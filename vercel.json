@@ -24,11 +24,11 @@
     },
     {
       "source": "/app/(.*)",
-      "destination": "frontend/app/index.html"
+      "destination": "/app/index.html"
     },
     {
       "source": "/(.*)",
-      "destination": "frontend/$1"
+      "destination": "/$1"
     }
   ],
   "crons": [
