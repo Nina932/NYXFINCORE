@@ -34,7 +34,7 @@
   "crons": [
     {
       "path": "/api/flywheel/trigger-cycle",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
