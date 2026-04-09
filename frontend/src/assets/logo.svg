@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for neon AI effect -->
+    <linearGradient id="nyxGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"></stop>
+      <stop offset="100%" stop-color="#7C3AED"></stop>
+    </linearGradient>
+
+    <!-- Soft Glow Filter -->
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Hexagon -->
+  <polygon points="100,18 162,55 162,125 100,162 38,125 38,55" stroke="url(#nyxGradient)" stroke-width="4" fill="none" filter="url(#softGlow)"></polygon>
+
+  <!-- Inner Hexagon (subtle) -->
+  <polygon points="100,40 145,65 145,115 100,140 55,115 55,65" fill="rgba(124,58,237,0.05)"></polygon>
+
+  <!-- Central Node (Core Intelligence) -->
+  <circle cx="100" cy="100" r="12" fill="#0B0F19">
+    <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite"></animate>
+    <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite"></animate>
+  </circle>
+
+  <!-- Neural Connections (Multi-Agent) -->
+  <g stroke="#0B0F19" stroke-width="2.5">
+    <line x1="100" y1="100" x2="100" y2="45"></line>
+    <line x1="100" y1="100" x2="145" y2="120"></line>
+    <line x1="100" y1="100" x2="55" y2="120"></line>
+  </g>
+</svg>

@@ -1,0 +1,763 @@
+"""
+Complete Accounting Knowledge Base for LLM Context Injection
+=============================================================
+This module builds a comprehensive accounting knowledge document that gets
+injected into every LLM prompt. It combines:
+1. Georgian 1C Chart of Accounts (406 accounts)
+2. IFRS standards and rules
+3. Financial statement construction logic
+4. Ratio formulas and benchmarks
+5. Industry-specific knowledge (fuel distribution)
+6. Georgian tax and regulatory knowledge
+7. Fraud detection patterns
+8. All 710 Knowledge Graph entities
+
+This is NOT training — it's RAG (Retrieval-Augmented Generation).
+The LLM receives this knowledge as context, so it can reason like an expert
+accountant without needing to be fine-tuned.
+"""
+
+import logging
+from typing import Dict, List, Optional
+from functools import lru_cache
+
+logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=1)
+def build_full_accounting_knowledge() -> str:
+    """Build the complete accounting knowledge document for LLM injection."""
+    sections = []
+
+    # ═══════════════════════════════════════════════════════════════
+    # 1. CHART OF ACCOUNTS (Georgian 1C, IFRS-compatible)
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== CHART OF ACCOUNTS (Georgian 1C / IFRS) ===
+CLASS 1: CURRENT ASSETS (1000-1999)
+  11XX Cash and Cash Equivalents
+    1110 Petty Cash (National Currency / GEL)
+    1120 Petty Cash (Foreign Currency)
+  12XX Bank Accounts
+    1210 Current Account (GEL) at Resident Bank
+    1220 Foreign Currency Account at Resident Bank
+    1230 Deposit Account
+  13XX Short-term Investments
+  14XX Trade Receivables
+    1410 Receivables from Sales and Services
+    1420 Notes Receivable
+    1430 Receivables from Related Parties
+  15XX Other Receivables
+    1510 Advances Paid to Suppliers
+    1520 Employee Advances
+    1530 Tax Receivables (VAT, Income Tax prepayments)
+  16XX Inventories
+    1610 Goods for Resale (THIS IS INVENTORY, NOT COGS!)
+    1620 Raw Materials
+    1630 Work in Progress
+    1640 Finished Goods
+    1650 Fuel Inventory (petrol, diesel, gas, LPG, CNG)
+
+CLASS 2: NON-CURRENT ASSETS (2000-2999)
+  21XX Property, Plant & Equipment (PP&E)
+    2110 Land
+    2120 Buildings and Structures
+    2130 Machinery and Equipment
+    2140 Vehicles
+    2150 Fuel Station Equipment (pumps, tanks, canopies)
+    2160 Office Equipment and Furniture
+  22XX Accumulated Depreciation (NEGATIVE values)
+    2210 Depreciation of Buildings
+    2220 Depreciation of Equipment
+    2230 Depreciation of Vehicles
+  23XX Intangible Assets
+    2310 Software Licenses
+    2320 Goodwill
+  24XX Long-term Investments
+    2410 Investments in Subsidiaries
+    2420 Long-term Deposits
+
+CLASS 3: CURRENT LIABILITIES (3000-3999)
+  31XX Trade Payables
+    3110 Payables to Suppliers
+    3120 Notes Payable
+    3130 Payables to Related Parties
+  32XX Accrued Liabilities
+    3210 Accrued Wages
+    3220 Accrued Taxes
+  33XX Tax Liabilities
+    3310 VAT Payable
+    3320 Income Tax Payable
+    3330 Property Tax Payable
+  34XX Short-term Borrowings
+    3410 Bank Overdraft
+    3420 Short-term Loans
+  35XX Advances Received
+    3510 Customer Prepayments
+
+CLASS 4: NON-CURRENT LIABILITIES (4000-4999)
+  41XX Long-term Borrowings
+    4110 Bank Loans (>1 year)
+    4120 Bonds Payable
+    4130 Finance Lease Obligations
+  42XX Provisions
+    4210 Provision for Environmental Remediation
+    4220 Provision for Legal Claims
+
+CLASS 5: EQUITY (5000-5999)
+  51XX Share Capital
+    5110 Authorized Capital
+    5120 Additional Paid-in Capital
+  52XX Reserves
+    5210 Legal Reserve
+    5220 Revaluation Reserve
+  53XX Treasury Shares (NEGATIVE)
+  54XX Retained Earnings
+    5410 Retained Earnings (Prior Years)
+    5420 Current Year Profit/Loss
+
+CLASS 6: REVENUE (6000-6999)
+  61XX Revenue from Sales (CREDIT BALANCE = NEGATIVE in Trial Balance)
+    6110 Revenue from Sale of Goods/Products
+    6120 Revenue Discounts/Returns (DEBIT = reduces revenue)
+  62XX Other Operating Revenue
+    6210 Rental Income
+    6220 Service Revenue
+
+CLASS 7: EXPENSES (7000-7999)
+  71XX Cost of Goods Sold — THE REAL COGS
+    7110 Cost of Products Sold (COGS)
+    7120 Cost of Services Provided
+  73XX Selling and Distribution Expenses
+    7310 Commercial Expenses (selling staff, marketing, transport)
+    7310.01 Selling expenses in organizations
+    7310.02 Commercial expenses in gas station operations
+  74XX General and Administrative Expenses
+    7410 Administrative Expenses (office, management, audit, legal)
+    7410.01 G&A in central office
+
+CLASS 8: OTHER INCOME AND EXPENSES (8000-8999)
+  81XX Other Operating Income
+    8110 Foreign Exchange Gains
+    8120 Gain on Disposal of Assets
+    8130 Other Non-operating Income
+  82XX Other Operating Expenses
+    8210 Foreign Exchange Losses
+    8220 Interest Expense on Loans/Borrowings
+    8230 Loss on Disposal of Assets
+    8240 Fines and Penalties
+  83XX Extraordinary Items (rare)
+
+CLASS 9: TAX (9000-9999)
+  91XX Income Tax Expense
+    9110 Current Income Tax
+    9120 Deferred Income Tax
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 2. FINANCIAL STATEMENT CONSTRUCTION
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== FINANCIAL STATEMENT CONSTRUCTION RULES ===
+
+P&L (INCOME STATEMENT) — Top to Bottom:
+  Revenue (61XX)                          = Total Sales
+  - COGS (71XX)                           = Cost of Goods Sold
+  = GROSS PROFIT                          = Revenue - COGS
+  - Selling Expenses (73XX)               = Commercial/Distribution costs
+  - Admin Expenses (74XX)                 = G&A / Management costs
+  = EBITDA                                = Gross Profit - Selling - Admin
+  - Depreciation & Amortization           = From 22XX movements
+  = EBIT (Operating Profit)               = EBITDA - D&A
+  + Other Income (81XX)                   = FX gains, asset sales, etc.
+  - Other Expenses (82XX)                 = Interest, FX losses, etc.
+  = EBT (Earnings Before Tax)             = EBIT + Other Income - Other Expense
+  - Income Tax (91XX)                     = Current + Deferred tax
+  = NET PROFIT                            = EBT - Tax
+
+BALANCE SHEET — Must ALWAYS balance:
+  TOTAL ASSETS = TOTAL LIABILITIES + TOTAL EQUITY
+
+  Assets:
+    Current Assets (1XXX) = Cash + Bank + Receivables + Inventory + Prepayments
+    Non-Current Assets (2XXX) = PP&E - Accumulated Depreciation + Intangibles + Investments
+    TOTAL ASSETS = Current + Non-Current
+
+  Liabilities:
+    Current Liabilities (3XXX) = Trade Payables + Tax Payables + Short-term Loans + Accruals
+    Non-Current Liabilities (4XXX) = Long-term Loans + Provisions + Finance Leases
+    TOTAL LIABILITIES = Current + Non-Current
+
+  Equity (5XXX):
+    Share Capital + Reserves + Retained Earnings
+
+CASH FLOW STATEMENT (Indirect Method):
+  Operating Activities:
+    Net Profit
+    + Depreciation & Amortization (non-cash expense)
+    +/- Changes in Working Capital:
+      - Increase in Receivables (cash used)
+      + Decrease in Receivables (cash received)
+      - Increase in Inventory (cash used)
+      + Increase in Payables (cash received)
+    +/- Other non-cash adjustments
+  Investing Activities:
+    - Purchase of PP&E
+    + Sale of PP&E
+    - Purchase of Investments
+  Financing Activities:
+    + New Borrowings
+    - Loan Repayments
+    - Dividends Paid
+    + Capital Contributions
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 3. FINANCIAL RATIOS
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== FINANCIAL RATIOS (formulas + benchmarks for fuel distribution) ===
+
+PROFITABILITY:
+  Gross Margin %     = Gross Profit / Revenue * 100          [Fuel: 8-15% normal]
+  Net Margin %       = Net Profit / Revenue * 100            [Fuel: 2-6% normal]
+  EBITDA Margin %    = EBITDA / Revenue * 100                [Fuel: 5-10% normal]
+  ROE                = Net Profit / Equity * 100             [>15% good]
+  ROA                = Net Profit / Total Assets * 100       [>5% good]
+  ROCE               = EBIT / (Equity + Long-term Debt)     [>12% good]
+
+LIQUIDITY:
+  Current Ratio      = Current Assets / Current Liabilities  [>1.5 healthy, <1.0 danger]
+  Quick Ratio        = (Current Assets - Inventory) / CL     [>1.0 healthy]
+  Cash Ratio         = Cash / Current Liabilities            [>0.2 adequate]
+  Working Capital    = Current Assets - Current Liabilities  [positive = healthy]
+
+LEVERAGE:
+  Debt/Equity        = Total Liabilities / Equity            [<2.0 normal, >4.0 high risk]
+  Debt/Assets        = Total Liabilities / Total Assets      [<0.6 normal]
+  Interest Coverage  = EBIT / Interest Expense               [>3.0 safe, <1.5 danger]
+  Equity Ratio       = Equity / Total Assets                 [>0.3 adequate]
+
+EFFICIENCY:
+  Asset Turnover     = Revenue / Total Assets                [Fuel: 1.5-3.0]
+  Inventory Turnover = COGS / Average Inventory              [Fuel: 12-24 times/year]
+  Receivables Days   = (Receivables / Revenue) * 365         [Fuel: 15-45 days]
+  Payables Days      = (Payables / COGS) * 365               [Fuel: 30-60 days]
+
+FUEL DISTRIBUTION SPECIFIC:
+  COGS/Revenue %     = COGS / Revenue * 100                  [85-92% is normal]
+  OpEx/Revenue %     = (Selling+Admin) / Revenue * 100       [5-12% normal]
+  Fuel Margin/Liter  = Gross Profit / Total Liters Sold      [0.05-0.15 GEL/liter]
+  Station Profitability = Station Revenue - Station Costs    [per location]
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 4. CRITICAL ACCOUNTING RULES
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== CRITICAL ACCOUNTING RULES ===
+
+DOUBLE-ENTRY BOOKKEEPING:
+  Every transaction has EQUAL debits and credits.
+  Debits increase: Assets (1-2XXX), Expenses (7-9XXX)
+  Credits increase: Liabilities (3-4XXX), Equity (5XXX), Revenue (6XXX)
+  Trial Balance: Total Debits MUST equal Total Credits
+
+REVENUE (credit balance):
+  Revenue appears as NEGATIVE in Trial Balance (credit = income)
+  To get positive revenue figure: take absolute value of 61XX balance
+  Revenue recognition (IFRS 15): recognize when performance obligation is satisfied
+
+EXPENSES (debit balance):
+  Expenses appear as POSITIVE in Trial Balance (debit = cost)
+  Match expenses to the period they relate to (accrual basis)
+
+DEPRECIATION:
+  Accumulated Depreciation (22XX) is NEGATIVE on Balance Sheet
+  Net PP&E = Gross PP&E (21XX) - Accumulated Depreciation (22XX)
+  Methods: straight-line (most common), declining balance, units of production
+
+INVENTORY (account 16XX):
+  1610 is Balance Sheet item (Goods for Resale)
+  Turnovers on 1610 show INVENTORY MOVEMENT, not COGS
+  COGS is account 7110 (P&L item)
+  NEVER confuse inventory turnovers with cost of goods sold
+
+VAT (Georgian rules):
+  Standard rate: 18%
+  VAT on sales: 61XX gross amount includes VAT
+  Net Revenue = Gross Revenue / 1.18 (if VAT inclusive)
+  VAT Receivable: 15XX (input VAT on purchases)
+  VAT Payable: 33XX (output VAT on sales)
+
+GEORGIAN CORPORATE TAX:
+  Profit tax rate: 15%
+  Estonia-style model: tax on distributed profits only (since 2017)
+  Tax is charged when dividends are paid, not when profit is earned
+
+MAPPING SHEET = SOURCE OF TRUTH:
+  When a file has a "Mapping" sheet with account codes and amounts,
+  use IT for P&L figures, not Revenue Breakdown or COGS Breakdown sheets.
+  Revenue Breakdown = product-level detail (for analysis, not totals)
+  COGS Breakdown = inventory turnovers (WRONG for COGS total)
+  Mapping = final P&L classification by account code (CORRECT)
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 5. FRAUD AND ANOMALY DETECTION
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== FRAUD & ANOMALY DETECTION PATTERNS ===
+
+RED FLAGS:
+  - COGS > Revenue (selling below cost — possible fraud or error)
+  - Negative equity (insolvent — liabilities exceed assets)
+  - Interest expense > 25% of total costs (dangerously leveraged)
+  - Revenue growth > 50% without corresponding asset growth (channel stuffing risk)
+  - Receivables growing faster than revenue (collection problems or fictitious sales)
+  - Round number entries (₾100,000 exactly — possible estimates, not real transactions)
+  - Journal entries at period-end clustered (window dressing)
+  - Related party transactions > 20% of revenue (transfer pricing risk)
+  - Depreciation rate suddenly changes (earnings management)
+  - Inventory days increasing (obsolescence or overstatement)
+
+BENFORD'S LAW:
+  First digits of financial amounts should follow Benford distribution:
+  1=30.1%, 2=17.6%, 3=12.5%, 4=9.7%, 5=7.9%, 6=6.7%, 7=5.8%, 8=5.1%, 9=4.6%
+  Deviation suggests manipulation.
+
+GOING CONCERN INDICATORS:
+  - Negative working capital (current liabilities > current assets)
+  - Cash runway < 6 months
+  - Recurring losses for 2+ years
+  - Debt covenants breached
+  - Key customer/supplier dependency > 50%
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 6. SHEET TYPE RECOGNITION
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== FILE/SHEET TYPE RECOGNITION ===
+
+REVENUE BREAKDOWN:
+  Headers: Product | Amount | VAT | Net Revenue | Category
+  Contains: Product names (Georgian), gross amounts, VAT amounts, net amounts
+  Categories: "Revenue Retail", "Revenue Wholesale", "Other Revenue"
+  Use for: Product-level revenue analysis, category breakdown
+  DO NOT use for: P&L revenue total (use Mapping sheet instead)
+
+COGS BREAKDOWN (Account 1610):
+  Headers: Субконто | Нач. сальдо деб. | Деб. оборот | ...
+  Contains: Inventory items with opening balance, debit/credit turnovers
+  Title often: "Обороты счета 1610" (Turnovers of account 1610)
+  This is INVENTORY MOVEMENT on Balance Sheet account 1610
+  DO NOT use for: COGS total. Use account 7110 from Mapping sheet.
+
+TRIAL BALANCE (TDSheet / ОСВ):
+  Headers: Счет | Код | Наименование | Дебет | Кредит
+  Title: "Оборотно-сальдовая ведомость" (Trial Balance)
+  Contains: ALL accounts with opening/closing balances and turnovers
+  Use for: Building complete P&L and Balance Sheet from scratch
+
+BALANCE (Full Account List):
+  Headers: Index | Company | Code | Name | Start Dr | Start Cr | Starting Balance
+  Contains: Complete chart of accounts with balances
+  Use for: Balance Sheet construction, account verification
+
+MAPPING (P&L Classification):
+  Contains: Account codes (61XX, 71XX, 73XX, 74XX) with amounts and IFRS categories
+  This is the AUTHORITATIVE SOURCE for P&L line items
+  Use for: Final P&L figures. This overrides other sheets.
+
+BS (Balance Sheet Summary):
+  Contains: Summarized balance sheet lines
+  May have non-standard format
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 7. IFRS STANDARDS (KEY ONES FOR FINANCIAL ANALYSIS)
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== KEY IFRS STANDARDS ===
+
+IAS 1 — Presentation of Financial Statements:
+  Required statements: Statement of Financial Position (BS), Statement of Profit or Loss (P&L),
+  Statement of Changes in Equity, Statement of Cash Flows, Notes.
+  Current/Non-current distinction required. Going concern assumption mandatory.
+
+IAS 2 — Inventories:
+  Measured at LOWER of cost and net realizable value.
+  Cost formulas: FIFO or Weighted Average (LIFO prohibited under IFRS).
+  Write-down to NRV recognized in P&L as expense.
+  For fuel distribution: inventory = fuel in tanks + fuel in transit.
+
+IAS 7 — Statement of Cash Flows:
+  Operating: indirect (start from net profit, adjust) or direct method.
+  Investing: PP&E purchases/sales, investment acquisitions.
+  Financing: borrowings, repayments, dividends, equity issuance.
+  Interest paid: operating or financing. Dividends paid: operating or financing.
+
+IAS 8 — Accounting Policies, Changes and Errors:
+  Changes in estimates: prospective (affect current + future).
+  Changes in policy: retrospective (restate prior periods).
+  Error corrections: retrospective restatement.
+
+IAS 10 — Events After Reporting Period:
+  Adjusting events: conditions existed at period end → adjust financials.
+  Non-adjusting events: arose after period end → disclose only.
+
+IAS 12 — Income Taxes:
+  Current tax: amount payable/recoverable for current period.
+  Deferred tax: temporary differences between carrying amount and tax base.
+  Georgian specifics: Estonia-model since 2017 → tax on distribution only.
+
+IAS 16 — Property, Plant and Equipment:
+  Initial measurement: cost (purchase + directly attributable costs).
+  Subsequent: cost model or revaluation model.
+  Depreciation: systematic allocation over useful life.
+  Component approach: separately depreciate significant components.
+  Fuel stations: land (no depreciation), buildings (20-40 years), pumps (10-15 years), canopies (15-25 years).
+
+IAS 21 — Foreign Currency:
+  Functional currency: currency of primary economic environment.
+  Transactions: initial rate at transaction date.
+  Monetary items: closing rate → exchange differences in P&L.
+  Georgian companies: GEL is functional currency.
+
+IAS 23 — Borrowing Costs:
+  Capitalize borrowing costs on qualifying assets (long construction period).
+  All other borrowing costs: expense in P&L (82XX accounts).
+
+IAS 36 — Impairment of Assets:
+  Test when indicators exist. Recoverable amount = higher of fair value less costs to sell OR value in use.
+  Impairment loss = carrying amount - recoverable amount → P&L.
+  For fuel stations: test if station consistently unprofitable.
+
+IAS 37 — Provisions, Contingent Liabilities:
+  Provision: probable outflow, reliable estimate → recognize liability.
+  Contingent liability: possible but not probable → disclose only.
+  Environmental provisions important for fuel companies (soil contamination, tank removal).
+
+IAS 38 — Intangible Assets:
+  Identifiable, controlled, future economic benefits.
+  Software: capitalize if development phase criteria met.
+  Fuel distribution licenses: capitalize, amortize over license period.
+
+IFRS 9 — Financial Instruments:
+  Classification: amortized cost, FVOCI, FVTPL.
+  Expected credit loss model for trade receivables (simplified approach).
+  Fuel companies: apply to trade receivables from fuel sales.
+
+IFRS 15 — Revenue Recognition:
+  5-step model: 1) Identify contract, 2) Identify performance obligations,
+  3) Determine transaction price, 4) Allocate price, 5) Recognize when/as satisfied.
+  Fuel retail: revenue at point of sale (pump delivery).
+  Wholesale: revenue when fuel delivered/accepted by customer.
+  Transport services: revenue over time or at delivery point.
+
+IFRS 16 — Leases:
+  Lessee: recognize right-of-use asset + lease liability for ALL leases >12 months.
+  Exception: short-term (<12 months) and low-value assets.
+  Fuel stations: many are leased → significant right-of-use assets.
+  Impact: higher assets, higher liabilities, EBITDA increases (rent → depreciation + interest).
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 8. ADVANCED FINANCIAL ANALYSIS TECHNIQUES
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== ADVANCED FINANCIAL ANALYSIS ===
+
+DUPONT ANALYSIS (ROE Decomposition):
+  ROE = Net Margin x Asset Turnover x Equity Multiplier
+  ROE = (Net Profit/Revenue) x (Revenue/Assets) x (Assets/Equity)
+  Identifies whether ROE is driven by profitability, efficiency, or leverage.
+  Fuel distribution: typically low margin, high turnover, moderate leverage.
+
+ALTMAN Z-SCORE (Bankruptcy Prediction):
+  Z = 1.2*(Working Capital/Assets) + 1.4*(Retained Earnings/Assets) + 3.3*(EBIT/Assets)
+    + 0.6*(Market Cap/Total Liabilities) + 1.0*(Revenue/Assets)
+  Z > 2.99: Safe zone
+  1.81 < Z < 2.99: Grey zone (monitor closely)
+  Z < 1.81: Distress zone (high bankruptcy risk)
+
+VARIANCE ANALYSIS:
+  Price Variance = (Actual Price - Standard Price) x Actual Quantity
+  Volume Variance = (Actual Quantity - Standard Quantity) x Standard Price
+  Mix Variance = change in product mix impact on margins
+  For fuel: analyze per-liter margin variance between diesel, petrol, LPG, CNG.
+
+BREAK-EVEN ANALYSIS:
+  Break-even Revenue = Fixed Costs / Contribution Margin Ratio
+  Contribution Margin = Revenue - Variable Costs (primarily COGS for fuel)
+  Contribution Margin Ratio = Contribution Margin / Revenue
+  For fuel: variable costs = fuel purchase price + transport, fixed = station costs + admin.
+
+WORKING CAPITAL CYCLE:
+  Cash Conversion Cycle = Inventory Days + Receivable Days - Payable Days
+  Inventory Days = (Inventory / COGS) x 365
+  Receivable Days = (Receivables / Revenue) x 365
+  Payable Days = (Payables / COGS) x 365
+  Fuel distribution: typically 5-15 days inventory, 15-45 days receivables, 30-60 days payables.
+
+TREND ANALYSIS:
+  Compare same metrics across 3+ periods.
+  Calculate: period-over-period growth rate, compound annual growth rate (CAGR).
+  Identify: acceleration, deceleration, cyclical patterns, seasonal effects.
+  Revenue decomposition: volume growth vs price growth vs mix effect.
+
+COMMON-SIZE ANALYSIS:
+  Express all P&L items as % of Revenue.
+  Express all BS items as % of Total Assets.
+  Enables cross-company and cross-period comparison regardless of size.
+
+HORIZONTAL ANALYSIS:
+  Compare each line item to base period (Year 1 = 100%).
+  Identify which items grew faster/slower than revenue.
+  Flag: COGS growing faster than revenue = margin compression.
+
+VERTICAL ANALYSIS:
+  Each P&L line as % of Revenue.
+  Each BS line as % of Total Assets.
+  Industry comparison: fuel distribution COGS should be 85-92% of revenue.
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 9. GEORGIAN TAX & REGULATORY SPECIFICS
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== GEORGIAN TAX & REGULATORY FRAMEWORK ===
+
+CORPORATE INCOME TAX (Estonia Model since 2017):
+  Rate: 15% on distributed profits (dividends).
+  No tax on retained/reinvested profits.
+  Tax base = gross distribution / 0.85 (gross-up).
+  Effective rate on distribution: 15/85 = 17.65%.
+  If no dividends paid, corporate tax = 0 (but provision still recognized).
+
+VALUE ADDED TAX (VAT):
+  Standard rate: 18%.
+  Registration threshold: annual turnover > 100,000 GEL.
+  Fuel sales: VAT included in pump price.
+  Input VAT on purchases: deductible (account 15XX).
+  Output VAT on sales: payable (account 33XX).
+  Net VAT = Output VAT - Input VAT.
+
+PROPERTY TAX:
+  Rate: up to 1% of average annual value of taxable property.
+  Assessed on: buildings, land, equipment.
+  Fuel stations: significant property tax on station infrastructure.
+
+EXCISE TAX (Critical for fuel):
+  Applied on fuel imports and domestic production.
+  Rates vary by fuel type (petrol, diesel, LPG, CNG, natural gas).
+  Excise is part of COGS for fuel distributors.
+  Excise changes directly impact margins.
+
+TRANSFER PRICING:
+  Arm's length principle applies.
+  Related party transactions must be at market rates.
+  NYX Core Thinker subsidiary: intercompany fuel purchases must be documented.
+  Documentation: benchmarking study, transfer pricing policy.
+
+NATIONAL BANK OF GEORGIA (NBG):
+  Sets official exchange rates daily.
+  GEL exchange rate to USD, EUR, GBP, TRY.
+  All foreign currency BS items revalued at NBG rate.
+  FX gains/losses: account 81XX (gains) / 82XX (losses).
+
+FINANCIAL REPORTING REQUIREMENTS:
+  Category I entities (large): full IFRS, mandatory audit.
+  Category II (medium): IFRS or IFRS for SMEs, audit required.
+  Category III (small): IFRS for SMEs, audit not always required.
+  Filing: Service for Accounting, Reporting and Auditing Supervision (SARAS).
+  Deadline: 6 months after fiscal year end (typically June 30 for Dec year-end).
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 10. FUEL DISTRIBUTION INDUSTRY DEEP KNOWLEDGE
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== FUEL DISTRIBUTION INDUSTRY KNOWLEDGE ===
+
+BUSINESS MODEL:
+  Import fuel (crude or refined) → Store in depots → Distribute to stations → Sell retail/wholesale.
+  Revenue streams: retail pump sales, wholesale to corporate clients, gas (CNG/LPG), convenience store.
+  Key cost: fuel purchase price (85-92% of revenue). Thin margins, high volume.
+
+PRODUCT MIX (Georgian market):
+  Diesel: largest volume (trucks, commercial vehicles, heating)
+  Euro Regular (AI-92): standard petrol for passenger cars
+  Euro Premium (AI-95/98): premium petrol
+  CNG (Compressed Natural Gas): growing segment, lower margins
+  LPG (Liquefied Petroleum Gas): used in vehicles and heating
+  Natural Gas (pipeline): residential and commercial heating
+  Bitumen: road construction, seasonal demand
+
+REVENUE CLASSIFICATION:
+  Revenue Retail = pump sales to end consumers (higher margin, lower volume per transaction)
+  Revenue Wholesale = bulk sales to corporate clients (lower margin, higher volume)
+  Other Revenue = services, rent, transport, carwash, convenience store
+
+COST STRUCTURE:
+  COGS (85-92%): fuel purchase + excise + transport to depot
+  Selling expenses (3-5%): station operations, staff, marketing, fuel transport to stations
+  Admin expenses (2-4%): central office, management, audit, legal
+  Depreciation (1-3%): stations, pumps, tanks, vehicles
+  Interest (1-3%): financing for fuel inventory, station construction
+
+KEY OPERATIONAL METRICS:
+  Fuel margin per liter (tetri/liter): 5-15 tetri retail, 2-8 tetri wholesale
+  Station throughput: liters/day per station
+  Station count and utilization rate
+  Fuel inventory days: 5-15 days typical
+  Transport cost per liter: depends on distance to depot
+
+SEASONAL PATTERNS:
+  Q1 (Jan-Mar): lower demand (except heating gas), diesel steady for trucks
+  Q2 (Apr-Jun): increasing demand, road construction starts (bitumen)
+  Q3 (Jul-Sep): peak demand (summer travel, agriculture)
+  Q4 (Oct-Dec): declining fuel, increasing gas for heating
+
+RISK FACTORS:
+  Oil price volatility: directly impacts COGS and margins
+  Exchange rate: fuel priced in USD, sold in GEL → FX exposure
+  Regulatory: excise tax changes, environmental regulations
+  Competition: pricing pressure from other stations
+  Infrastructure: station maintenance, tank inspections, environmental compliance
+  Credit risk: wholesale receivables from corporate clients
+
+VALUATION METRICS:
+  EV/EBITDA: 6-10x for fuel distributors
+  P/E: 8-15x
+  EV/Revenue: 0.3-0.8x (low margin business)
+  Station value: based on throughput, location, lease terms
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 11. MANAGEMENT REPORTING & KPI FRAMEWORK
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== MANAGEMENT REPORTING FRAMEWORK ===
+
+DAILY KPIs (operational):
+  - Total liters sold (by product, by station)
+  - Daily revenue by station
+  - Fuel inventory levels (days of supply)
+  - Cash position
+
+WEEKLY KPIs (tactical):
+  - Gross margin by product
+  - Station-level profitability
+  - Receivables aging
+  - Fuel purchase cost trend
+
+MONTHLY KPIs (strategic):
+  - Full P&L with budget comparison
+  - Balance sheet with ratio analysis
+  - Working capital position
+  - Debt service coverage
+  - Capital expenditure vs budget
+
+QUARTERLY KPIs (board-level):
+  - Revenue growth vs market
+  - Market share changes
+  - Strategic investment ROI
+  - Covenant compliance
+  - Peer benchmarking
+
+REPORTING HIERARCHY:
+  Station Manager → Regional Manager → Operations Director → CFO → Board
+  Each level sees aggregated data with drill-down capability.
+
+BUDGET VARIANCE CATEGORIES:
+  Favorable: actual better than budget (higher revenue, lower cost)
+  Unfavorable: actual worse than budget (lower revenue, higher cost)
+  Material: >5% variance requires explanation
+  Immaterial: <5% variance, normal fluctuation
+""")
+
+    # ═══════════════════════════════════════════════════════════════
+    # 12. CROSS-PERIOD ANALYSIS INTELLIGENCE
+    # ═══════════════════════════════════════════════════════════════
+    sections.append("""
+=== CROSS-PERIOD ANALYSIS INTELLIGENCE ===
+
+WHEN COMPARING TWO PERIODS:
+  1. Calculate absolute change (Current - Previous)
+  2. Calculate percentage change ((Current - Previous) / |Previous| * 100)
+  3. Identify direction: growth, decline, stable (within 2%)
+  4. Assess significance: material if > 5% or > threshold amount
+
+WHAT TO LOOK FOR:
+  Revenue change drivers:
+    - Volume effect (more/fewer liters sold)
+    - Price effect (higher/lower price per liter)
+    - Mix effect (shift between retail/wholesale/products)
+
+  Margin changes:
+    - If revenue grew but margin declined → COGS grew faster (pricing pressure)
+    - If revenue declined but margin improved → cost optimization worked
+    - If both declined → structural problem
+
+  Cost anomalies:
+    - Any expense category growing > 2x revenue growth rate
+    - New expense categories appearing
+    - Seasonal expenses appearing in wrong season
+    - Related party transactions changing significantly
+
+  Balance sheet shifts:
+    - Receivables growing faster than revenue → collection issue
+    - Inventory days increasing → overstock or obsolescence
+    - Debt increasing without corresponding asset growth → concern
+    - Cash declining while profit is positive → working capital consumed
+
+WHEN DATA IS MISSING:
+  If current period data is partial (e.g., only expenses, no revenue):
+    1. State clearly: "Revenue data not available for this period"
+    2. Analyze what IS available (expense structure, leverage signals)
+    3. Compare available items to last known full period
+    4. Flag: "Complete analysis requires revenue and COGS data"
+    5. Suggest: "Upload trial balance or full P&L for complete view"
+
+  NEVER fabricate missing data. NEVER estimate revenue from expenses alone
+  unless explicitly asked for a range estimate (and mark it clearly as estimate).
+""")
+
+    full_knowledge = "\n".join(sections)
+    logger.info("Built accounting knowledge base: %d chars, %d sections",
+                len(full_knowledge), len(sections))
+    return full_knowledge
+
+
+@lru_cache(maxsize=1)
+def build_compact_knowledge() -> str:
+    """Build a shorter version for smaller context windows (qwen2.5:3b has 4K)."""
+    return """
+ACCOUNTING KNOWLEDGE (Georgian 1C / IFRS):
+Accounts: 11XX=Cash, 12XX=Bank, 14XX=Receivables, 16XX=Inventory(BS!), 21XX=PP&E, 22XX=Depreciation, 24XX=Investments, 31XX=Payables, 33XX=Tax, 41XX=LongDebt, 51XX=Capital, 54XX=RetainedEarnings, 61XX=Revenue(credit/negative), 71XX=COGS(THE REAL ONE), 73XX=SellingExp, 74XX=AdminExp, 81XX=OtherIncome, 82XX=OtherExpense(interest), 91XX=Tax
+P&L: Revenue-COGS=GrossProfit-Selling-Admin=EBITDA-D&A=EBIT+OtherInc-OtherExp=EBT-Tax=NetProfit
+BS: Assets(1-2XXX)=Liabilities(3-4XXX)+Equity(5XXX). MUST balance.
+CRITICAL: 1610=Inventory(BS), 7110=COGS(P&L). NEVER confuse them.
+Revenue is NEGATIVE in TB (credit). Expenses are POSITIVE (debit).
+Mapping sheet = source of truth for P&L. COGS Breakdown = inventory turnovers, NOT COGS.
+Fuel distribution: Gross margin 8-15%, COGS/Rev 85-92%, OpEx/Rev 5-12%.
+Georgian tax: 15% on distributed profits (Estonia model since 2017).
+"""
+
+
+def get_knowledge_for_context(max_chars: int = 8000) -> str:
+    """Get accounting knowledge sized for the available context window."""
+    full = build_full_accounting_knowledge()
+    if len(full) <= max_chars:
+        return full
+    # Use compact version for small models
+    return build_compact_knowledge()
+
+
+# Module-level pre-build
+_full = build_full_accounting_knowledge()
+_compact = build_compact_knowledge()
+logger.info("Accounting knowledge base ready: full=%d chars, compact=%d chars",
+            len(_full), len(_compact))

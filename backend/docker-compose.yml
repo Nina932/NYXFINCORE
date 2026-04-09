@@ -1,0 +1,116 @@
+version: "3.9"
+
+services:
+  # ── Backend API ──
+  api:
+    build: .
+    container_name: finai_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql+asyncpg://finai:${DB_PASSWORD}@db:5432/finai_db
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - CORS_ORIGINS=http://localhost,https://${DOMAIN:-yourdomain.com}
+      - UPLOAD_DIR=/app/uploads
+      - EXPORT_DIR=/app/exports
+      - LOG_FILE=/app/logs/finai.log
+      - REDIS_ENABLED=true
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./uploads:/app/uploads
+      - ./exports:/app/exports
+      - ./logs:/app/logs
+      - ./static:/app/static
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - finai_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── PostgreSQL Database ──
+  db:
+    image: postgres:16-alpine
+    container_name: finai_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=finai_db
+      - POSTGRES_USER=finai
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - finai_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finai -d finai_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"   # Remove in production
+
+  # ── Redis Cache (optional) ──
+  redis:
+    image: redis:7-alpine
+    container_name: finai_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - finai_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Nginx Reverse Proxy ──
+  nginx:
+    image: nginx:alpine
+    container_name: finai_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./static:/var/www/static:ro
+      - ./ssl:/etc/nginx/ssl:ro       # SSL certificates
+    depends_on:
+      - api
+    networks:
+      - finai_net
+
+  # ── Jaeger Tracing (Observability) ──
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: finai_jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686" # UI
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - finai_net
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  finai_net:
+    driver: bridge

@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="nyx-glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b1"/><feGaussianBlur stdDeviation="12" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="nyx-pulse" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.5" result="bl"/><feMerge><feMergeNode in="bl"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g stroke="#1E3D5A" stroke-width="0.7" fill="none">
+    <animate attributeName="opacity" values="0.2;0.38;0.2" dur="4s" repeatCount="indefinite"/>
+    <polygon points="64.0,58.8 55.0,74.4 37.0,74.4 28.0,58.8 37.0,43.2 55.0,43.2"/>
+    <polygon points="64.0,90.0 55.0,105.6 37.0,105.6 28.0,90.0 37.0,74.4 55.0,74.4"/>
+    <polygon points="64.0,121.2 55.0,136.8 37.0,136.8 28.0,121.2 37.0,105.6 55.0,105.6"/>
+    <polygon points="91.0,43.2 82.0,58.8 64.0,58.8 55.0,43.2 64.0,27.6 82.0,27.6"/>
+    <polygon points="91.0,74.4 82.0,90.0 64.0,90.0 55.0,74.4 64.0,58.8 82.0,58.8"/>
+    <polygon points="91.0,105.6 82.0,121.2 64.0,121.2 55.0,105.6 64.0,90.0 82.0,90.0"/>
+    <polygon points="91.0,136.8 82.0,152.4 64.0,152.4 55.0,136.8 64.0,121.2 82.0,121.2"/>
+    <polygon points="118.0,27.6 109.0,43.2 91.0,43.2 82.0,27.6 91.0,12.0 109.0,12.0"/>
+    <polygon points="118.0,58.8 109.0,74.4 91.0,74.4 82.0,58.8 91.0,43.2 109.0,43.2"/>
+    <polygon points="118.0,90.0 109.0,105.6 91.0,105.6 82.0,90.0 91.0,74.4 109.0,74.4"/>
+    <polygon points="118.0,121.2 109.0,136.8 91.0,136.8 82.0,121.2 91.0,105.6 109.0,105.6"/>
+    <polygon points="118.0,152.4 109.0,168.0 91.0,168.0 82.0,152.4 91.0,136.8 109.0,136.8"/>
+    <polygon points="145.0,43.2 136.0,58.8 118.0,58.8 109.0,43.2 118.0,27.6 136.0,27.6"/>
+    <polygon points="145.0,74.4 136.0,90.0 118.0,90.0 109.0,74.4 118.0,58.8 136.0,58.8"/>
+    <polygon points="145.0,105.6 136.0,121.2 118.0,121.2 109.0,105.6 118.0,90.0 136.0,90.0"/>
+    <polygon points="145.0,136.8 136.0,152.4 118.0,152.4 109.0,136.8 118.0,121.2 136.0,121.2"/>
+    <polygon points="172.0,58.8 163.0,74.4 145.0,74.4 136.0,58.8 145.0,43.2 163.0,43.2"/>
+    <polygon points="172.0,90.0 163.0,105.6 145.0,105.6 136.0,90.0 145.0,74.4 163.0,74.4"/>
+    <polygon points="172.0,121.2 163.0,136.8 145.0,136.8 136.0,121.2 145.0,105.6 163.0,105.6"/>
+  </g>
+  <g transform="translate(100 90)" filter="url(#nyx-pulse)">
+    <polygon points="0,-48 42,-24 42,24 0,48 -42,24 -42,-24" stroke="#00E5FF" stroke-width="1.5" fill="none">
+      <animate attributeName="opacity" values="0.5;0" dur="3s" begin="0s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="scale" values="1;1.55" dur="3s" begin="0s" repeatCount="indefinite"/>
+    </polygon>
+    <polygon points="0,-48 42,-24 42,24 0,48 -42,24 -42,-24" stroke="#00E5FF" stroke-width="1.5" fill="none">
+      <animate attributeName="opacity" values="0.5;0" dur="3s" begin="1s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="scale" values="1;1.55" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </polygon>
+    <polygon points="0,-48 42,-24 42,24 0,48 -42,24 -42,-24" stroke="#00E5FF" stroke-width="1.5" fill="none">
+      <animate attributeName="opacity" values="0.5;0" dur="3s" begin="2s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="scale" values="1;1.55" dur="3s" begin="2s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+  <polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none" filter="url(#nyx-glow)">
+    <animate attributeName="stroke-opacity" values="1;0.65;1" dur="3s" repeatCount="indefinite"/>
+  </polygon>
+  <polygon points="100,42 142,66 142,114 100,138 58,114 58,66" fill="#00C8FF" opacity="0.04"/>
+</svg>

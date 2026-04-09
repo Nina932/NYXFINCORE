@@ -1,0 +1,1473 @@
+I have now thoroughly explored the entire codebase. Let me synthesize the comprehensive implementation plan.
+
+---
+
+# FinAI Feature Expansion -- Comprehensive Implementation Plan
+
+## Part 0: Codebase Architecture Summary
+
+The current codebase follows these conventions consistently, and all new code must adhere to them:
+
+**Project structure:**
+```
+backend/
+  main.py                          # FastAPI app, lifespan, routers, middleware
+  app/
+    config.py                      # Pydantic BaseSettings, .env driven
+    database.py                    # SQLAlchemy async engine, session factory, Base, get_db, init_db
+    models/all_models.py           # ALL models in single file, inherit from Base
+    routers/
+      agent.py                     # /api/agent/* -- chat, memory, feedback
+      analytics.py                 # /api/analytics/* -- dashboard, txns, revenue, costs, budget, pl, bs
+      datasets.py                  # /api/datasets/* -- upload, list, activate, delete, product-mappings
+      reports.py                   # /api/reports/* -- CRUD + Excel export
+      tools.py                     # /api/tools/* -- custom tools CRUD + sync
+    services/
+      ai_agent.py                  # FinAIAgent singleton with tools[], execute_tool(), chat() loop
+      income_statement.py          # IncomeStatement dataclass + build_income_statement()
+      coa_engine.py                # COA-based P&L/BS computation, build_structured_pl_rows()
+      file_parser.py               # parse_file(), map_coa(), GEORGIAN_COA, product classification
+      semantic_layer.py            # Counterparty/dept/cost-class semantic classification
+      seed_data.py                 # seed_database() for initial data
+    utils/
+      excel_export.py              # ExcelExporter class, NYX-themed Excel generation
+```
+
+**Key patterns observed:**
+- Every model has `to_dict()` method
+- Routers use `APIRouter(prefix="/api/...", tags=[...])`, all async, `Depends(get_db)`
+- Agent tools defined as dicts in `self.tools[]` list, dispatched via `execute_tool()` with `if/elif` chain
+- Tool results return formatted markdown strings; navigation uses `__NAVIGATE_TO__<page>__END__` protocol; charts use `__CHART__<json>__END__`
+- `_resolve_active_ds()` and `_build_stmt()` are common helper patterns
+- Database uses `Base.metadata.create_all` at startup (no Alembic migrations in use for schema changes)
+- Config values from `.env` via `pydantic_settings.BaseSettings`
+- All monetary formatting via `fgel()` (abbreviated) and `fexact()` (precise) helpers
+
+---
+
+## PHASE 1: Database Models (7 new models)
+
+**File to modify:** `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\models\all_models.py`
+
+All 7 new models are added to the same `all_models.py` file, following the existing pattern (Column definitions, Index, `to_dict()` method). Since the project uses `Base.metadata.create_all` at startup, new tables are auto-created. No Alembic migration needed for development; for production, an Alembic migration script should be generated.
+
+### Model 1: Forecast
+
+```python
+class Forecast(Base):
+    __tablename__ = "forecasts"
+    id                = Column(Integer, primary_key=True, autoincrement=True)
+    dataset_id        = Column(Integer, ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True)
+    forecast_type     = Column(String(50), nullable=False)  # "revenue"|"cogs"|"margin"|"expense"|"ebitda"
+    product           = Column(String(255))                  # Specific product or None for aggregate
+    segment           = Column(String(100))                  # "Wholesale"|"Retail"|"Other"|None
+    category          = Column(String(100))                  # e.g. "Revenue Whsale Petrol"
+    method            = Column(String(50), nullable=False)   # "moving_avg"|"exp_smoothing"|"linear_regression"|"growth_rate"
+    period_start      = Column(String(50))                   # e.g. "January 2025"
+    period_end        = Column(String(50))                   # e.g. "December 2025"
+    periods           = Column(Integer, default=6)           # number of forecast periods
+    values            = Column(JSON)                         # [{"period": "Feb 2025", "value": 1234.56, "lower": ..., "upper": ...}]
+    confidence_interval = Column(Float, default=0.95)
+    parameters        = Column(JSON)                         # method-specific params {window, alpha, degree, growth_rate}
+    input_data        = Column(JSON)                         # historical data points used
+    created_at        = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__    = (Index("ix_forecast_type", "forecast_type"), Index("ix_forecast_dataset", "dataset_id"),)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "dataset_id": self.dataset_id,
+            "forecast_type": self.forecast_type, "product": self.product,
+            "segment": self.segment, "category": self.category,
+            "method": self.method, "period_start": self.period_start,
+            "period_end": self.period_end, "periods": self.periods,
+            "values": self.values, "confidence_interval": self.confidence_interval,
+            "parameters": self.parameters,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+### Model 2: Scenario
+
+```python
+class Scenario(Base):
+    __tablename__ = "scenarios"
+    id              = Column(Integer, primary_key=True, autoincrement=True)
+    name            = Column(String(255), nullable=False)
+    description     = Column(Text)
+    base_dataset_id = Column(Integer, ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True)
+    parameters      = Column(JSON, nullable=False)  # {"changes": [{"target": "diesel_price", "type": "pct_change", "value": 10}]}
+    results         = Column(JSON)                   # {"revenue": ..., "cogs": ..., "margin": ..., "ebitda": ..., "delta": {...}}
+    base_snapshot   = Column(JSON)                   # snapshot of base IS values for comparison
+    is_active       = Column(Boolean, default=True)
+    created_at      = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__  = (Index("ix_scenario_dataset", "base_dataset_id"),)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "name": self.name, "description": self.description,
+            "base_dataset_id": self.base_dataset_id,
+            "parameters": self.parameters, "results": self.results,
+            "base_snapshot": self.base_snapshot, "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+### Model 3: Anomaly
+
+```python
+class Anomaly(Base):
+    __tablename__ = "anomalies"
+    id               = Column(Integer, primary_key=True, autoincrement=True)
+    dataset_id       = Column(Integer, ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False)
+    transaction_id   = Column(Integer, ForeignKey("transactions.id", ondelete="SET NULL"), nullable=True)
+    anomaly_type     = Column(String(50), nullable=False)  # "zscore"|"iqr"|"benford"|"seasonal"
+    severity         = Column(String(20), default="medium") # "low"|"medium"|"high"|"critical"
+    score            = Column(Float, default=0.0)           # anomaly score (e.g., z-score value)
+    description      = Column(Text)
+    details          = Column(JSON)                          # method-specific details
+    is_acknowledged  = Column(Boolean, default=False)
+    acknowledged_by  = Column(String(100))
+    created_at       = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__   = (Index("ix_anomaly_dataset", "dataset_id"), Index("ix_anomaly_type", "anomaly_type"), Index("ix_anomaly_severity", "severity"),)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "dataset_id": self.dataset_id,
+            "transaction_id": self.transaction_id,
+            "anomaly_type": self.anomaly_type, "severity": self.severity,
+            "score": self.score, "description": self.description,
+            "details": self.details, "is_acknowledged": self.is_acknowledged,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+### Model 4: ExchangeRate
+
+```python
+class ExchangeRate(Base):
+    __tablename__ = "exchange_rates"
+    id             = Column(Integer, primary_key=True, autoincrement=True)
+    from_currency  = Column(String(10), nullable=False)
+    to_currency    = Column(String(10), nullable=False)
+    rate           = Column(Float, nullable=False)
+    rate_date      = Column(String(20), nullable=False)  # "2025-01-15"
+    source         = Column(String(100), default="exchangerate-api.com")
+    created_at     = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__ = (
+        Index("ix_exrate_pair", "from_currency", "to_currency"),
+        Index("ix_exrate_date", "rate_date"),
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id, "from_currency": self.from_currency,
+            "to_currency": self.to_currency, "rate": self.rate,
+            "rate_date": self.rate_date, "source": self.source,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+### Model 5: ScheduledReport
+
+```python
+class ScheduledReport(Base):
+    __tablename__ = "scheduled_reports"
+    id            = Column(Integer, primary_key=True, autoincrement=True)
+    name          = Column(String(255), nullable=False)
+    report_type   = Column(String(50), nullable=False)  # "pl"|"bs"|"mr"|"is"|"dashboard"
+    frequency     = Column(String(20), nullable=False)   # "daily"|"weekly"|"monthly"
+    recipients    = Column(JSON, nullable=False)          # ["email1@co.ge", "email2@co.ge"]
+    smtp_config   = Column(JSON)                          # override from .env or None
+    parameters    = Column(JSON)                          # report-specific params {period, currency, dataset_id}
+    next_run      = Column(DateTime(timezone=True))
+    last_run      = Column(DateTime(timezone=True))
+    last_status   = Column(String(50))                    # "success"|"failed"|"pending"
+    is_active     = Column(Boolean, default=True)
+    created_at    = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__ = (Index("ix_sched_active", "is_active"), Index("ix_sched_next", "next_run"),)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "name": self.name, "report_type": self.report_type,
+            "frequency": self.frequency, "recipients": self.recipients,
+            "parameters": self.parameters,
+            "next_run": self.next_run.isoformat() if self.next_run else None,
+            "last_run": self.last_run.isoformat() if self.last_run else None,
+            "last_status": self.last_status, "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+### Model 6: DataLineage
+
+```python
+class DataLineage(Base):
+    __tablename__ = "data_lineage"
+    id                        = Column(Integer, primary_key=True, autoincrement=True)
+    entity_type               = Column(String(50), nullable=False)  # "transaction"|"revenue_item"|"cogs_item"|"ga_expense"|"budget_line"
+    entity_id                 = Column(Integer, nullable=False)
+    dataset_id                = Column(Integer, ForeignKey("datasets.id", ondelete="CASCADE"), nullable=True)
+    source_file               = Column(String(500))
+    source_sheet              = Column(String(100))
+    source_row                = Column(Integer)
+    source_column             = Column(String(50))
+    classification_rule       = Column(String(200))           # "COA:7310.02.1"|"Product:Revenue Whsale Petrol"
+    classification_confidence = Column(Float, default=1.0)    # 0.0-1.0
+    transform_chain           = Column(JSON)                  # [{"step": "parse", "detail": "..."}, {"step": "classify", ...}]
+    uploaded_by               = Column(String(100), default="user")
+    created_at                = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__            = (
+        Index("ix_lineage_entity", "entity_type", "entity_id"),
+        Index("ix_lineage_dataset", "dataset_id"),
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id, "entity_type": self.entity_type,
+            "entity_id": self.entity_id, "dataset_id": self.dataset_id,
+            "source_file": self.source_file, "source_sheet": self.source_sheet,
+            "source_row": self.source_row, "source_column": self.source_column,
+            "classification_rule": self.classification_rule,
+            "classification_confidence": self.classification_confidence,
+            "transform_chain": self.transform_chain,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+### Model 7: FinancialDocument (for RAG)
+
+```python
+class FinancialDocument(Base):
+    __tablename__ = "financial_documents"
+    id             = Column(Integer, primary_key=True, autoincrement=True)
+    content        = Column(Text, nullable=False)
+    metadata_json  = Column(JSON)                      # {"source": "transaction", "entity_id": 123, "period": "Jan 2025"}
+    document_type  = Column(String(50), nullable=False) # "transaction"|"revenue"|"budget"|"report"|"rule"|"memory"
+    embedding_id   = Column(String(200))                # chromadb doc ID
+    dataset_id     = Column(Integer, ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True)
+    is_indexed     = Column(Boolean, default=False)
+    created_at     = Column(DateTime(timezone=True), server_default=func.now())
+    __table_args__ = (Index("ix_findoc_type", "document_type"), Index("ix_findoc_indexed", "is_indexed"),)
+
+    def to_dict(self):
+        return {
+            "id": self.id, "document_type": self.document_type,
+            "content": self.content[:200], "metadata_json": self.metadata_json,
+            "embedding_id": self.embedding_id, "is_indexed": self.is_indexed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+```
+
+---
+
+## PHASE 2: Forecasting Engine
+
+### New file: `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\forecasting.py`
+
+This service implements all 4 forecasting methods using only numpy + pandas (already installed). No scikit-learn needed.
+
+```python
+# Key class and function signatures:
+
+class ForecastEngine:
+    """
+    Business-specific forecasting for fuel distribution.
+    Methods: Moving Average, Exponential Smoothing, Linear Regression, Growth Rate.
+    Handles single-period gracefully (returns baseline projection with wide confidence).
+    """
+
+    @staticmethod
+    def moving_average(
+        data_points: List[float],
+        periods_ahead: int = 6,
+        window: int = 3,
+        confidence: float = 0.95
+    ) -> List[Dict[str, Any]]:
+        """
+        Uses pandas.rolling(window).mean() for smoothed projections.
+        Returns: [{"period_index": i, "value": v, "lower": lb, "upper": ub}]
+        Confidence interval: +/- z * rolling_std
+        """
+
+    @staticmethod
+    def exponential_smoothing(
+        data_points: List[float],
+        periods_ahead: int = 6,
+        alpha: float = 0.3,
+        confidence: float = 0.95
+    ) -> List[Dict[str, Any]]:
+        """
+        Simple Exponential Smoothing (manual implementation).
+        S_t = alpha * Y_t + (1-alpha) * S_{t-1}
+        """
+
+    @staticmethod
+    def linear_regression(
+        data_points: List[float],
+        periods_ahead: int = 6,
+        confidence: float = 0.95
+    ) -> List[Dict[str, Any]]:
+        """
+        Uses numpy.polyfit(x, y, deg=1) for trend line.
+        Confidence interval from residual standard error.
+        """
+
+    @staticmethod
+    def growth_rate(
+        data_points: List[float],
+        periods_ahead: int = 6,
+        custom_rate: Optional[float] = None,
+        confidence: float = 0.95
+    ) -> List[Dict[str, Any]]:
+        """
+        Projects using CAGR or custom growth rate.
+        CAGR = (end/start)^(1/n) - 1
+        """
+
+    @staticmethod
+    def seasonal_decompose(
+        data_points: List[float],
+        period_labels: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Additive seasonal decomposition:
+        Y = Trend + Seasonal + Residual
+        Uses pandas rolling mean for trend, then computes seasonal factors.
+        Returns: {"trend": [...], "seasonal": [...], "residual": [...], "seasonal_factors": {...}}
+        """
+
+    @staticmethod
+    def auto_select_method(data_points: List[float]) -> str:
+        """
+        Select best method based on data characteristics:
+        - <2 points: growth_rate (default 0%)
+        - 2-3 points: linear_regression
+        - 4-11 points: exponential_smoothing
+        - 12+ points: moving_average (can capture seasonality)
+        """
+
+    async def generate_forecast(
+        self,
+        db: AsyncSession,
+        forecast_type: str,        # "revenue"|"cogs"|"margin"|"expense"|"ebitda"
+        product: Optional[str],
+        segment: Optional[str],
+        method: Optional[str],     # None = auto-select
+        periods_ahead: int = 6,
+        **kwargs                   # method-specific params
+    ) -> Forecast:
+        """
+        Main entry point. Gathers historical data across multiple datasets,
+        runs selected forecasting method, stores result in Forecast model.
+        Returns: Forecast model instance (already persisted).
+
+        Data gathering logic:
+        1. Query all datasets ordered by period
+        2. For each dataset, build IncomeStatement to get the target metric
+        3. Build time series: [(period_label, value)]
+        4. Handle single-period: use baseline with wide confidence
+        5. Run forecast method
+        6. Persist to Forecast table
+        """
+
+    async def _gather_historical_data(
+        self,
+        db: AsyncSession,
+        forecast_type: str,
+        product: Optional[str],
+        segment: Optional[str]
+    ) -> Tuple[List[str], List[float]]:
+        """
+        Gather historical values across all datasets.
+        Returns (period_labels, values) sorted chronologically.
+        """
+```
+
+### Agent tool specification for `generate_forecast`:
+
+Add to `self.tools` list in `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\ai_agent.py`:
+
+```python
+{
+    "name": "generate_forecast",
+    "description": "Generate financial forecast for revenue, COGS, margins, expenses, or EBITDA. Supports product-level and segment-level forecasts. Methods: moving_avg, exp_smoothing, linear_regression, growth_rate, or auto (auto-select). Returns projected values with confidence intervals.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "forecast_type": {
+                "type": "string",
+                "description": "revenue|cogs|margin|expense|ebitda"
+            },
+            "product": {"type": "string", "description": "Specific product name or null for aggregate"},
+            "segment": {"type": "string", "description": "Wholesale|Retail|Other|null for total"},
+            "method": {"type": "string", "description": "moving_avg|exp_smoothing|linear_regression|growth_rate|auto"},
+            "periods_ahead": {"type": "integer", "description": "Number of periods to forecast (default 6)"},
+        },
+        "required": ["forecast_type"]
+    }
+}
+```
+
+Tool implementation in `execute_tool()`:
+
+```python
+elif name == "generate_forecast":
+    return await self._generate_forecast(params, db)
+```
+
+With corresponding method:
+
+```python
+async def _generate_forecast(self, p: Dict, db: AsyncSession) -> str:
+    from app.services.forecasting import ForecastEngine
+    engine = ForecastEngine()
+    forecast = await engine.generate_forecast(
+        db=db,
+        forecast_type=p.get("forecast_type", "revenue"),
+        product=p.get("product"),
+        segment=p.get("segment"),
+        method=p.get("method"),  # None = auto
+        periods_ahead=p.get("periods_ahead", 6),
+    )
+    # Format results as markdown + chart data
+    values = forecast.values or []
+    labels = [v.get("period", f"P{i+1}") for i, v in enumerate(values)]
+    data = [round(v.get("value", 0), 2) for v in values]
+    chart_json = json.dumps({"type": "line", "title": f"{forecast.forecast_type.title()} Forecast ({forecast.method})", "labels": labels, "data": data})
+
+    lines = [f"**{forecast.forecast_type.title()} Forecast** (Method: {forecast.method})"]
+    lines.append(f"Forecast periods: {forecast.periods}")
+    if forecast.product:
+        lines.append(f"Product: {forecast.product}")
+    if forecast.segment:
+        lines.append(f"Segment: {forecast.segment}")
+    lines.append("")
+    for v in values:
+        ci = f" [{fgel(v.get('lower', 0))} - {fgel(v.get('upper', 0))}]" if v.get("lower") else ""
+        lines.append(f"  {v.get('period', '?')}: {fgel(v.get('value', 0))}{ci}")
+    lines.append(f"\n__CHART__{chart_json}__END__")
+    lines.append(f"\nSaved forecast (ID: {forecast.id})")
+    return "\n".join(lines)
+```
+
+### API endpoint:
+
+Add to new router `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\routers\advanced.py`:
+
+```python
+@router.post("/forecast")
+async def create_forecast(
+    forecast_type: str,
+    product: Optional[str] = None,
+    segment: Optional[str] = None,
+    method: Optional[str] = None,
+    periods_ahead: int = 6,
+    db: AsyncSession = Depends(get_db)
+):
+    """Generate a forecast and return results."""
+
+@router.get("/forecasts")
+async def list_forecasts(db: AsyncSession = Depends(get_db)):
+    """List all saved forecasts."""
+
+@router.get("/forecasts/{forecast_id}")
+async def get_forecast(forecast_id: int, db: AsyncSession = Depends(get_db)):
+    """Get a specific forecast with all values."""
+
+@router.delete("/forecasts/{forecast_id}")
+async def delete_forecast(forecast_id: int, db: AsyncSession = Depends(get_db)):
+    """Delete a forecast."""
+```
+
+---
+
+## PHASE 3: Enhanced Agent Reasoning
+
+**File to modify:** `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\ai_agent.py`
+
+The system prompt (in `_build_system_prompt()`) gains new sections. The key addition is a financial reasoning framework injected after the existing `REASONING APPROACH` section. No new model or service file is needed -- this is purely a system prompt enhancement.
+
+### System prompt additions (appended after existing `═══ REASONING APPROACH ═══`):
+
+```
+═══ FINANCIAL REASONING FRAMEWORKS ═══
+Apply these frameworks when analyzing financials:
+
+1. DuPont Decomposition:
+   ROE = (Net Profit / Revenue) * (Revenue / Total Assets) * (Total Assets / Equity)
+   Use this to decompose profitability drivers when Balance Sheet data exists.
+
+2. Margin Waterfall Analysis:
+   Revenue → (-COGS) → Gross Margin → (-G&A) → EBITDA → (-D&A) → EBIT → (-Finance) → EBT → (-Tax) → Net Profit
+   Always walk through each step when explaining profitability. Flag where value is lost.
+
+3. Trend Decomposition:
+   For multi-period data: Base Level + Trend + Seasonal + Residual
+   Fuel demand is seasonal: heating diesel peaks in winter (Oct-Mar), gasoline peaks in summer (Jun-Sep).
+
+4. Industry Benchmarks (Fuel Distribution - Georgia):
+   - Gross Margin: 7-12% (industry avg ~9%)
+   - EBITDA Margin: 3-6% (industry avg ~4.5%)
+   - Retail Margin > Wholesale Margin (always, by design)
+   - Inventory Turnover: 15-25x per year for fuel
+   - Days Payable Outstanding: 30-60 days
+   - Current Ratio: 1.0-1.5 (fuel distributors run lean)
+
+5. Cross-Validation Rules:
+   - Revenue vs COGS: each product should have both, flag mismatches
+   - BS Balance: Assets = Liabilities + Equity (flag if off by >₾1)
+   - Revenue Gross vs Net: Net = Gross - VAT (verify per product)
+   - COGS formula: Total = Col_K + Col_L + Col_O (verify column sums)
+   - Budget variance: flag anything >10% off budget
+
+6. Ratio Analysis (compute when asked):
+   - Gross Margin % = Gross Margin / Revenue * 100
+   - EBITDA Margin % = EBITDA / Revenue * 100
+   - Wholesale Margin % vs Retail Margin %
+   - COGS as % of Revenue (by segment)
+   - G&A as % of Revenue
+   - Revenue per product concentration (Pareto)
+
+═══ FORECAST INTERPRETATION ═══
+When presenting forecasts:
+- Always state the method used and why it was selected
+- Show confidence intervals and explain their meaning
+- For single-period data: explain that projections are baseline (no trend info)
+- For multi-period: highlight trend direction and seasonal patterns
+- Compare forecast vs budget where available
+- Flag forecast anomalies (sudden jumps or drops)
+```
+
+---
+
+## PHASE 4: RAG / Vector Search
+
+### New file: `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\vector_store.py`
+
+```python
+"""
+RAG service for FinAI.
+Primary: chromadb with sentence-transformers embeddings.
+Fallback: SQLite FTS5 full-text search + keyword matching.
+"""
+
+class VectorStoreService:
+    """Manages document embedding and semantic search."""
+
+    def __init__(self):
+        self._client = None
+        self._collection = None
+        self._use_chromadb = False
+        self._init_attempted = False
+
+    async def initialize(self):
+        """Try to initialize chromadb; fall back to FTS5."""
+        try:
+            import chromadb
+            self._client = chromadb.PersistentClient(path="./chromadb_data")
+            self._collection = self._client.get_or_create_collection(
+                name="finai_documents",
+                metadata={"hnsw:space": "cosine"}
+            )
+            self._use_chromadb = True
+        except ImportError:
+            logger.info("chromadb not installed; using FTS5 fallback")
+            self._use_chromadb = False
+        self._init_attempted = True
+
+    async def index_documents(self, documents: List[Dict], db: AsyncSession):
+        """
+        Index a batch of documents.
+        Each doc: {"id": str, "content": str, "metadata": dict, "document_type": str}
+        If chromadb available: embed and upsert.
+        If FTS5 fallback: store in FinancialDocument table (FTS via LIKE queries).
+        """
+
+    async def index_dataset(self, dataset_id: int, db: AsyncSession):
+        """
+        Index all data from a dataset:
+        - Transactions: "{counterparty} | {dept} | {cost_class} | {amount} GEL | {acct_dr}->{acct_cr}"
+        - Revenue items: "Revenue: {product} | {segment} | Net: {net} GEL"
+        - COGS items: "COGS: {product} | {segment} | Total: {total_cogs} GEL"
+        - Budget lines: "Budget: {line_item} = {amount} GEL"
+        - G&A items: "G&A: {account_code} {account_name} = {amount} GEL"
+        """
+
+    async def search(self, query: str, n_results: int = 10, filters: Optional[Dict] = None) -> List[Dict]:
+        """
+        Semantic search.
+        chromadb: collection.query(query_texts=[query], n_results=n_results)
+        FTS5 fallback: LIKE '%keyword%' across content column + rank by relevance
+        Returns: [{"content": ..., "metadata": ..., "score": ...}]
+        """
+
+    async def index_financial_rules(self, db: AsyncSession):
+        """Index built-in financial rules and domain knowledge."""
+        rules = [
+            "Wholesale petrol has NEGATIVE gross margin. This is a deliberate loss-leader strategy.",
+            "Revenue is NET (excluding VAT). Gross revenue includes VAT which is a pass-through tax.",
+            "G&A expenses include only accounts: 7310.02.1, 8220.01.1, 9210.",
+            "D&A expenses include accounts: 7410, 7410.01.",
+            "COGS = Column K (account 6) + Column L (account 7310) + Column O (account 8230).",
+            # ... more domain rules
+        ]
+
+    async def index_agent_memories(self, db: AsyncSession):
+        """Index agent memories and corrections for RAG retrieval."""
+
+    def get_stats(self) -> Dict:
+        """Return indexing statistics."""
+```
+
+### New dependency in `requirements.txt`:
+
+```
+# Optional: Vector Search (RAG)
+chromadb==0.5.23           # optional — falls back to FTS5 if not installed
+```
+
+### Agent tool for RAG:
+
+```python
+{
+    "name": "search_knowledge",
+    "description": "Semantic search across all financial data, rules, reports, and agent memories. Use this to find relevant context for answering questions that aren't covered by other tools. Returns the most relevant documents with context.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "Natural language search query"},
+            "n_results": {"type": "integer", "description": "Number of results (default 5)"},
+            "doc_type": {"type": "string", "description": "Filter by type: transaction|revenue|budget|report|rule|memory|all"}
+        },
+        "required": ["query"]
+    }
+}
+```
+
+### Integration with dataset upload:
+
+In `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\routers\datasets.py`, after the `await db.commit()` line at the end of `upload_dataset()`, add:
+
+```python
+# Auto-index for RAG
+try:
+    from app.services.vector_store import vector_store
+    await vector_store.index_dataset(ds.id, db)
+except Exception as e:
+    logger.warning(f"RAG indexing failed (non-critical): {e}")
+```
+
+### Initialization in `main.py` lifespan:
+
+```python
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("FinAI starting...")
+    await init_db()
+    async with AsyncSessionLocal() as db:
+        await seed_database(db)
+    # Initialize RAG
+    from app.services.vector_store import vector_store
+    await vector_store.initialize()
+    logger.info("FinAI ready.")
+    yield
+    logger.info("FinAI shutting down.")
+```
+
+---
+
+## PHASE 5: Trend Analysis + What-If Scenarios
+
+### New file: `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\scenario_engine.py`
+
+```python
+class ScenarioEngine:
+    """
+    What-if scenario calculator.
+    Clones base Income Statement and applies parameter modifications.
+    """
+
+    async def create_scenario(
+        self,
+        db: AsyncSession,
+        name: str,
+        description: str,
+        base_dataset_id: int,
+        changes: List[Dict]   # [{"target": "diesel_price", "type": "pct_change", "value": 10}, ...]
+    ) -> Scenario:
+        """
+        Create a what-if scenario.
+
+        Supported change targets:
+        - "revenue_<product>": change revenue for a specific product
+        - "cogs_<product>": change COGS for a specific product
+        - "volume_<segment>": change volume for a segment
+        - "price_<product>": change price (affects revenue proportionally)
+        - "ga_expenses": change G&A expenses
+        - "new_retail_stations": add N stations (increases retail revenue by estimated per-station revenue)
+
+        Change types:
+        - "pct_change": +/- percentage
+        - "absolute": set to absolute value
+        - "delta": add/subtract amount
+
+        Process:
+        1. Build base IncomeStatement from dataset
+        2. Apply each change to the relevant line items
+        3. Recompute cascading effects (margins, EBITDA, etc.)
+        4. Store scenario with results + delta vs base
+        """
+
+    async def compare_scenarios(
+        self,
+        db: AsyncSession,
+        scenario_ids: List[int]
+    ) -> Dict:
+        """
+        Compare multiple scenarios side by side.
+        Returns: {"scenarios": [{"name": ..., "revenue": ..., "cogs": ..., ...}], "deltas": [...]}
+        """
+
+    def _apply_changes(
+        self,
+        base_stmt: IncomeStatement,
+        changes: List[Dict]
+    ) -> IncomeStatement:
+        """Apply parameter changes to a cloned IncomeStatement."""
+```
+
+### Trend analysis: added as a method in `forecasting.py`
+
+```python
+class TrendAnalyzer:
+    """Period-over-period trend analysis when multiple datasets exist."""
+
+    async def analyze_trends(
+        self,
+        db: AsyncSession,
+        metric: str = "all",      # "revenue"|"cogs"|"margin"|"expense"|"ebitda"|"all"
+        segment: Optional[str] = None,
+        product: Optional[str] = None
+    ) -> Dict:
+        """
+        Computes:
+        - Period-over-period change (absolute and %)
+        - CAGR (if 3+ periods)
+        - Growth rates by product
+        - Margin evolution (wholesale vs retail)
+        - Expense category trends
+
+        Returns: {
+            "periods": ["Jan 2025", "Feb 2025"],
+            "revenue_trend": [{"period": ..., "value": ..., "change_pct": ...}],
+            "cogs_trend": [...],
+            "margin_trend": [...],
+            "segment_trends": {...},
+            "top_growing": [...],
+            "top_declining": [...],
+        }
+        """
+```
+
+### Agent tools:
+
+```python
+{
+    "name": "analyze_trends",
+    "description": "Analyze period-over-period trends across multiple datasets. Shows revenue, COGS, margin, and expense trends with growth rates. Requires at least 2 periods of data.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "metric": {"type": "string", "description": "revenue|cogs|margin|expense|ebitda|all"},
+            "segment": {"type": "string", "description": "Wholesale|Retail|Other|null"},
+            "product": {"type": "string", "description": "Specific product or null for aggregate"}
+        }
+    }
+},
+{
+    "name": "create_scenario",
+    "description": "Create a what-if scenario. Modify parameters like prices, volumes, costs, and see the impact on Revenue, COGS, Margins, and EBITDA.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", "description": "Scenario name"},
+            "description": {"type": "string"},
+            "changes": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "target": {"type": "string", "description": "revenue_diesel|cogs_petrol|volume_retail|price_diesel|ga_expenses|new_retail_stations"},
+                        "type": {"type": "string", "description": "pct_change|absolute|delta"},
+                        "value": {"type": "number"}
+                    }
+                },
+                "description": "List of parameter changes"
+            }
+        },
+        "required": ["name", "changes"]
+    }
+},
+{
+    "name": "compare_scenarios",
+    "description": "Compare what-if scenarios side by side. Shows impact on all key financial metrics.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "scenario_ids": {"type": "array", "items": {"type": "integer"}, "description": "List of scenario IDs to compare"}
+        },
+        "required": ["scenario_ids"]
+    }
+}
+```
+
+---
+
+## PHASE 6: Statistical Anomaly Detection
+
+### New file: `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\anomaly_detector.py`
+
+```python
+import numpy as np
+import pandas as pd
+from collections import Counter
+
+class AnomalyDetector:
+    """Statistical anomaly detection using numpy + pandas only."""
+
+    def zscore_detection(
+        self,
+        transactions: List[Dict],
+        threshold: float = 2.0,
+        group_by: str = "cost_class"
+    ) -> List[Dict]:
+        """
+        Z-score: flag transactions > threshold standard deviations from category mean.
+        Groups by cost_class, dept, or counterparty.
+        Returns: [{"transaction_id": ..., "score": z, "severity": ..., "description": ...}]
+        """
+        # Use numpy: mean = np.mean(amounts), std = np.std(amounts)
+        # z = (x - mean) / std
+        # severity: >3sigma = "critical", >2.5 = "high", >2 = "medium"
+
+    def iqr_detection(
+        self,
+        transactions: List[Dict],
+        multiplier: float = 1.5
+    ) -> List[Dict]:
+        """
+        IQR method: flag transactions below Q1-1.5*IQR or above Q3+1.5*IQR.
+        Uses numpy: Q1 = np.percentile(amounts, 25), Q3 = np.percentile(amounts, 75)
+        """
+
+    def benford_law(
+        self,
+        transactions: List[Dict]
+    ) -> Dict:
+        """
+        Benford's Law: compare first-digit distribution to expected.
+        Expected: P(d) = log10(1 + 1/d) for d=1..9
+        Uses chi-squared test: chi2 = sum((observed - expected)^2 / expected)
+        Returns: {"digits": {1: {"expected": 0.301, "observed": 0.285, "deviation": -0.016}}, "chi_squared": ..., "suspicious": bool, "flagged_digits": [...]}
+        """
+
+    def seasonal_anomaly(
+        self,
+        historical_data: List[Dict],  # [{period, value}]
+        current_value: float,
+        current_period: str,
+        threshold: float = 2.0
+    ) -> Dict:
+        """
+        Compare current value against seasonal expectation.
+        Uses historical data to compute expected seasonal value.
+        """
+
+    async def run_full_detection(
+        self,
+        db: AsyncSession,
+        dataset_id: int,
+        methods: List[str] = None  # None = all
+    ) -> Dict:
+        """
+        Run all (or selected) detection methods on a dataset.
+        Stores results in Anomaly table.
+        Returns summary: {
+            "total_anomalies": N,
+            "by_method": {"zscore": N, "iqr": N, "benford": {...}},
+            "by_severity": {"critical": N, "high": N, ...},
+            "top_anomalies": [...]
+        }
+        """
+```
+
+### Auto-run on upload:
+
+In `datasets.py` `upload_dataset()`, after the commit:
+
+```python
+# Auto-detect anomalies
+try:
+    from app.services.anomaly_detector import AnomalyDetector
+    detector = AnomalyDetector()
+    anomaly_summary = await detector.run_full_detection(db, ds.id)
+    logger.info(f"Anomaly detection: {anomaly_summary.get('total_anomalies', 0)} anomalies found")
+except Exception as e:
+    logger.warning(f"Anomaly detection failed (non-critical): {e}")
+```
+
+---
+
+## PHASE 7: Multi-Currency
+
+### New file: `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\currency_service.py`
+
+```python
+import httpx
+from datetime import datetime, timedelta
+
+class CurrencyService:
+    """
+    Exchange rate fetcher and converter.
+    Uses httpx (already installed) for API calls.
+    Cache: store in ExchangeRate table, refresh daily.
+    """
+
+    BASE_URL = "https://v6.exchangerate-api.com/v6"
+    SUPPORTED_CURRENCIES = ["GEL", "USD", "EUR", "GBP", "TRY", "RUB"]
+
+    def __init__(self):
+        self._api_key = None  # From settings.EXCHANGE_RATE_API_KEY
+
+    async def get_rate(
+        self,
+        from_currency: str,
+        to_currency: str,
+        date: Optional[str] = None,  # "2025-01-15" or None for latest
+        db: Optional[AsyncSession] = None
+    ) -> float:
+        """
+        Get exchange rate. Check cache first, then API.
+        1. Check ExchangeRate table for today's rate
+        2. If not found or stale, fetch from API
+        3. Store in ExchangeRate for audit trail
+        """
+
+    async def convert(
+        self,
+        amount: float,
+        from_currency: str,
+        to_currency: str,
+        date: Optional[str] = None,
+        db: Optional[AsyncSession] = None
+    ) -> Dict:
+        """
+        Convert amount between currencies.
+        Returns: {"original": amount, "converted": result, "rate": rate, "from": from_c, "to": to_c, "date": date}
+        """
+
+    async def refresh_rates(self, db: AsyncSession):
+        """Fetch and cache today's rates for all supported currency pairs."""
+
+    async def get_historical_rates(
+        self,
+        from_currency: str,
+        to_currency: str,
+        start_date: str,
+        end_date: str,
+        db: AsyncSession
+    ) -> List[Dict]:
+        """Get historical rates from cache."""
+```
+
+### Config addition in `config.py`:
+
+```python
+# Currency
+EXCHANGE_RATE_API_KEY: str = ""  # Free tier key from exchangerate-api.com
+PREFERRED_CURRENCY: str = "GEL"
+```
+
+### Agent tool:
+
+```python
+{
+    "name": "convert_currency",
+    "description": "Convert financial amounts between currencies (GEL, USD, EUR). Uses live exchange rates with daily caching.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "amount": {"type": "number", "description": "Amount to convert"},
+            "from_currency": {"type": "string", "description": "Source currency (default GEL)"},
+            "to_currency": {"type": "string", "description": "Target currency"},
+            "date": {"type": "string", "description": "Historical date YYYY-MM-DD (default: today)"}
+        },
+        "required": ["amount", "to_currency"]
+    }
+}
+```
+
+---
+
+## PHASE 8: Scheduled Reports + Email Delivery
+
+### New file: `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\scheduler.py`
+
+Uses Python stdlib `smtplib` + `email.mime` (no new dependencies). Background scheduling via `asyncio` tasks.
+
+```python
+import asyncio
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
+from datetime import datetime, timedelta
+
+class ReportScheduler:
+    """Background task scheduler for report generation + email delivery."""
+
+    def __init__(self):
+        self._task: Optional[asyncio.Task] = None
+        self._running = False
+
+    async def start(self):
+        """Start the background scheduler loop."""
+        self._running = True
+        self._task = asyncio.create_task(self._scheduler_loop())
+
+    async def stop(self):
+        """Stop the scheduler."""
+        self._running = False
+        if self._task:
+            self._task.cancel()
+
+    async def _scheduler_loop(self):
+        """Main loop: check every 60 seconds for due reports."""
+        while self._running:
+            try:
+                async with AsyncSessionLocal() as db:
+                    due_reports = await self._get_due_reports(db)
+                    for sr in due_reports:
+                        await self._execute_scheduled_report(sr, db)
+            except Exception as e:
+                logger.error(f"Scheduler error: {e}")
+            await asyncio.sleep(60)
+
+    async def _get_due_reports(self, db: AsyncSession) -> List[ScheduledReport]:
+        """Find all active reports where next_run <= now."""
+
+    async def _execute_scheduled_report(self, sr: ScheduledReport, db: AsyncSession):
+        """Generate report, export to Excel, send email."""
+        # 1. Generate the report based on sr.report_type
+        # 2. Export to Excel using ExcelExporter
+        # 3. Send email with Excel attachment
+        # 4. Update sr.last_run, sr.next_run, sr.last_status
+
+    def _send_email(
+        self,
+        recipients: List[str],
+        subject: str,
+        body: str,
+        attachment_path: Optional[str] = None,
+        smtp_config: Optional[Dict] = None
+    ) -> bool:
+        """Send email using smtplib. Returns True on success."""
+        config = smtp_config or {
+            "host": settings.SMTP_HOST,
+            "port": settings.SMTP_PORT,
+            "user": settings.SMTP_USER,
+            "password": settings.SMTP_PASSWORD,
+            "use_tls": settings.SMTP_USE_TLS,
+        }
+        # Build MIME message, attach Excel file, send via SMTP
+
+    def _compute_next_run(self, frequency: str, from_time: datetime) -> datetime:
+        """Compute next run time based on frequency."""
+        if frequency == "daily":
+            return from_time + timedelta(days=1)
+        elif frequency == "weekly":
+            return from_time + timedelta(weeks=1)
+        elif frequency == "monthly":
+            # Add ~30 days, snap to same day of month
+            ...
+```
+
+### Config additions in `config.py`:
+
+```python
+# Email / SMTP
+SMTP_HOST: str = ""
+SMTP_PORT: int = 587
+SMTP_USER: str = ""
+SMTP_PASSWORD: str = ""
+SMTP_USE_TLS: bool = True
+SMTP_FROM_EMAIL: str = ""
+```
+
+### Scheduler start in `main.py` lifespan:
+
+```python
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ... existing code ...
+    # Start scheduler
+    from app.services.scheduler import report_scheduler
+    await report_scheduler.start()
+    yield
+    await report_scheduler.stop()
+    logger.info("FinAI shutting down.")
+```
+
+### API endpoints (in `advanced.py`):
+
+```python
+@router.post("/scheduled-reports")
+async def create_scheduled_report(payload: ScheduledReportCreate, db: AsyncSession = Depends(get_db)):
+    """Create a new scheduled report."""
+
+@router.get("/scheduled-reports")
+async def list_scheduled_reports(db: AsyncSession = Depends(get_db)):
+    """List all scheduled reports."""
+
+@router.put("/scheduled-reports/{report_id}")
+async def update_scheduled_report(report_id: int, payload: ScheduledReportUpdate, db: AsyncSession = Depends(get_db)):
+    """Update a scheduled report (toggle active, change frequency, etc.)."""
+
+@router.delete("/scheduled-reports/{report_id}")
+async def delete_scheduled_report(report_id: int, db: AsyncSession = Depends(get_db)):
+    """Delete a scheduled report."""
+
+@router.post("/scheduled-reports/{report_id}/test")
+async def test_scheduled_report(report_id: int, db: AsyncSession = Depends(get_db)):
+    """Send a test email for a scheduled report."""
+```
+
+---
+
+## PHASE 9: Data Lineage Tracking
+
+### Modifications to `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\file_parser.py`
+
+The `parse_file()` function currently returns `{"transactions": [...], "revenue": [...], "cogs_items": [...], ...}`. It needs to be enhanced to include lineage metadata per record.
+
+Each parsed record gains a `_lineage` dict:
+
+```python
+# Inside parse_base_sheet(), parse_revenue_sheet(), parse_cogs_sheet():
+txn = {
+    "date": ..., "recorder": ..., "acct_dr": ..., # existing fields
+    "_lineage": {
+        "source_sheet": "Base",
+        "source_row": row_idx + 1,
+        "source_column": None,
+        "classification_rule": f"COA:{acct_dr}",
+        "classification_confidence": 0.95 if map_coa(acct_dr) else 0.5,
+        "transform_chain": [
+            {"step": "parse", "detail": f"Row {row_idx+1} from Base sheet"},
+            {"step": "classify", "detail": f"Type={txn_type} via COA mapping"}
+        ]
+    }
+}
+```
+
+### Modifications to `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\routers\datasets.py`
+
+In `upload_dataset()`, after creating each Transaction/RevenueItem/etc., also create a DataLineage record:
+
+```python
+for t in parsed.get("transactions", []):
+    txn = Transaction(dataset_id=ds.id, ...)
+    db.add(txn)
+    await db.flush()  # Get txn.id
+
+    lineage_data = t.get("_lineage", {})
+    db.add(DataLineage(
+        entity_type="transaction",
+        entity_id=txn.id,
+        dataset_id=ds.id,
+        source_file=file.filename,
+        source_sheet=lineage_data.get("source_sheet", "Base"),
+        source_row=lineage_data.get("source_row"),
+        source_column=lineage_data.get("source_column"),
+        classification_rule=lineage_data.get("classification_rule"),
+        classification_confidence=lineage_data.get("classification_confidence", 1.0),
+        transform_chain=lineage_data.get("transform_chain", []),
+    ))
+```
+
+Performance consideration: This adds an extra DB write per record. For datasets with thousands of transactions, bulk insert using `db.add_all()` after building the list.
+
+### Agent tool:
+
+```python
+{
+    "name": "trace_lineage",
+    "description": "Trace the source of any financial figure back to its original file, sheet, and row. Shows which classification rule was applied and the confidence level.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "entity_type": {"type": "string", "description": "transaction|revenue_item|cogs_item|ga_expense|budget_line"},
+            "entity_id": {"type": "integer", "description": "The record's database ID"}
+        },
+        "required": ["entity_type", "entity_id"]
+    }
+}
+```
+
+---
+
+## PHASE 10: Frontend UI Updates
+
+**File to modify:** `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\FinAI_Platform_v7.html`
+
+The frontend is a single 392KB HTML file with vanilla JS and Chart.js. All new UI features integrate into the existing page/navigation system.
+
+### New pages to add to the navigation:
+
+The existing frontend has pages: `dash|pl|bs|revenue|costs|budget|mr|txn|lib|tools|train`. New pages needed:
+
+1. **`forecast`** -- Forecast dashboard with chart (Chart.js line chart with confidence interval shading)
+2. **`scenarios`** -- What-if scenario builder + comparison table
+3. **`anomalies`** -- Anomaly detection results with severity badges and acknowledge button
+4. **`lineage`** -- Data lineage viewer (click any number to see its source trail)
+5. **`schedule`** -- Scheduled reports manager (CRUD table with frequency/recipient config)
+
+### Navigation update:
+
+Add entries to the `navigate_to_page` tool's page enum and to the frontend's nav sidebar.
+
+### Frontend chart for forecasts:
+
+```javascript
+// Forecast chart with confidence intervals (shaded area)
+function renderForecastChart(canvasId, forecastData) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: forecastData.map(d => d.period),
+            datasets: [
+                {
+                    label: 'Forecast',
+                    data: forecastData.map(d => d.value),
+                    borderColor: '#0EA5E9',
+                    fill: false
+                },
+                {
+                    label: 'Upper Bound',
+                    data: forecastData.map(d => d.upper),
+                    borderColor: 'transparent',
+                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    fill: '+1',
+                    pointRadius: 0
+                },
+                {
+                    label: 'Lower Bound',
+                    data: forecastData.map(d => d.lower),
+                    borderColor: 'transparent',
+                    fill: false,
+                    pointRadius: 0
+                }
+            ]
+        }
+    });
+}
+```
+
+---
+
+## New Router File
+
+### `C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\routers\advanced.py`
+
+```python
+"""
+FinAI Advanced Features Router
+Endpoints for: Forecasting, Scenarios, Anomalies, Currency, Scheduled Reports, Lineage, Trends
+"""
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from pydantic import BaseModel
+from typing import Optional, List, Dict, Any
+from app.database import get_db
+from app.models.all_models import (
+    Forecast, Scenario, Anomaly, ExchangeRate,
+    ScheduledReport, DataLineage, FinancialDocument
+)
+
+router = APIRouter(prefix="/api/advanced", tags=["advanced"])
+
+# --- Forecast endpoints ---
+# POST /api/advanced/forecast
+# GET  /api/advanced/forecasts
+# GET  /api/advanced/forecasts/{id}
+# DELETE /api/advanced/forecasts/{id}
+
+# --- Scenario endpoints ---
+# POST /api/advanced/scenarios
+# GET  /api/advanced/scenarios
+# GET  /api/advanced/scenarios/{id}
+# POST /api/advanced/scenarios/compare
+# DELETE /api/advanced/scenarios/{id}
+
+# --- Anomaly endpoints ---
+# POST /api/advanced/anomalies/detect
+# GET  /api/advanced/anomalies
+# GET  /api/advanced/anomalies/{id}
+# PUT  /api/advanced/anomalies/{id}/acknowledge
+# GET  /api/advanced/anomalies/summary
+
+# --- Currency endpoints ---
+# POST /api/advanced/currency/convert
+# GET  /api/advanced/currency/rates
+# POST /api/advanced/currency/refresh
+
+# --- Scheduled Reports endpoints ---
+# POST /api/advanced/scheduled-reports
+# GET  /api/advanced/scheduled-reports
+# PUT  /api/advanced/scheduled-reports/{id}
+# DELETE /api/advanced/scheduled-reports/{id}
+# POST /api/advanced/scheduled-reports/{id}/test
+
+# --- Lineage endpoints ---
+# GET  /api/advanced/lineage/{entity_type}/{entity_id}
+# GET  /api/advanced/lineage/dataset/{dataset_id}
+
+# --- Trends endpoints ---
+# GET  /api/advanced/trends
+# GET  /api/advanced/trends/{metric}
+
+# --- RAG/Knowledge endpoints ---
+# POST /api/advanced/knowledge/search
+# POST /api/advanced/knowledge/reindex
+# GET  /api/advanced/knowledge/stats
+```
+
+### Registration in `main.py`:
+
+```python
+from app.routers import datasets, analytics, agent, reports, tools
+from app.routers import advanced   # NEW
+
+# ... in router registration section:
+app.include_router(advanced.router)  # NEW
+```
+
+---
+
+## Updated `navigate_to_page` Tool
+
+The tool's page enum needs to be extended:
+
+```python
+"page": {
+    "type": "string",
+    "description": "dash|pl|bs|revenue|costs|budget|mr|txn|lib|tools|train|forecast|scenarios|anomalies|lineage|schedule"
+}
+```
+
+---
+
+## Complete Agent Tools Summary (23 total)
+
+Existing (15):
+1. `navigate_to_page`
+2. `query_transactions`
+3. `calculate_financials`
+4. `generate_pl_statement`
+5. `generate_balance_sheet`
+6. `generate_income_statement`
+7. `generate_mr_report`
+8. `generate_chart`
+9. `save_report_to_db`
+10. `analyze_products`
+11. `detect_anomalies`
+12. `search_counterparty`
+13. `compare_periods`
+14. `analyze_semantic`
+15. `deep_financial_analysis`
+
+New (8):
+16. `generate_forecast`
+17. `search_knowledge`
+18. `analyze_trends`
+19. `create_scenario`
+20. `compare_scenarios`
+21. `detect_anomalies_statistical`
+22. `convert_currency`
+23. `trace_lineage`
+
+---
+
+## Dependencies Update
+
+`C:\Users\Nino\Downloads\FinAI_Backend_3\backend\requirements.txt` additions:
+
+```
+# Vector Search (RAG) - optional
+chromadb==0.5.23
+```
+
+No other new dependencies needed. The plan deliberately avoids adding new required packages:
+- Forecasting: numpy (2.1.3) + pandas (2.2.3) -- already installed
+- Anomaly detection: numpy + pandas -- already installed
+- Currency API: httpx (0.28.1) -- already installed
+- Email: smtplib + email.mime -- Python stdlib
+- Scheduling: asyncio -- Python stdlib
+- Excel export: openpyxl + xlsxwriter -- already installed
+
+---
+
+## Implementation Sequencing (Dependency Graph)
+
+```
+Phase 1 (Models)  ─────────────────────────────────────────►  All subsequent phases depend on this
+    │
+    ├── Phase 2 (Forecasting)  ──── standalone, no other phase dependency
+    │
+    ├── Phase 3 (Enhanced Reasoning) ──── standalone, system prompt only
+    │
+    ├── Phase 4 (RAG/Vector)  ──── requires Phase 1 (FinancialDocument model)
+    │
+    ├── Phase 5 (Trends + Scenarios) ──── Trends benefits from Phase 2 data; Scenarios standalone
+    │
+    ├── Phase 6 (Anomaly Detection)  ──── standalone, auto-triggers on upload
+    │
+    ├── Phase 7 (Multi-Currency)  ──── standalone, adds config settings
+    │
+    ├── Phase 8 (Scheduled Reports)  ──── depends on Phase 7 for currency, uses existing Excel export
+    │
+    ├── Phase 9 (Data Lineage)  ──── modifies file_parser + datasets.py upload flow
+    │
+    └── Phase 10 (Frontend)  ──── depends on all API endpoints being ready
+```
+
+Phases 2, 3, 5, 6, 7 can be implemented in parallel after Phase 1. Phase 4 has an optional dependency (chromadb install). Phase 8 depends on SMTP config. Phase 9 modifies the upload path so should be tested carefully. Phase 10 comes last as it requires all API endpoints.
+
+---
+
+## Risk Areas and Mitigation
+
+1. **Single-period data**: The forecasting engine must handle gracefully. Mitigation: return baseline projection with wide confidence intervals and a warning message.
+
+2. **chromadb dependency size**: chromadb pulls in sentence-transformers (large). Mitigation: graceful fallback to FTS5 keyword search if not installed. Make it optional in requirements.
+
+3. **Performance of lineage tracking**: Adding a DataLineage row for every parsed record roughly doubles DB writes on upload. Mitigation: use `db.add_all()` for bulk inserts, consider making lineage optional via config flag.
+
+4. **Scheduler reliability**: `asyncio.create_task()` runs in the same process. If the process crashes, scheduled reports are lost. Mitigation: store `next_run` in DB so scheduler picks up missed reports on restart.
+
+5. **Exchange rate API limits**: Free tier may have rate limits. Mitigation: cache aggressively (one fetch per day per currency pair), store in ExchangeRate table.
+
+6. **Frontend file size**: The HTML file is already 392KB. Adding 5 new page sections will increase it further. Mitigation: keep new UI sections minimal, use lazy rendering (only build DOM when page is navigated to).
+
+---
+
+### Critical Files for Implementation
+
+- **`C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\models\all_models.py`** -- All 7 new database models must be added here following the existing single-file pattern
+- **`C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\ai_agent.py`** -- The core agent file: 8 new tool definitions in `self.tools[]`, 8 new elif branches in `execute_tool()`, 8 new `_<tool_name>()` implementation methods, and enhanced system prompt in `_build_system_prompt()`
+- **`C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\services\forecasting.py`** -- New file: ForecastEngine class with 4 methods (moving_avg, exp_smoothing, linear_regression, growth_rate), TrendAnalyzer class, and seasonal decomposition
+- **`C:\Users\Nino\Downloads\FinAI_Backend_3\backend\app\routers\advanced.py`** -- New file: the unified router for all advanced feature API endpoints (forecasts, scenarios, anomalies, currency, scheduled reports, lineage, trends, RAG search)
+- **`C:\Users\Nino\Downloads\FinAI_Backend_3\backend\main.py`** -- Lifespan modifications to initialize RAG vector store, start scheduler background task, and register the new `advanced` router

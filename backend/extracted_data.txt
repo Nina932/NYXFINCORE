@@ -1,0 +1,369 @@
+============================================================
+REVENUE BREAKDOWN - all rows
+('Product', 'Amount Gel', 'VAT', 'Net Revenue', 'q')
+(' სხვა ადმინისტრაციული (ტრანზიტული ბარათები), მომსახურება', 2305, 351.61, 1953.3899999999999, 'Other Revenue')
+('BP გადაზიდვის ღირებულება, მომსახურება', 103090.33, None, 103090.33, 'Other Revenue')
+('DRY GOODS SMARKETS, ცალი', 6397.25, 975.84, 5421.41, 'Other Revenue')
+('ბიტუმი (საბითუმო), კგ', 2569524.34, 391961.37, 2177562.9699999997, 'Revenue Wholesale')
+('ბუნებრივი აირი, მ3', 13036998.55, 1988694.66, 11048303.89, 'Revenue Retail')
+('ბუნებრივი აირი (საბითუმო), მ3', 1639880.68, 250151.29, 1389729.39, 'Revenue Retail')
+('გადასახდელი იჯარა, მომსახურება', 1026775.4, 156626.66, 870148.74, 'Other Revenue')
+('გაცემული იჯარა (ინვოისისთ), მომსახურება', 5189, 791.58, 4397.42, 'Other Revenue')
+('დიზელი, ლ', 30276534.67, 4617873.09, 25658661.580000002, 'Revenue Retail')
+('დიზელი (საბითუმო), ლ', 14012893.89, 2042673.67, 11970220.22, 'Revenue Wholesale')
+('ევრო დიზელი, ლ', 11445883.27, 1722579.03, 9723304.24, 'Revenue Retail')
+('ევრო რეგულარი, ლ', 19083998.36, 2909873.19, 16174125.17, 'Revenue Retail')
+('ევრო რეგულარი (იმპორტი), კგ', 5583855.32, None, 5583855.32, 'Revenue Wholesale')
+('ევროდიზელი  (ექსპორტი), კგ', 1513095.82, None, 1513095.82, 'Revenue Wholesale')
+('ელექტროენერგია (კომუნალური), მომსახურება', 423829.77, 64652.02, 359177.75, 'Other Revenue')
+('ზარალის ანაზღაურება, მომსახურება', 7217.4, None, 7217.4, 'Other Revenue')
+('თხევადი აირი (მხოლოდ SGP !!!), ლ', 441817.61, 67396.22, 374421.39, 'Revenue Retail')
+('იჯარა ბენზინმზიდების, მომსახურება', 144900, 22103.4, 122796.6, 'Other Revenue')
+('იჯარა ფართის  (მიწა და საწყობი), მომსახურება', 46650, 7116.09, 39533.91, 'Other Revenue')
+('იჯარა ჩიხით სარგებლობის, მომსახურება', 4848.37, 739.54, 4108.83, 'Other Revenue')
+('კომერციული ავტოტექმომსახურება, მომსახურება', 2191.2, 334.24, 1856.9599999999998, 'Other Revenue')
+('მოლეკულური საცერი molecular sieve, კგ', 3300, 503.39, 2796.61, 'Other Revenue')
+('მომსახურების ღირებულება, ', 36717.64, 5600.98, 31116.66, 'Other Revenue')
+('მომსახურების ღირებულება ა/ფ გარეშე, ', 25405.85, 3875.47, 21530.379999999997, 'Other Revenue')
+('პირადი დაცვის მომსახურება, მომსახურება', 10620, 1620, 9000, 'Other Revenue')
+('პრემიუმი , ლ', 27256932.1, 4146000.88, 23110931.220000003, 'Revenue Retail')
+('პრემიუმი (რეექსპორტი), კგ', 1828750.59, None, 1828750.59, 'Revenue Wholesale')
+('სამრეცხაო მომსახურება, მომსახურება', 44207.1, 6743.46, 37463.64, 'Other Revenue')
+('სუპერი , ლ', 781736.69, 119248.13, 662488.5599999999, 'Revenue Retail')
+('სუპერი (რეექსპორტი), კგ', 258783.93, None, 258783.93, 'Revenue Wholesale')
+('სხვა მომსახურება, მომსახურება', 1943, 296.39, 1646.6100000000001, 'Other Revenue')
+('სხვა მომსახურება Z - ებით ( სასტუმრო ტირ-პარკი ), მომსახურება', 20455, 3120.25, 17334.75, 'Other Revenue')
+('ძრავის ზეთი მეორადი, ლ', 1408, 214.78, 1193.22, 'Other Revenue')
+('წყალი, მ3', 23592.08, 3598.8, 19993.280000000002, 'Other Revenue')
+('Итог', 131671728.21, 18535716.03, 113136012.17999998, None)
+
+============================================================
+COGS BREAKDOWN - all rows
+('Субконто', 'Нач. сальдо деб.', 'Нач. сальдо кред.', 'Деб. оборот', 1605, 1610, 31, 81, 'Кред. оборот', 1610, 6, 7310, 7410, 8220, 8230, 'Кон. сальдо деб.', 'Кон. сальдо кред.', 'q')
+('DRY GOODS SMARKETS', 1287.73, None, 4736.93, None, None, 4736.93, None, 3339.92, None, None, 3339.92, None, None, None, 2684.74, None, '???')
+('ბიტუმი (იმპორტი)', None, None, 2087371.39, 1451441.64, None, 635929.75, None, 2079842.31, 2079842.31, None, None, None, None, None, 7529.08, None, 0)
+('ბიტუმი (საბითუმო)', None, None, 2079842.31, None, 2079842.31, None, None, 2079841.07, None, 2079841.07, None, None, None, None, 1.24, None, 'COGS Wholesale')
+('ბუნებრივი აირი', 1359.26, None, 8734357.02, None, 86322.91, 8442467.12, 205566.99, 8734369.94, 86322.91, 8648047.03, None, None, None, None, 1346.34, None, 'COGS Retail')
+('ბუნებრივი აირი (საბითუმო)', 0.03, None, 676310.35, None, None, 676310.35, None, 676310.23, None, 676310.23, None, None, None, None, 0.15, None, 'COGS Retail')
+('დიზელი', 3690515.45, None, 25059694.23, None, 25059694.23, None, None, 25068701.61, 41323.55, 25027378.06, None, None, None, None, 3681508.07, None, 'COGS Retail')
+('დიზელი (იმპორტი)', 0.72, None, 31117575.68, 24464798.08, None, 6652777.6, None, 31117574.45, 31117574.45, None, None, None, None, None, 1.95, None, 0)
+('დიზელი (საბითუმო)', 6448691.78, None, 69103210.48, None, 39026558.85, 30076651.63, None, 54917417.64, 42911486.97, 11765762.56, None, 1069.14, None, 239098.97, 20634484.62, None, 'COGS Wholesale')
+('ევრო დიზელი', 1423992.03, None, 8646147.99, None, 8646147.99, None, None, 8408556.01, 8105.47, 8400450.54, None, None, None, None, 1661584.01, None, 'COGS Retail')
+('ევრო დიზელი (იმპორტი)', 6437.8, None, None, None, None, None, None, None, None, None, None, None, None, None, 6437.8, None, 0)
+('ევრო დიზელი (საბითუმო)', 0.99, None, None, None, None, None, None, None, None, None, None, None, None, None, 0.99, None, 'COGS Wholesale')
+('ევრო რეგულარი', 2098262.02, None, 14868076.96, None, 14351908.64, 516168.32, None, 13574364.75, 7812.7, 13566552.05, None, None, None, None, 3391974.23, None, 'COGS Retail')
+('ევრო რეგულარი (იმპორტი)', None, None, 17937165.15, 9816924.29, None, 8120240.86, None, 17936762.86, 12373479.82, 5563283.04, None, None, None, None, 402.29, None, 'COGS Wholesale')
+('ევრო რეგულარი (საბითუმო)', 2301229.92, None, 26228537.61, None, 13012210.71, 13216326.9, None, 16915594.43, 14982826.83, None, None, None, None, 1932767.6, 11614173.1, None, 'COGS Wholesale')
+('ევროდიზელი  (ექსპორტი)', 0.08, None, 1346089.37, None, 1346089.37, None, None, 1346089.01, None, 1346089.01, None, None, None, None, 0.44, None, 'COGS Wholesale')
+('ევროდიზელი(რეექსპორტი)', 5506.98, None, None, None, None, None, None, None, None, None, None, None, None, None, 5506.98, None, 'COGS Wholesale')
+('ევრორეგულარი  (ექსპორტი)', 0.33, None, None, None, None, None, None, None, None, None, None, None, None, None, 0.33, None, 'COGS Wholesale')
+('თხევადი აირი (მხოლოდ SGP !!!)', 1030743.68, None, 289277.97, None, 289277.97, None, None, 292938.95, 6.63, 292932.32, None, None, None, None, 1027082.7, None, 'COGS Retail')
+('თხევადი გაზი (LPG) საბითუმო', 284449.39, None, 327575.12, None, None, 327575.12, None, 303024.51, 289271.34, None, None, None, 13753.17, None, 309000, None, 0)
+('პრემიუმი ', 1771361.23, None, 20208206.06, None, 20086924.88, 121281.18, None, 19406985.46, 1469.67, 19405515.79, None, None, None, None, 2572581.83, None, 'COGS Retail')
+('პრემიუმი (იმპორტი)', 0.71, None, 1736582.85, 1283307.17, None, 453275.68, None, 1736582.65, 1736582.65, None, None, None, None, None, 0.91, None, 0)
+('პრემიუმი (რეექსპორტი)', None, None, 1817972.47, None, None, 1817972.47, None, 1817971.95, None, 1817971.95, None, None, None, None, 0.52, None, 'COGS Wholesale')
+('პრემიუმი (საბითუმო)', 4803585.81, None, 26251019.68, None, 1736582.65, 24514437.03, None, 20501500.14, 20085455.21, None, None, None, None, 416044.93, 10553105.35, None, 'COGS Wholesale')
+('სუპერი ', 223060.57, None, 514191.09, None, None, 514191.09, None, 544778.06, None, 544778.06, None, None, None, None, 192473.6, None, 'COGS Retail')
+('სუპერი (რეექსპორტი)', 0.14, None, 256014.39, None, None, 256014.39, None, 256014.3, None, 256014.3, None, None, None, None, 0.23, None, 'COGS Wholesale')
+('Итого', 24090486.65, None, 259289955.1, 37016471.18, 125721560.51, 96346356.42, 205566.99, 227718560.25, 125721560.51, 99390926.01, 3339.92, 1069.14, 13753.17, 2587911.5, 55661881.5, None, None)
+
+============================================================
+BUDGET (2) - all rows
+('Budget Article', '1C', None, None)
+('Revenue ', 111474234.29000002, None, None)
+('Revenue Wholesale', 23332268.85, None, None)
+('Revenue Whsale Petrol (Lari)', 7671389.84, None, None)
+('Revenue Whsale Diesel (Lari)', 13483316.040000001, None, None)
+('Revenue Whsale Fuel oil (Lari)', 0, None, None)
+('Revenue Whsale Urea (Lari)', 0, None, None)
+('Revenue Whsale Bitumen (Lari)', 2177562.9699999997, None, None)
+('Revenue LPG (Lari)', 0, None, None)
+('Revenue  Petroleum coke (Lari)', 0, None, None)
+('Revenue Retial', 88141965.44000001, None, None)
+('Revenue Retial Petrol (Lari)', 39947544.95, None, None)
+('Revenue Retial Diesel (Lari)', 35381965.82, None, None)
+('Revenue Retial CNG (Lari)', 12438033.280000001, None, None)
+('Revenue Retial LPG (Lari)', 374421.39, None, None)
+('COGS ', 101978837.50999999, None, None)
+('COGS Wholesale', 25416873.43, None, None)
+('COGS Whsale Petrol (Lari)', 9986081.82, None, None)
+('COGS Whsale Diesel (Lari)', 13350950.540000001, None, None)
+('COGS Whsale Fuel oil (Lari)', 0, None, None)
+('COGS Whsale Urea (Lari)', 0, None, None)
+('COGS Whsale Bitumen (Lari)', 2079841.07, None, None)
+('COGS LPG (kg)', 0, None, None)
+('COGS  Petroleum coke (Lari)', 0, None, None)
+('COGS Retial', 76561964.08, None, None)
+('COGS Retial Petrol (Lari)', 33516845.9, None, None)
+('COGS Retial Diesel (Lari)', 33427828.599999998, None, None)
+('COGS Retial CNG (Lari)', 9324357.26, None, None)
+('COGS Retial LPG (Lari)', 292932.32, None, None)
+('Gr. Margin ', 9495396.780000016, None, None)
+('Gr. Margin Wholesale', -2084604.5799999982, None, None)
+('Gr. Margin Whsale Petrol (Lari)', -2314691.9800000004, None, None)
+('Gr. Margin Whsale Diesel (Lari)', 132365.5, None, None)
+('Gr. Margin Whsale Fuel oil (Lari)', 0, None, None)
+('Gr. Margin Whsale Urea (Lari)', 0, None, None)
+('Gr. Margin Whsale Bitumen (Lari)', 97721.89999999967, None, None)
+('Gr. Margin LPG (kg)', 0, None, None)
+('Gr. Margin Whsale  Petroleum coke (Lari)', 0, None, None)
+('Gr. Margin Retial', 11580001.360000014, None, '\xa0111,474,234.29')
+('Gr. Margin Retial Petrol (Lari)', 6430699.0500000045, None, None)
+('Gr. Margin Retial Diesel (Lari)', 1954137.2200000025, None, None)
+('Gr. Margin Retial CNG (Lari)', 3113676.0200000014, None, None)
+('Gr. Margin Retial LPG (Lari)', 81489.07, None, None)
+('Quantity Losses (Lari)', 0, None, None)
+
+============================================================
+BASE sheet - first 30 rows
+['Period', 'Line number', 'Recorder', 'Организация', 'Account Dr', 'Extra dimension1 Dr', 'Extra dimension2 Dr', 'Extra dimension3 Dr', 'Валюта Dr', 'Валютная сумма Dr', 'Количество Dr', 'Account Cr', 'Extra dimension1 Cr', 'Extra dimension2 Cr', 'Extra dimension3 Cr', 'Валюта Cr', 'Валютная сумма Cr', 'Количество Cr', 'Сумма', 'Содержание', 'Номер журнала', 'AFDoc', 'ა/ფ სერია', 'ა/ფ ნომერი', 'WBDoc']
+['01.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '7310.02.1', 'წარმომადგენლობითი ხარჯები (ადმ', 'დირექტორატი', None, None, '0', '0', '3110', 'სს გუდვილი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '731.97', 'representative (administrative', None, None, None, None, None]
+['01.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '7310.02.1', 'წარმომადგენლობითი ხარჯები (ადმ', 'ადამიანური რესურსების მართვის ', None, None, '0', '0', '3110', 'სს სასტუმროებისა და რესტორნები', 'ვირტუალური ხელშეკრულება', None, None, '0', '0', '344.5', 'წარმომადგენლობითი (ადმინისტრაც', None, 'Invoice service 001397308 from', 'ეა-82', '1539337', None]
+['01.01.2025 0:00:00', '2', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '3340.04', 'სს სასტუმროებისა და რესტორნები', 'Поступление товаров и услуг SE', None, None, '0', '0', '3110', 'სს სასტუმროებისა და რესტორნები', 'ვირტუალური ხელშეკრულება', None, None, '0', '0', '62.01', 'წარმომადგენლობითი (ადმინისტრაც', None, 'Invoice service 001397308 from', 'ეა-82', '1539337', None]
+['01.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '7410.01', 'ბიზნეს კონუნიკაციებისა და საზო', 'სხვა მომსახურება (ადმინისტრაცი', None, None, '0', '0', '3110', 'გოცირიძე მირიან', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '2500', 'Service cost по вх.док.  от ', None, None, None, None, None]
+['01.01.2025 12:00:03', '1', 'Авансовый отчет SEG00000001 fr', 'NYX Core Thinker // NYX Core Th', '7410.01', 'ადმინისტრაციული სამსახური', 'მივლინება (ნორმით) ადმინისტრაც', None, None, '0', '0', '1430', 'ჯიჯელავა ეკატერინე', None, None, None, '0', '0', '30', 'მივლინება (ნორმით) ადმინისტრაც', None, None, None, None, None]
+['01.01.2025 12:00:04', '1', 'Авансовый отчет SEG00000002 fr', 'NYX Core Thinker // NYX Core Th', '7410.01', 'ადმინისტრაციული სამსახური', 'მივლინება (ნორმით) ადმინისტრაც', None, None, '0', '0', '1430', 'ჯიჯელავა ეკატერინე', None, None, None, '0', '0', '30', 'მივლინება (ნორმით) ადმინისტრაც', None, None, None, None, None]
+['01.01.2025 12:00:05', '1', 'Авансовый отчет SEG00000003 fr', 'NYX Core Thinker // NYX Core Th', '7410.01', 'იურიდიული სამსახური', 'მივლინება (ნორმით) ადმინისტრაც', None, None, '0', '0', '1430', 'ხაჩიძე მარინე', None, None, None, '0', '0', '30', 'მივლინება (ნორმით) ადმინისტრაც', None, None, None, None, None]
+['01.01.2025 12:00:09', '1', 'Авансовый отчет SEG00000004 fr', 'NYX Core Thinker // NYX Core Th', '7410.01', None, 'მივლინება (ნორმით) ადმინისტრაც', None, None, '0', '0', '1430', 'ნიქაბაძე მარინე', None, None, None, '0', '0', '30', 'მივლინება (ნორმით) ადმინისტრაც', None, None, None, None, None]
+['01.01.2025 12:00:10', '1', 'Авансовый отчет SEG00000005 fr', 'NYX Core Thinker // NYX Core Th', '7410.01', None, 'მივლინება (ნორმით) ადმინისტრაც', None, None, '0', '0', '1430', 'ნიქაბაძე მარინე', None, None, None, '0', '0', '30', 'მივლინება (ნორმით) ადმინისტრაც', None, None, None, None, None]
+['01.01.2025 12:00:11', '1', 'Авансовый отчет SEG00000006 fr', 'NYX Core Thinker // NYX Core Th', '7410.01', None, 'მივლინება (ნორმით) ადმინისტრაც', None, None, '0', '0', '1430', 'ნიქაბაძე მარინე', None, None, None, '0', '0', '90', 'მივლინება (ნორმით) ადმინისტრაც', None, None, None, None, None]
+['01.01.2025 14:00:23', '1', 'Модернизация ОС SEG00000001 fr', 'NYX Core Thinker // NYX Core Th', '2130', 'TOYOTA COROLLA  (მარიამ ჩოგოვა', None, None, None, '0', '0', '2120', 'TOYOTA COROLLA  (მარიამ ჩოგოვა', None, 'Подрядный', None, '0', '0', '27000', 'Модернизация подрядн. способ', 'ОС', None, None, None, None]
+['01.01.2025 16:53:31', '1', 'Корректировка долга SEG0000001', 'NYX Core Thinker // NYX Core Th', '8220.01.1', 'დასაბეგრი 15%', None, None, None, '0', '0', '3110', 'შპს ეი ბი სი - ტელეკომ ჯი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '0.01', 'Возврат аванса', None, None, None, None, None]
+['01.01.2025 16:53:32', '1', 'Корректировка долга SEG0000001', 'NYX Core Thinker // NYX Core Th', '8220.01.1', 'დასაბეგრი 15%', None, None, None, '0', '0', '3110', 'შპს ელ თი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '0.02', 'Возврат аванса', None, None, None, None, None]
+['01.01.2025 16:53:33', '1', 'Корректировка долга SEG0000001', 'NYX Core Thinker // NYX Core Th', '8220.01.1', 'დასაბეგრი 15%', None, None, None, '0', '0', '3110', 'შპს დაბი გრუპ ჯორჯია', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '0.01', 'Возврат аванса', None, None, None, None, None]
+['03.01.2025 23:56:25', '1', 'Платежное поручение исходящее ', 'NYX Core Thinker // NYX Core Th', '7410.01', 'NYX Core Thinker // NYX Core E', 'საბანკო ხარჯები (საკომისიო) _ა', None, None, '0', '0', '1210', 'GE54PB1360100026900001GEL', '- საბანკო ხარჯები // Банковски', None, None, '0', '0', '1', 'Прочее списание денежных средс', None, None, None, None, None]
+['06.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '1622', 'პრემიუმი ', 'სოკარ ენერჯი ჯორჯია სათაო ოფის', None, None, '0', '4200', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '10357.63', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068500', None]
+['06.01.2025 0:00:00', '2', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '3340.03', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'Поступление товаров и услуг SE', None, None, '0', '0', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '1864.37', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068500', None]
+['06.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '1622', 'პრემიუმი ', 'სოკარ ენერჯი ჯორჯია სათაო ოფის', None, None, '0', '700', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '1726.27', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068501', None]
+['06.01.2025 0:00:00', '2', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '3340.03', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'Поступление товаров и услуг SE', None, None, '0', '0', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '310.73', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068501', None]
+['06.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '1622', 'დიზელი', 'სოკარ ენერჯი ჯორჯია სათაო ოფის', None, None, '0', '800', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '1945.76', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068502', None]
+['06.01.2025 0:00:00', '2', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '3340.03', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'Поступление товаров и услуг SE', None, None, '0', '0', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '350.24', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068502', None]
+['06.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '1622', 'დიზელი', 'სოკარ ენერჯი ჯორჯია სათაო ოფის', None, None, '0', '300', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '729.66', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068503', None]
+['06.01.2025 0:00:00', '2', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '3340.03', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'Поступление товаров и услуг SE', None, None, '0', '0', '3110', 'შპს სოკარ ჯორჯია პეტროლეუმი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '131.34', 'Поступление  по вх.док. 706850', None, 'Spec invoices service 00108356', 'ეა', '7068503', None]
+['06.01.2025 21:48:24', '1', 'Платежное поручение входящее S', 'NYX Core Thinker // NYX Core Th', '1210', 'GE50BG0000000233446900GEL', '+ სხვა შემოსავლები არაძირითადი', None, None, '0', '0', '1410', 'სს სოკარ ჯორჯია გაზ დისტრიბუშე', 'იურიდიული მომსახურება', None, None, '0', '0', '19470', 'Оплата', None, None, None, None, None]
+['06.01.2025 21:48:25', '1', 'Платежное поручение входящее S', 'NYX Core Thinker // NYX Core Th', '1210', 'GE50BG0000000233446900GEL', '+ სხვა შემოსავლები არაძირითადი', None, None, '0', '0', '1410', 'სს სოკარ ჯორჯია გაზ დისტრიბუშე', 'ხელშეკრულება მყიდველთან 1C', None, None, '0', '0', '518.45', 'Оплата', None, None, None, None, None]
+['06.01.2025 21:48:26', '1', 'Платежное поручение входящее S', 'NYX Core Thinker // NYX Core Th', '1210', 'GE50BG0000000233446900GEL', '+ სხვა შემოსავლები არაძირითადი', None, None, '0', '0', '1410', 'სს საქორგგაზი', 'ხელშეკრულება მყიდველთან IT', None, None, '0', '0', '46020', 'Оплата', None, None, None, None, None]
+['06.01.2025 21:48:27', '1', 'Платежное поручение входящее S', 'NYX Core Thinker // NYX Core Th', '1210', 'GE50BG0000000233446900GEL', '+ სხვა შემოსავლები არაძირითადი', None, None, '0', '0', '1410', 'სს საქორგგაზი', 'ხელშეკრულება მყიდველთან 1C', None, None, '0', '0', '10109.67', 'Оплата', None, None, None, None, None]
+['06.01.2025 21:48:28', '1', 'Платежное поручение входящее S', 'NYX Core Thinker // NYX Core Th', '1210', 'GE50BG0000000233446900GEL', '+ სხვა შემოსავლები არაძირითადი', None, None, '0', '0', '1410', 'სს საქორგგაზი', 'იურიდიული მომსახურება', None, None, '0', '0', '23600', 'Оплата', None, None, None, None, None]
+['07.01.2025 0:00:00', '1', 'Поступление товаров и услуг SE', 'NYX Core Thinker // NYX Core Th', '7410.01', 'ადმინისტრაციული სამსახური', 'მოგებით დასაბეგრი ხარჯი (ადმინ', None, None, '0', '0', '3110', 'სს გუდვილი', 'ხელშეკრულება გამყიდველთან', None, None, '0', '0', '922.94', 'წარმომადგენლობითი (ადმინისტრაც', None, 'Invoice service 001386855 from', 'ეა-82', '795549', 'Way bill service 00001394407 f']
+
+============================================================
+MR P&L sheet - key rows
+['Code / Kod', 'Profit & Loss Statement Line', 'Mənfəət və ya Zərər Hesabatın Sətiri', '+/-', 'Same period of the previous year actual / Ötən ilin eyni dövrü üzrə fakt', 'Current period actual / Cari dövr üzrə fakt', 'Current period plan / Cari dövr üzrə plan', 'Deviations actual to plan of current period / Cari dövr üzrə faktın plandan kənarlaşmaları', None, None, None, 'Deviations of current from previous period / Cari dövrün əvvəlki dövrdən kənarlaşmaları']
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+['01', 'Revenue (net of tax)', 'Gəlirlər (vergi çıxılmaqla)', '+', 127586.22696176433, 94245.9224200796, 113853.36802736472, -19607.445607285117, -0.17221664977510773, None, None, -33340.30454168473]
+['01.A', 'Revenue from the sale of products  (net of VAT, export taxes, road tax, excises)', 'Məhsul satışından əldə olunan gəlirlər (ƏDV, ixrac qiymət fərqi, yol, aksiz vergisi çıxılmaqla)', '+', 126751.50489867048, 93795.43218401715, 113193.73166372835, -19398.299479711204, -0.17137255919204905, None, None, -32956.07271465333]
+['01.A.01', 'Crude liquids', 'Xam neft (kondensat)', '+', 0, 0, 0, 0, 'N/A', None, None, 0]
+['01.A.02', 'Oil products', 'Neft məhsulları', '+', 9785.248780986287, 11514.813130079034, 13155.050664140685, -1640.2375340616509, -0.12468500319293864, None, None, 1729.5643490927469]
+['01.A.03', 'Petrochemicals', 'Neft-kimya məhsulları', '+', 0, 0, 0, 0, 'N/A', None, None, 0]
+['01.A.04', 'Natural Gas', 'Təbii qaz', '+', 113726.17352914732, 79522.53742951291, 96725.09090909091, -17202.553479577997, -0.17784995928043298, None, None, -34203.6360996344]
+['01.A.05', 'Gas products', 'Qaz məhsulları', '+', 0, 0, 0, 0, 'N/A', None, None, 0]
+['01.A.06', 'Gases (for retail)', 'Qazlar (pərakəndə satış üçün)', '+', 2167.9407142468203, 1732.4287138345167, 2161.840357654192, -429.4116438196752, -0.19863244864464868, None, None, -435.5120004123037]
+['01.A.07', 'Other type of products', 'Digər məhsullar', '+', 1072.1418742900414, 1025.6529105906798, 1151.749732842563, -126.09682225188317, -0.10948283177862897, None, None, -46.48896369936165]
+['01.B', 'Revenue from the sale of services ', 'Xidmətlərin göstərilməsindən əldə olunan gəlirlər', '+', 834.7220630938475, 450.4902360624526, 659.6363636363636, -209.14612757391103, -0.3170627623088508, None, None, -384.2318270313949]
+['02', 'Expenses', 'Xərclər', '-', -110277.18024062303, -83446.90749924508, -103365.69181748104, 19918.784318235965, 0.19270208487945642, None, None, 26830.27274137795]
+['02.A', 'Cost of sales', 'Satılan məhsulun maya dəyəri', '-', -103449.6431125698, -72660.92166604164, -95287.91443850269, 22626.992772461046, 0.23745920881775778, None, None, 30788.721446528158]
+['02.A.01', 'Wages, salaries, SSPF and other employee expenses', 'Əmək haqqı, DSMF və işçilərlə bağlı digər ödənişlər', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.A.02', 'Depreciation (property, plant and equipment and right-of-use assets) and amortization', 'Köhnəlmə (Əmlak, avadanlıq və qurğular və istifadə hüququ olan aktivlər) və amortizasiya  ', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.02.01', 'Depreciation (property, plant and equipment)', 'Köhnəlmə (ƏAQ)', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.02.02', 'Depreciation (right-of-use assets)', 'Köhnəlmə (İstifadə hüququ olan aktivlər)', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.02.03', 'Amortization (intangible assets)', 'Amortizasiya (qeyri-maddi aktivləri)', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.03', 'Raw materials and consumables used', 'İstifadə edilmiş xammal və xərc materialları', '-', -99951.90705879904, -70545.38941875436, -92576.4705882353, 22031.081169480938, 0.23797711264530177, "The decrease in revenue, accompanied by a corresponding decrease in cost of goods sold (COGS), primarily attributed to lower natural gas sales, underscores the impact of market conditions on the company's financial performance. Despite these challenges, maintaining gross profit at the same level indicates effective cost management strategies or potential adjustments in product pricing, demonstrating resilience and adaptability in maintaining profitability amidst changing market dynamics.", None, 29406.51764004468]
+['02.A.04', 'Utilities expenses', 'Kommunal xərclər', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.05', 'Repairs and maintenance expenses', 'Təmir və texniki xidmət xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.06', 'Taxes other than income (incl. mining tax)', 'Mənfəət vergisi olmayan digər vergilər (Mədən vergisi daxil olmaqla)', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.07', 'Rent expenses', 'İcarə xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.08', 'Insurance expenses ', 'Sığorta xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.09', 'Business trip expenses ', 'Ezamiyyə xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.10', 'Storage expenses', 'Anbar xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.11', 'Security services', 'Mühafizə xidməti', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.12', 'Communication and IT services', 'Rabitə və IT xidmətləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.13', 'Automobile and special machinery services', 'Avtomobil və xüsusi texnika xidmətləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.14', 'Refining services', 'Emal xidmətləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.15', 'Transportation of products (cost of sales)', 'Hazır məhsulun nəqli xidməti (satılan məhsulun maya dəyəri)', '-', -870.431802347596, -932.555746076714, -904.9732620320859, -27.582484044628018, -0.030478783409238534, None, None, -62.12394372911797]
+['02.A.16', 'Consulting and supervision services', 'Məsləhət və müşahidə xidmətləri', '-', 0, None, 0, 0, 'N/A', None, None, 0]
+['02.A.17', 'Other (Cost of sales)', 'Digər (Satılan məhsulun maya dəyəri)', '-', -2627.304251423164, -1182.9765012105602, -1806.4705882352941, 623.494087024734, 0.3451448869886186, None, None, 1444.3277502126036]
+['02.A.18', 'Change in work in progress balance', 'Tamamlanmamış iş balansında dəyişiklik', '+/-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.A.19', 'Change in finished goods balance', 'Hazır məhsul qalığının dəyişməsi', '-/+', 0, None, 0, 0, 'N/A', None, None, 0]
+['GP', 'Gross profit', '\nÜmumi mənfəət', '+', 24136.583849194532, 21585.00075403796, 18565.45358886203, 3019.547165175929, 0.1626433284122638, None, None, -2551.583095156573]
+['02.B', 'Administrative expenses', 'İnzibati xərclər', '-', -6827.537128053222, -10785.98583320344, -8077.777378978349, -2708.2084542250914, -0.33526653770787834, None, None, -3958.4487051502183]
+['02.B.01', 'Wages, salaries, SSPF and other employee expenses', 'Əmək haqqı, DSMF və işçilərlə bağlı digər ödənişlər', '-', -2973.263852983148, -5805.751857501109, -4113.529411764706, -1692.2224457364027, -0.4113796879382074, 'The difference observed in wages and bonuses can be attributed to the inclusion of bonuses from the previous year, which are accounted for in the current financial period. This accounting treatment can lead to fluctuations in wage expenses, as bonuses may vary from year to year based on company performance and individual achievements.', None, -2832.488004517961]
+['02.B.02', 'Depreciation (property, plant and equipment and right-of-use assets) and amortization', 'Köhnəlmə (Əmlak, avadanlıq və qurğular və istifadə hüququ olan aktivlər) və amortizasiya  ', '-', -2146.6948466490385, -2140.3021284526826, -1669.0124723116803, -471.2896561410023, -0.2823763536579439, None, None, 6.392718196355872]
+['02.B.02.01', 'Depreciation (property, plant and equipment)', 'Köhnəlmə (ƏAQ)', '-', -2146.6948466490385, -2140.3021284526826, -1649.180188160167, -491.12194029251555, -0.2977976232181236, 'N/A', None, 6.392718196355872]
+['02.B.02.02', 'Depreciation (right-of-use assets)', 'Köhnəlmə (İstifadə hüququ olan aktivlər)', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.B.02.03', 'Amortization (intangible assets)', 'Amortizasiya (qeyri-maddi aktivləri)', '-', 0, 0, -19.832284151513225, 19.832284151513225, 1, None, None, 0]
+['02.B.03', 'Raw materials and consumables used', 'İstifadə edilmiş xammal və xərc materialları', '-', -99.47284578069736, -116.38655007250463, -140.58823529411765, 24.20168522161302, 0.17214587814536456, None, None, -16.913704291807278]
+['02.B.04', 'Utilities expenses', 'Kommunal xərclər', '-', -293.5317266187048, -300.7853126087871, -318.8235294117647, 18.038216802977615, 0.05657743277686706, None, None, -7.253585990082286]
+['02.B.05', 'Repairs and maintenance expenses', 'Təmir və texniki xidmət xərcləri', '-', -132.8028474062856, -158.02112424050375, -218.23529411764707, 60.21416987714332, 0.2759139859599559, None, None, -25.21827683421816]
+['02.B.06', 'Taxes other than income', 'Mənfəət vergisindən başqa sair vergilər (Mədən vergisi daxil olmaqla)', '-', -50.44462324876941, -346.9620483421553, -344.11764705882354, -2.844401283331763, -0.008265781507117943, None, None, -296.5174250933859]
+['02.B.07', 'Rent expenses', 'İcarə xərcləri', '-', -298.36342294585387, -406.7540391396727, -334.70588235294116, -72.04815678673157, -0.21525811342257237, None, None, -108.39061619381886]
+['02.B.08', 'Insurance expenses ', 'Sığorta xərcləri', '-', -37.179337372207485, -27.43917694859656, -22.35294117647059, -5.0862357721259706, -0.22754212664774076, None, None, 9.740160423610924]
+['02.B.09', 'Business trip expenses ', 'Ezamiyyə xərcləri', '-', -14.229191121976433, -16.9090730922726, -27.058823529411764, 10.149750437139165, 0.3750994726768822, None, None, -2.679881970296167]
+['02.B.10', 'Storage expense', 'Anbar xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.B.11', 'Security services', 'Mühafizə xidməti', '-', -59.89569859901569, -74.96417780594194, -74.70588235294117, -0.2582954530007697, -0.003457498189774083, None, None, -15.068479206926256]
+['02.B.12', 'Communication and IT services', 'Rabitə və IT xidmətləri', '-', -71.0967285119273, -131.82359309650727, -162.29431843137257, 30.470725334865307, 0.18774979696994193, None, None, -60.72686458457997]
+['02.B.13', 'Automobile and special machinery services', 'Avtomobil və xüsusi texnika xidmətləri', '-', -30.44057175312382, -39.95038989367832, -51.76470588235294, 11.814315988674622, 0.22823110432666882, None, None, -9.5098181405545]
+['02.B.14', 'Management services', 'İdarəetmə xidmətləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.B.15', 'Consulting and supervision services', 'Məsləhət və müşahidə xidmətləri', '-', -68.04570995834912, -126.77464494725463, -90, -36.77464494725463, -0.408607166080607, None, None, -58.72893498890551]
+['02.B.16', 'Other (Administrative)', 'Digər (İnzibati) ', '-', -552.0757251041233, -1093.1617170617753, -510.5882352941177, -582.5734817676577, -1.1409849297292833, 'The temporary difference', None, -541.085991957652]
+['02.C', 'S&D expenses', 'Satış və Paylama xərcləri', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.C.01', 'Wages, salaries, SSPF and other employee expenses', 'Əmək haqqı, DSMF və işçilərlə bağlı digər ödənişlər', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.02', 'Depreciation (property, plant and equipment and right-of-use assets) and amortization', 'Köhnəlmə (Əmlak, avadanlıq və qurğular və istifadə hüququ olan aktivlər) və amortizasiya  ', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.C.02.01', 'Depreciation (property, plant and equipment)', 'Köhnəlmə (ƏAQ)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.02.02', 'Depreciation (right-of-use assets)', 'Köhnəlmə (İstifadə hüququ olan aktivlər)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.02.03', 'Amortization (intangible assets)', 'Amortizasiya (qeyri-maddi aktivləri)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.03', 'Raw materials and consumables used', 'İstifadə edilmiş xammal və xərc materialları', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.04', 'Utilities expenses', 'Kommunal xərclər', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.05', 'Repairs and maintenance expenses', 'Təmir və texniki xidmət xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.06', 'Taxes other than income', 'Mənfəət vergisindən başqa sair vergilər ', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.07', 'Rent expenses', 'İcarə xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.08', 'Insurance expenses ', 'Sığorta xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.09', 'Business trip expenses ', 'Ezamiyyə xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.10', 'Storage expense', 'Anbar xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.11', 'Security services', 'Mühafizə xidməti', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.12', 'Communication and IT services', 'Rabitə və IT xidmətləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.13', 'Automobile and special machinery services', 'Avtomobil və xüsusi texnika xidmətləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.14', 'Transportation of products (S&D)', 'Hazır məhsulun nəqli xidməti (satış və paylama)', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.C.14.01', 'Reimbursable transportation services', 'Ödənişi qaytarılan nəql xidmətləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.14.02', 'Reimbursed transportation services', 'Kompensasiyalı nəql xidmətləri', '+', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.14.03', 'Un-reimbursable transportation services', 'Ödənişi geri qaytarılmayan nəql xidmətləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.15', 'Commission services', 'Komissiya xidmətləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.C.16', 'Other (S&D)', 'Digər (Satış və paylama)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D', 'Social expenses', 'Sosial xərclər', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.D.01', 'Wages, salaries, SSPF and other employee expenses', 'Əmək haqqı, DSMF və işçilərlə bağlı digər ödənişlər', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.02', 'Depreciation (property, plant and equipment and right-of-use assets) and amortization', 'Köhnəlmə (Əmlak, avadanlıq və qurğular və istifadə hüququ olan aktivlər) və amortizasiya  ', '-', 0, 0, 0, 0, 'N/A', None, None, 0]
+['02.D.02.01', 'Depreciation (property, plant and equipment)', 'Köhnəlmə (ƏAQ)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.02.02', 'Depreciation (right-of-use assets)', 'Köhnəlmə (İstifadə hüququ olan aktivlər)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.02.03', 'Amortization (intangible assets)', 'Amortizasiya (qeyri-maddi aktivləri)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.03', 'Raw materials and consumables used', 'İstifadə edilmiş xammal və xərc materialları', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.04', 'Utilities expenses', 'Kommunal xərclər', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.05', 'Repairs and maintenance expenses', 'Təmir və texniki xidmət xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.06', 'Taxes other than income', 'Mənfəət vergisindən başqa sair vergilər (Mədən vergisi daxil olmaqla)', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.07', 'Rent expenses', 'İcarə xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+['02.D.08', 'Insurance expenses ', 'Sığorta xərcləri', '-', None, None, None, 0, 'N/A', None, None, 0]
+
+============================================================
+MR Products WSales - all rows
+[None, None, 'Entity Name / Müəssisənin Adı', None, None, None, None, None, None, None, None, None]
+[None, None, 'Currency / Valyuta', None, None, None, None, None, None, None, None, None]
+[None, None, None, None, None, 'Month / Ay', None, None, None, None, None, None]
+[None, 'Code / Kod', 'Line item', 'Units of measurement / Ölçü vahidi', '+/-', 'Same period of the previous year actual / Ötən ilin eyni dövrü üzrə fakt', 'Current period actual / Cari dövr üzrə fakt', 'Current period plan / Cari dövr üzrə plan', 'Deviations actual to plan of current period / Cari dövr üzrə faktın plandan kənarlaşmaları', None, 'Deviations of current from previous period / Cari dövrün əvvəlki dövrdən kənarlaşmaları', None]
+[None, None, None, None, None, None, None, None, 'Deviation from current period plan in absolute / Cari dövr üzrə plandan kənarlaşma (mütləq dəyərdə)', 'Deviation from current period plan % /\nCari dövr üzrə plandan kənarlaşma %', 'Deviation from same period of the previous year actual in absolute / Əvvəlki ilin eyni dövrü üzrə faktdan kənarlaşma (mütləq dəyərdə)', 'Deviation from same period of the previous year actual % / Əvvəlki ilin eyni dövrü üzrə faktdan kənarlaşma %\n']
+[None, None, None, None, None, 'Reporting period (month) / Hesabat dövrü (ay)', None, None, None, None, None, None]
+[None, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+[None, '01.A', 'Products revenue ', 'thsd / min ', '+', 82232.53143249541, 49332.49239292845, 67058.69861818182, -17726.206225253372, -0.264338655394771, -32900.03903956696, -0.40008544631238263]
+[None, None, 'COGS', 'thsd / min ', '+', 79299.93528793447, 50345.31005434083, 69400.37546619622, -19055.065411855387, -0.2745671804201808, -28954.625233593637, -0.36512798060251506]
+[None, None, 'Crude liquids', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Local revenue (for Entity location)', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Crude oil Revenue Crude liquids', None, 'Crude oil', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Crude oil Sales volume Crude liquids', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Crude oil Price Crude liquids', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Crude oil COGs Crude liquids', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gas condensate Revenue Crude liquids', None, 'Gas condensate', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gas condensate Sales volume Crude liquids', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gas condensate Price Crude liquids', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gas condensate COGs Crude liquids', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+[None, None, 'Overseas revenue (for Entity location)', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Crude oil Revenue Crude liquids', None, 'Crude oil', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Crude oil Sales volume Crude liquids', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Crude oil Price Crude liquids', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Crude oil COGs Crude liquids', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Gas condensate Revenue Crude liquids', None, 'Gas condensate', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Gas condensate Sales volume Crude liquids', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Gas condensate Price Crude liquids', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Overseas revenue (for Entity location) Gas condensate COGs Crude liquids', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+[None, None, 'Oil products, net', 'thsd / min ', '+', 694.848765811613, 2038.3051822824466, 1209.9713454545456, 828.333836827901, 0.6845896309360316, 1343.4564164708336, 1.9334515402090686]
+[None, None, 'Local revenue (for Entity location)', 'thsd / min ', '+', 694.848765811613, 2038.3051822824466, 1209.9713454545456, 828.333836827901, 0.6845896309360316, 1343.4564164708336, 1.9334515402090686]
+['Local revenue (for Entity location) Diesel fuel Revenue Oil products, net', None, 'Diesel fuel', 'thsd / min ', '+', 681.9920634839114, 1417.6239601767322, 1209.9713454545456, 207.65261472218663, 0.17161779533231716, 735.6318966928209, 1.0786516971105118]
+['Local revenue (for Entity location) Diesel fuel Sales volume Oil products, net', None, 'Sales volume', 'thsd / min ', '+', 0.7050299999999999, 1.665778, 1.31, 0.3557779999999999, 0.2715862595419847, 0.960748, 1.3627051331149032]
+['Local revenue (for Entity location) Diesel fuel Price Oil products, net', None, 'Price', 'thsd / min ', '+', 967.3234663544976, 851.0281443125868, 923.6422484385844, -72.61410412599753, -0.07861713152332686, -116.29532204191071, -0.12022381973238687]
+['Local revenue (for Entity location) Diesel fuel COGs Oil products, net', None, 'COGs', 'thsd / min ', '+', 909.8995591385864, 804.6894756817229, 894.7603497571133, -90.0708740753904, -0.10066480270369664, -105.21008345686346, -0.11562823874369958]
+[None, None, 'Total COGs', 'thsd / min ', '+', 641.5064861794775, 1340.434025422149, 1172.1360581818185, 168.29796724033054, 0.1435822796044592, 698.9275392426715, 1.0895096999021285]
+['Local revenue (for Entity location) Gasoline (Petrol) Revenue Oil products, net', None, 'Gasoline (Petrol)', 'thsd / min ', '+', 2.8401542815713743, 620.6812221057144, 0, 620.6812221057144, 'N/A', 617.841067824143, 217.53785413456822]
+['Local revenue (for Entity location) Gasoline (Petrol) Sales volume Oil products, net', None, 'Sales volume', 'thsd / min ', '+', 0.0033399999999999997, 0.9613343601519072, 0, 0.9613343601519072, 'N/A', 0.9579943601519072, 286.82465872811593]
+['Local revenue (for Entity location) Gasoline (Petrol) Price Oil products, net', None, 'Price', 'thsd / min ', '+', 850.3455932848427, 645.6455192214664, 0, 645.6455192214664, 'N/A', -204.7000740633763, -0.24072574219221868]
+['Local revenue (for Entity location) Gasoline (Petrol) COGs Oil products, net', None, 'COGs', 'thsd / min ', '+', 808.6303727267162, 638.3002371343098, 0, 638.3002371343098, 'N/A', -170.33013559240646, -0.21064028923134578]
+[None, None, 'Total COGs', 'thsd / min ', '+', 2.700825444907232, 613.6199500503224, 0, 613.6199500503224, 'N/A', 610.9191246054152, 226.19718936571223]
+['Local revenue (for Entity location) Gasoil Revenue Oil products, net', None, 'Gasoil', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gasoil Sales volume Oil products, net', None, 'Sales volume', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gasoil Price Oil products, net', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Gasoil COGs Oil products, net', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Jet fuel Revenue Oil products, net', None, 'Jet fuel', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Jet fuel Sales volume Oil products, net', None, 'Sales volume', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Jet fuel Price Oil products, net', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Jet fuel COGs Oil products, net', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Naphtha (all types) Revenue Oil products, net', None, 'Naphtha (all types)', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Naphtha (all types) Sales volume Oil products, net', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Naphtha (all types) Price Oil products, net', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Naphtha (all types) COGs Oil products, net', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Local revenue (for Entity location) Reformate Revenue Oil products, net', None, 'Reformate', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+
+============================================================
+MR Products Retail - all rows
+[None, None, 'Entity Name', 'NYX Core Thinker LLC', None, None, None, None, None, None, None, None]
+[None, None, 'Currency ', 'USD', None, None, None, None, None, None, None, None]
+[None, None, None, None, None, 'Month / Ay', None, None, None, None, None, None]
+[None, 'Code / Kod', 'Line item', 'Units of measurement', '+/-', 'Same period of the previous year actual / Ötən ilin eyni dövrü üzrə fakt', 'Current period actual / Cari dövr üzrə fakt', 'Current period plan / Cari dövr üzrə plan', 'Deviations actual to plan of current period ', 'Deviations actual to plan of current period ', 'Deviations of current from previous period / Cari dövrün əvvəlki dövrdən kənarlaşmaları', None]
+[None, None, None, None, None, None, None, None, 'Deviation from current period plan in absolute / Cari dövr üzrə plandan kənarlaşma (mütləq dəyərdə)', 'Deviation from current period plan % /\nCari dövr üzrə plandan kənarlaşma %', 'Deviation from same period of the previous year actual in absolute / Əvvəlki ilin eyni dövrü üzrə faktdan kənarlaşma (mütləq dəyərdə)', 'Deviation from same period of the previous year actual % / Əvvəlki ilin eyni dövrü üzrə faktdan kənarlaşma %\n']
+[None, None, None, None, None, 'Reporting period (month) / Hesabat dövrü (ay)', None, None, None, None, None, None]
+[None, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+[None, '01.A', 'Products revenue ', 'thsd / min ', '+', 12330.482603711534, 12234.589572221783, 15258.669409182894, -3024.079836961111, -0.19818765030332036, -95.89303148975159, -0.007776908217760052]
+[None, None, 'COGS', 'thsd / min ', '+', 11107.28858144028, 10086.976707679698, 13217.049168079455, -3130.072460399757, -0.23682082290797607, -1020.3118737605819, -0.09185967090703591]
+[None, None, 'Oil products, net', 'thsd / min ', '+', 9090.400015174673, 9476.507947796586, 11945.07931868614, -2468.571370889553, -0.20666010706415933, 386.1079326219133, 0.042474251075572074]
+[None, None, 'Local revenue (for Entity location)', 'thsd / min ', '+', 9090.400015174673, 9476.507947796586, 11945.07931868614, -2468.571370889553, -0.20666010706415933, 386.1079326219133, 0.042474251075572074]
+['Oil products, net Local revenue (for Entity location) Diesel fuel Revenue', None, 'Diesel fuel', 'thsd / min ', '+', 4865.12496426978, 4434.122954309224, 6014.253213296615, -1580.1302589873912, -0.2627309165324066, -431.0020099605563, -0.08859012114301293]
+['Oil products, net Local revenue (for Entity location) Diesel fuel Sales volume', None, 'Sales volume', 'thsd / min ', '+', 4.357275476, 4.633755109999999, 5.51779142556013, -0.884036315560131, -0.1602156093586646, 0.2764796339999993, 0.06345241092119541]
+['Oil products, net Local revenue (for Entity location) Diesel fuel Price', None, 'Price', 'thsd / min ', '+', 1116.5520727498251, 956.9178450410653, 1089.9747289172112, -133.0568838761459, -0.12207336587365246, -159.6342277087598, -0.142970696669449]
+['Oil products, net Local revenue (for Entity location) Diesel fuel COGs', None, 'COGs', 'thsd / min ', '+', 1035.7519859020956, 835.7443447068155, 978.6895767506479, -142.94523204383245, -0.14605778526672944, -200.00764119528014, -0.19310379696842392]
+[None, None, 'Total COGs', 'thsd / min ', '+', 4513.0567273894985, 3872.6346279388067, 5400.204954879798, -1527.570326940991, -0.282872657557308, -640.4220994506918, -0.14190428752291204]
+['Oil products, net Local revenue (for Entity location) Gasoline (Petrol) Revenue', None, 'Gasoline (Petrol)', 'thsd / min ', '+', 4225.275050904894, 5042.384993487362, 5930.826105389524, -888.4411119021615, -0.1498005667532231, 817.1099425824686, 0.19338621337975967]
+['Oil products, net Local revenue (for Entity location) Gasoline (Petrol) Sales volume', None, 'Sales volume', 'thsd / min ', '+', 4.69163855, 5.287006940000001, 5.47068911153756, -0.1836821715375585, -0.03357569179907828, 0.5953683900000009, 0.1268998844763949]
+['Oil products, net Local revenue (for Entity location) Gasoline (Petrol) Price', None, 'Price', 'thsd / min ', '+', 900.5968822779183, 953.7314875337314, 1084.1095124344656, -130.3780249007342, -0.12026278102473116, 53.134605255813085, 0.058999321784700666]
+['Oil products, net Local revenue (for Entity location) Gasoline (Petrol) COGs', None, 'COGs', 'thsd / min ', '+', 823.3184918867713, 801.6929106333505, 972.2328176965057, -170.53990706315517, -0.17541056417660578, -21.62558125342082, -0.026266361640757276]
+[None, None, 'Total COGs', 'thsd / min ', '+', 3862.712775463839, 4238.555982267325, 5318.783489651755, -1080.2275073844303, -0.20309672493458794, 375.8432068034858, 0.09730032457781025]
+['Oil products, net Local revenue (for Entity location) Other oil products Revenue', None, 'Other oil products', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Local revenue (for Entity location) Other oil products Sales volume', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Local revenue (for Entity location) Other oil products Price', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Oil products, net Local revenue (for Entity location) Other oil products COGs', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+[None, None, 'Overseas revenue (for Entity location)', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Diesel fuel Revenue', None, 'Diesel fuel', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Diesel fuel Sales volume', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Diesel fuel Price', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Diesel fuel COGs', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Gasoline (Petrol) Revenue', None, 'Gasoline (Petrol)', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Gasoline (Petrol) Sales volume', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Gasoline (Petrol) Price', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Gasoline (Petrol) COGs', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Other oil products Revenue', None, 'Other oil products', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Other oil products Sales volume', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Other oil products Price', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Oil products, net Overseas revenue (for Entity location) Other oil products COGs', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+[None, None, 'Gases, net', 'thsd / min ', '+', 2167.9407142468203, 1732.4287138345167, 2161.840357654192, -429.4116438196752, -0.19863244864464868, -435.5120004123037, -0.20088741244181485]
+[None, None, 'Local revenue (for Entity location)', 'thsd / min ', '+', 2167.9407142468203, 1732.4287138345167, 2161.840357654192, -429.4116438196752, -0.19863244864464868, -435.5120004123037, -0.20088741244181485]
+['Gases, net Local revenue (for Entity location) LPG Revenue', None, 'LPG', 'thsd / min ', '+', 40.01704658434294, 60.06788757013889, 81.16726975786383, -21.09938218772494, -0.2599493890908009, 20.05084098579595, 0.5010574916750862]
+['Gases, net Local revenue (for Entity location) LPG Sales volume', None, 'Sales volume', 'thsd / min ', '+', 7.364323000000002e-05, 0.00010246625000000001, 0.00012682385899666224, -2.4357608996662233e-05, -0.192058569967527, 2.8823019999999993e-05, 0.3913872327435935]
+['Gases, net Local revenue (for Entity location) LPG Price', None, 'Price', 'thsd / min ', '+', 543390.7038616168, 586221.1954681556, 640000, -53778.80453184445, -0.08402938208100695, 42830.491606538766, 0.0788208029731886]
+['Gases, net Local revenue (for Entity location) LPG COGs', None, 'COGs', 'thsd / min ', '+', 476840.33003020444, 439307.3428245846, 531530.2161319943, -92222.8733074097, -0.173504479159296, -37532.987205619866, -0.07871185560844322]
+[None, None, 'Total COGs', 'thsd / min ', '+', 35.11606209769026, 45.014176016699594, 67.41071318318944, -22.39653716648985, -0.33224002697652794, 9.898113919009333, 0.28186856178444836]
+['Gases, net Local revenue (for Entity location) CNG Revenue', None, 'CNG', 'thsd / min ', '+', 2127.9236676624773, 1672.3608262643777, 2080.673087896328, -408.3122616319504, -0.1962404685326016, -455.56284139809964, -0.2140879620454314]
+['Gases, net Local revenue (for Entity location) CNG Sales volume', None, 'Sales volume', 'thsd / min ', '+', 4.12912205, 3.4073056799999994, 3.3857106459851494, 0.02159503401485008, 0.006378286945595291, -0.7218163700000009, -0.17481110058250782]
+['Gases, net Local revenue (for Entity location) CNG Price', None, 'Price', 'thsd / min ', '+', 515.3453063133547, 490.81620004941203, 614.5454545454545, -123.72925449604247, -0.2013345857184123, -24.529106263942708, -0.04759741859185156]
+['Gases, net Local revenue (for Entity location) CNG COGs', None, 'COGs', 'thsd / min ', '+', 385.02769509378203, 354.54286907299326, 478.70593814495004, -124.16306907195678, -0.2593723185325534, -30.484826020788773, -0.07917567076145916]
+[None, None, 'Total COGs', 'thsd / min ', '+', 1589.8263456724123, 1208.035931595906, 1620.7597910736658, -412.7238594777598, -0.2546483826603031, -381.7904140765063, -0.24014598519879804]
+['Gases, net Local revenue (for Entity location) Other Revenue', None, 'Other', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Gases, net Local revenue (for Entity location) Other Sales volume', None, 'Sales volume', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+['Gases, net Local revenue (for Entity location) Other Price', None, 'Price', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+['Gases, net Local revenue (for Entity location) Other COGs', None, 'COGs', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']
+[None, None, 'Total COGs', 'thsd / min ', '+', None, None, None, 0, 'N/A', 0, 'N/A']
+[None, None, 'Overseas revenue (for Entity location)', 'thsd / min ', '+', 0, 0, 0, 0, 'N/A', 0, 'N/A']

@@ -1,0 +1,74 @@
+{
+  "version": "1.0",
+  "updated": "2026-03-28T08:22:20.982179+00:00",
+  "patterns": {
+    "805e3e8753d19632": {
+      "fingerprint_id": "805e3e8753d19632",
+      "column_count": 4,
+      "row_count_bucket": "1s",
+      "header_roles": [
+        "account_code",
+        "account_name",
+        "credit",
+        "debit"
+      ],
+      "header_hash": "f1da3ea4e25baabe",
+      "numeric_col_positions": [
+        0,
+        2,
+        3
+      ],
+      "text_col_positions": [
+        1
+      ],
+      "date_col_positions": [],
+      "account_code_pattern": "d4",
+      "account_code_col_idx": 0,
+      "filename_pattern": "test_tb",
+      "schema_type": "TRIAL_BALANCE",
+      "confidence": 1.0,
+      "first_seen": "2026-03-12T11:15:41.342470+00:00",
+      "last_seen": "2026-03-12T13:39:06.230880+00:00",
+      "match_count": 8,
+      "source_filenames": [
+        "test_tb.xlsx",
+        "test.xlsx"
+      ]
+    },
+    "9088d4f7f0e982b2": {
+      "fingerprint_id": "9088d4f7f0e982b2",
+      "column_count": 6,
+      "row_count_bucket": "1s",
+      "header_roles": [
+        "account_code",
+        "account_name",
+        "account_type",
+        "off_balance",
+        "subkonto1"
+      ],
+      "header_hash": "0b79649ca9447876",
+      "numeric_col_positions": [
+        1
+      ],
+      "text_col_positions": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "date_col_positions": [],
+      "account_code_pattern": "d4",
+      "account_code_col_idx": 1,
+      "filename_pattern": "c_accountn",
+      "schema_type": "CHART_OF_ACCOUNTS",
+      "confidence": 1.0,
+      "first_seen": "2026-03-12T11:27:50.771236+00:00",
+      "last_seen": "2026-03-28T08:22:20.982174+00:00",
+      "match_count": 85,
+      "source_filenames": [
+        "1c AccountN.xlsx"
+      ]
+    }
+  }
+}

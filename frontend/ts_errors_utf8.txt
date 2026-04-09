@@ -1,0 +1,4 @@
+﻿src/components/WorkshopTour.tsx(36,20): error TS2554: Expected 1 arguments, but got 0.
+src/components/WorkshopTour.tsx(37,21): error TS2554: Expected 1 arguments, but got 0.
+src/pages/WorkshopPage.tsx(234,7): error TS2353: Object literal may only specify known properties, and 'i' does not exist in type 'readonly LayoutItem[]'.
+src/pages/WorkshopPage.tsx(247,42): error TS2339: Property 'i' does not exist on type 'Layout'.

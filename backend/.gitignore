@@ -1,0 +1,133 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Database (local development)
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+temp/
+
+# OS
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local uploads and exports
+uploads/
+backups/
+exports/
+
+# SSL certificates (local)
+ssl/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# IDE-specific
+.env.vscode
+.vscode/settings.json
+.vscode/launch.json
+
+# Docker volumes (if running docker locally)
+postgres_data/
+
+# Node modules (if frontend in same repo)
+node_modules/
+frontend/node_modules/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Linting
+.flake8
+.pylintrc
+
+# Package lock files (if using pip-tools)
+requirements.lock
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Poetry
+poetry.lock
+
+# Development utilities
+.python-version
+.ruby-version
+
+# Max OS
+._*
+.localized
+
+# Misc
+TODO.md
+NOTES.md
+DEBUG.md
