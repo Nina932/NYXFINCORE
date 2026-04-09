@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { setLang as setTranslationLang } from '../i18n/translations';
+import { api } from '../api/client';
 
 /* ─── Types ─── */
 export interface PLLineItem {
@@ -319,7 +320,6 @@ export const useStore = create<FinAIState>((set, get) => ({
   fetchInstitutionalLedger: async () => {
     set({ isLoading: true });
     try {
-      const { api } = await import('../api/client');
       const data = await api.getInstitutionalLedger();
       set({ fact_ledger: data || [] });
     } catch (err) {
@@ -331,7 +331,6 @@ export const useStore = create<FinAIState>((set, get) => ({
 
   triggerWriteback: async (anomalies: any[]) => {
     try {
-      const { api } = await import('../api/client');
       await api.postWriteback(anomalies);
     } catch (err) {
       console.error('Writeback failed:', err);

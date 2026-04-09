@@ -1,5 +1,3 @@
-import { useStore } from '../store/useStore';
-
 const BASE = '/api/agent';
 
 function getHeaders(): Record<string, string> {
@@ -8,7 +6,7 @@ function getHeaders(): Record<string, string> {
   if (token) headers['Authorization'] = `Bearer ${token}`;
   
   // Dynamically inject the active language preference for the backend
-  const lang = useStore.getState().lang;
+  const lang = typeof window !== 'undefined' ? localStorage.getItem('finai-lang') || 'en' : 'en';
   if (lang) headers['Accept-Language'] = lang;
   
   return headers;
@@ -36,7 +34,7 @@ async function postFile<T = unknown>(path: string, file: File): Promise<T> {
   const headers: Record<string, string> = {};
   const token = localStorage.getItem('token');
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  const lang = useStore.getState().lang;
+  const lang = typeof window !== 'undefined' ? localStorage.getItem('finai-lang') || 'en' : 'en';
   if (lang) headers['Accept-Language'] = lang;
   const response = await fetch(url, { method: 'POST', headers, body: formData });
   if (!response.ok) {
@@ -474,6 +472,10 @@ export const api = {
   // Competitor Intelligence
   benchmarkCompetitors: (target_a: string, target_b: string) => 
     rawGet<any>(`/api/external-data/logistics/benchmark?target_a=${target_a}&target_b=${target_b}`),
+
+  // Institutional Facts & Writeback
+  getInstitutionalLedger: () => rawGet<any[]>('/api/reports/institutional-ledger'),
+  postWriteback: (facts: any[]) => rawPost('/api/writeback/push', { facts }),
 };
 
 function put<T = unknown>(path: string, body?: unknown): Promise<T> { return request<T>('PUT', path, body); }
