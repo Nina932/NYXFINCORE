@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 try:
     from llama_index.core import VectorStoreIndex, StorageContext, Document, QueryBundle
     from llama_index.vector_stores.postgres import PostgresVectorStore
-    from llama_index.embeddings.openai import OpenAIEmbedding
+    from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
     HAS_LLAMA = True
 except ImportError:
     HAS_LLAMA = False
@@ -194,10 +194,12 @@ class VectorStoreService:
             return
 
         try:
-            # Use OpenAI for "Thin" embeddings (avoids massive local model downloads)
+            # Use Google Gemini for "Thin" embeddings
             from llama_index.core import Settings
-            # text-embedding-3-small is the modern, high-efficiency standard
-            Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+            Settings.embed_model = GoogleGenAIEmbedding(
+                model_name="models/text-embedding-004",
+                api_key=settings.GEMINI_API_KEY
+            )
             
             # Setup Postgres Vector Store
             self._vector_store = PostgresVectorStore.from_params(
