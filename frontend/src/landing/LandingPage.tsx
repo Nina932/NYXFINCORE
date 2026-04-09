@@ -220,19 +220,19 @@ const LandingPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
               { 
-                step: '01', icon: <Database />, title: '📥 Data Sources',
+                step: '01', icon: Database, title: '📥 Data Sources',
                 desc: 'PostgreSQL, SAP, 1C, Excel, and 600+ more connectors.'
               },
               { 
-                step: '02', icon: <Layers />, title: '🔄 Lake Space',
+                step: '02', icon: Layers, title: '🔄 Lake Space',
                 desc: 'Centralize data in seconds with Auto Schema Detection and ERD Relations.'
               },
               { 
-                step: '03', icon: <Cpu />, title: '⚙️ Warehouse',
+                step: '03', icon: Cpu, title: '⚙️ Warehouse',
                 desc: 'Modeling & transformation with AI-Powered ETL and Auto-Generated Lineage.'
               },
               { 
-                step: '04', icon: <Zap />, title: '📊 Consume & Act',
+                step: '04', icon: Zap, title: '📊 Consume & Act',
                 desc: 'Agentic AI Data Minds and Browser-Based Query Editors for final analytics.'
               }
             ].map((item, i) => (
@@ -241,7 +241,7 @@ const LandingPage: React.FC = () => {
                 className="glass-premium p-8 relative z-10 flex flex-col gap-6 group border border-white/5"
               >
                 <div className="w-12 h-12 rounded bg-sky/10 flex items-center justify-center text-sky border border-sky/30">
-                  {React.cloneElement(item.icon as React.ReactElement, { className: 'w-6 h-6' })}
+                  <item.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-[11px] font-black text-heading tracking-widest uppercase">{item.title}</h3>
                 <p className="text-[11px] text-muted leading-relaxed font-medium">
@@ -253,14 +253,16 @@ const LandingPage: React.FC = () => {
 
           <div className="mt-20 grid grid-cols-2 md:grid-cols-5 gap-8 border-t border-white/5 pt-20">
              {[
-               { icon: <Lock />, label: 'Access Control' },
-               { icon: <FileText />, label: 'Data Catalog' },
-               { icon: <Server />, label: 'On-Premise' },
-               { icon: <Fingerprint />, label: 'ZDR Security' },
-               { icon: <Activity />, label: '99.9% SLA' }
+               { icon: Lock, label: 'Access Control' },
+               { icon: FileText, label: 'Data Catalog' },
+               { icon: Server, label: 'On-Premise' },
+               { icon: Fingerprint, label: 'ZDR Security' },
+               { icon: Activity, label: '99.9% SLA' }
              ].map((item, i) => (
                <div key={i} className="flex flex-col items-center gap-3 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all cursor-default">
-                  <div className="w-8 h-8 flex items-center justify-center text-sky">{item.icon}</div>
+                  <div className="w-8 h-8 flex items-center justify-center text-sky">
+                    <item.icon className="w-5 h-5" />
+                  </div>
                   <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
                </div>
              ))}
