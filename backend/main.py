@@ -40,6 +40,7 @@ from app.database import init_db, AsyncSessionLocal, engine
 from app.services.seed_data import seed_database
 from app.routers import datasets, analytics, agent, reports
 from app.routers import schemas
+from app.routers import writeback # new
 from app.routers import tools  # new
 from app.routers import advanced  # advanced features (forecasting, scenarios, anomalies, etc.)
 from app.routers import mr_reports  # MR report generation + exchange rates
@@ -355,6 +356,7 @@ app.include_router(analytics.router)
 app.include_router(agent.router)
 app.include_router(reports.router)
 app.include_router(schemas.router)
+app.include_router(writeback.router) # ← new
 app.include_router(tools.router)       # ← custom tools endpoint
 app.include_router(advanced.router)    # ← advanced features (forecast, scenarios, anomalies, etc.)
 app.include_router(mr_reports.router)  # ← MR report generation + exchange rates

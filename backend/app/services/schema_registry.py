@@ -46,6 +46,21 @@ class SheetSchema:
     required_any_groups: List[List[str]] = field(default_factory=list)
     numeric_columns_any: List[str] = field(default_factory=list)
 
+    def to_singer_schema(self) -> Dict:
+        """Convert the sheet definition to a Singer-compatible JSON Schema."""
+        properties = {}
+        for group in self.required_any_groups:
+            primary_header = group[0]
+            if primary_header in self.numeric_columns_any:
+                properties[primary_header] = {"type": ["null", "number"]}
+            else:
+                properties[primary_header] = {"type": ["null", "string"]}
+        
+        return {
+            "type": "object",
+            "properties": properties
+        }
+
     def validate_headers(self, headers: List[str]) -> List[str]:
         errors = []
         nh = _norm_headers(headers)
@@ -208,3 +223,45 @@ class SchemaRegistry:
             errors=errors,
             warnings=warnings,
         )
+
+    def discover_catalog(self, sheet_rows: Dict[str, List[List]]) -> Dict:
+        """
+        Industrial 'Discovery Mode' — Generates a Singer-compatible Catalog
+        document representing the actual structure of the uploaded spreadsheets.
+        """
+        streams = []
+        for sheet_name, rows in sheet_rows.items():
+            _, header_row = _find_first_non_empty_row(rows)
+            # Find the best matching registered schema to use as a baseline
+            matched_schema = None
+            for ftype, schemas in self.schemas.items():
+                for schema in schemas:
+                    if not schema.validate_headers(header_row):
+                        matched_schema = schema
+                        break
+            
+            # Generate the stream schema
+            schema_json = {}
+            if matched_schema:
+                schema_json = matched_schema.to_singer_schema()
+            else:
+                # Dynamic discovery for unknown schemas
+                props = {h: {"type": ["null", "string"]} for h in header_row if h}
+                schema_json = {"type": "object", "properties": props}
+
+            streams.append({
+                "stream": sheet_name,
+                "tap_stream_id": sheet_name.lower().replace(" ", "_"),
+                "schema": schema_json,
+                "metadata": [
+                    {
+                        "breadcrumb": [],
+                        "metadata": {
+                            "selected": True,
+                            "inclusion": "available"
+                        }
+                    }
+                ]
+            })
+        
+        return {"streams": streams}

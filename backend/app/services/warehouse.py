@@ -107,6 +107,30 @@ class FinAIWarehouse:
                 value DOUBLE, source_file VARCHAR, uploaded_at TIMESTAMP
             )
         """)
+        
+        # 🔗 Phase 3: Institutional Fact & Dimension Tables
+        self._conn.execute("""
+            CREATE TABLE IF NOT EXISTS fact_financial_ledger (
+                id INTEGER PRIMARY KEY, dataset_id INTEGER, period VARCHAR,
+                account_code VARCHAR, ifrs_line_item VARCHAR, baku_mr_code VARCHAR,
+                business_unit VARCHAR, product_category VARCHAR, counterparty VARCHAR,
+                amount_gel DOUBLE, amount_usd DOUBLE, quantity DOUBLE,
+                entry_type VARCHAR, confidence_score DOUBLE, audit_id VARCHAR,
+                created_at TIMESTAMP
+            )
+        """)
+        self._conn.execute("""
+            CREATE TABLE IF NOT EXISTS dim_products (
+                product_name VARCHAR PRIMARY KEY, category VARCHAR,
+                segment VARCHAR, unit_measure VARCHAR, is_active BOOLEAN
+            )
+        """)
+        self._conn.execute("""
+            CREATE TABLE IF NOT EXISTS dim_business_units (
+                name VARCHAR PRIMARY KEY, region VARCHAR,
+                manager VARCHAR, unit_type VARCHAR
+            )
+        """)
 
         # ── 4-Tier Pipeline Views (Palantir pattern: raw → clean → semantic → application) ──
         self._create_pipeline_views()
@@ -237,6 +261,20 @@ class FinAIWarehouse:
                 FROM clean_transactions
                 GROUP BY department
                 ORDER BY total_amount DESC
+            """)
+
+            # LAYER 4.1: Institutional Fact Summary (The "Golden Niche" Insight View)
+            self._conn.execute("""
+                CREATE OR REPLACE VIEW app_forensic_ledger_summary AS
+                SELECT
+                    period,
+                    business_unit,
+                    ifrs_line_item,
+                    SUM(amount_gel) as total_gel,
+                    SUM(amount_usd) as total_usd,
+                    AVG(confidence_score) as avg_confidence
+                FROM fact_financial_ledger
+                GROUP BY period, business_unit, ifrs_line_item
             """)
 
             logger.debug("Pipeline views created (clean → semantic → application)")

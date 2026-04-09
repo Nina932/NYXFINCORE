@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Any
 from app.database import get_db, AsyncSessionLocal
 from app.models.all_models import Report
+from app.models.marts import FactFinancialLedger
 from app.utils.excel_export import excel_exporter
 from app.services.job_manager import job_manager, compute_checksum
 from app.config import settings
@@ -225,3 +226,29 @@ async def get_export_job(job_id: str):
         "manifest": j.manifest,
         "error": j.error,
     }
+
+@router.get("/institutional-ledger")
+async def get_institutional_ledger(period: Optional[str] = None, db: AsyncSession = Depends(get_db)):
+    """Fetch forensic facts from the institutional ledger mart."""
+    query = select(FactFinancialLedger)
+    if period:
+        query = query.where(FactFinancialLedger.period == period)
+    
+    result = await db.execute(query.order_by(FactFinancialLedger.created_at.desc()))
+    facts = result.scalars().all()
+    
+    return [
+        {
+            "id": f.id,
+            "period": f.period,
+            "account_code": f.account_code,
+            "ifrs_line_item": f.ifrs_line_item,
+            "business_unit": f.business_unit,
+            "product_category": f.product_category,
+            "amount_gel": float(f.amount_gel or 0),
+            "amount_usd": float(f.amount_usd or 0),
+            "entry_type": f.entry_type,
+            "confidence_score": f.confidence_score,
+            "created_at": f.created_at.isoformat() if f.created_at else None
+        } for f in facts
+    ]

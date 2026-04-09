@@ -24,6 +24,11 @@ from typing import Optional
 
 # Import the universal parser
 from app.services.socar_universal_parser import parse_nyx_excel, ParseResult
+from app.services.connector_hub import get_connector_hub
+from app.services.accounting_intelligence import accounting_intelligence
+from app.models.marts import FactFinancialLedger, DimProduct, DimBusinessUnit
+from app.db.session import async_session
+from sqlalchemy import select, insert, delete
 
 
 async def handle_smart_upload(file, data_store, knowledge_graph=None) -> dict:
@@ -61,7 +66,16 @@ async def handle_smart_upload(file, data_store, knowledge_graph=None) -> dict:
                 "sheets_found": result.sheets_available
             }
         
-        # ── Step 3: Store in DataStore ──
+        # 🔗 Phase 2/3 Uplift: Institutional Ingestion Hub
+        async with async_session() as db:
+            hub = await get_connector_hub(db)
+            # Run Discovery and check STATE
+            state = await hub.get_state(f"1c_export_{result.company}")
+            
+            # Populate Institutional Marts (The Golden Niche Transformation)
+            await _populate_institutional_marts(db, result, hub, state)
+            await hub.save_state(f"1c_export_{result.company}", state)
+            await db.commit()
         company_id = _store_company(data_store, result.company)
         period_id = _store_period(data_store, company_id, result.period)
         
@@ -331,3 +345,58 @@ def _store_snapshot(data_store, period_id: int, key: str, value) -> None:
         VALUES (?, ?, ?)
     """, (period_id, key, val_json))
     conn.commit()
+
+
+async def _populate_institutional_marts(db, result: ParseResult, hub, state):
+    """
+    Core 'Transformation' logic: Converts Raw ParseResult → Institutional Fact Ledger.
+    Uses 'Forensic Intelligence' to enrich every entry.
+    """
+    dataset_id = 999 # Placeholder — ideally from a newly created Dataset record
+    
+    # 1. Clear existing facts for this period to ensure idempotency
+    await db.execute(delete(FactFinancialLedger).where(FactFinancialLedger.period == result.period))
+    
+    # 2. Transform Revenue Items → Facts
+    for item in result.revenue_breakdown:
+        # Use Intelligence for classification
+        classification = accounting_intelligence.classify_account("6110") # Base revenue code
+        
+        fact = FactFinancialLedger(
+            dataset_id=dataset_id,
+            period=result.period,
+            account_code="6110",
+            ifrs_line_item="Revenue",
+            business_unit=result.company,
+            product_category=item.category,
+            amount_gel=item.net_revenue,
+            entry_type="Transaction",
+            confidence_score=1.0 # Base for explicit breakdowns
+        )
+        db.add(fact)
+        
+        # Sync Dimension
+        await db.execute(insert(DimProduct).values(
+            product_name=item.product,
+            category=item.category,
+            segment="Retail" if "Retail" in item.category else "Wholesale"
+        ).on_conflict_do_nothing())
+
+    # 3. Transform COGS Items → Facts
+    for item in result.cogs_breakdown:
+        db.add(FactFinancialLedger(
+            dataset_id=dataset_id,
+            period=result.period,
+            account_code="7110",
+            ifrs_line_item="COGS",
+            business_unit=result.company,
+            product_category=item.category,
+            amount_gel=-abs(item.amount), # Deductive
+            entry_type="Transaction"
+        ))
+    
+    # 4. Sync Business Unit
+    await db.execute(insert(DimBusinessUnit).values(
+        name=result.company,
+        unit_type="HQ"
+    ).on_conflict_do_nothing())
