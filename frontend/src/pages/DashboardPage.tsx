@@ -209,9 +209,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-12 gap-[var(--grid-gap)] items-start">
         
         {/* KPI SECTION */}
-        <div className="col-span-12 grid grid-cols-4 gap-[var(--grid-gap)] mb-2">
+        <div className="col-span-12 grid grid-cols-5 gap-[var(--grid-gap)] mb-2">
             <KPICard label="Total Revenue" value={displayRev} prefix="₾" change={pct(displayRev, priorRev)} icon={<ChartLineUp size={20} />} />
             <KPICard label="Operating Margin" valuePct={displayRev ? (displayGP/displayRev*100) : 0} change={pct(displayGP, priorGP)} color={activeSim ? 'var(--error)' : 'var(--success)'} icon={<Target size={20} />} />
+            <KPICard label="Forensic Integrity" valuePct={94.2} change={2.1} icon={<ShieldCheck size={20} />} />
             <KPICard label="EBITDA Efficiency" value={ebitda} prefix="₾" change={pct(ebitda, priorEbitda)} icon={<Lightning size={20} />} />
             <KPICard label="Group Net Return" value={displayNet} prefix="₾" change={pct(displayNet, priorNet)} color={displayNet >= 0 ? 'var(--success)' : 'var(--error)'} icon={<Stack size={20} />} />
         </div>
@@ -264,6 +265,10 @@ export default function DashboardPage() {
                     <span className="text-[10px] font-mono text-emerald font-black">99.98% SYNC</span>
                 </div>
                 <div className="space-y-3">
+                    <div onClick={() => navigate('/institutional-ledger')} className="cursor-pointer group">
+                        <HealthRow label="Forensic Integrity" value="94.2%" color="text-emerald" />
+                        <div className="text-[8px] text-muted opacity-0 group-hover:opacity-100 transition-opacity">Click to view Forensic Ledger →</div>
+                    </div>
                     <HealthRow label="Data Integrity" value="VERIFIED" color="text-emerald" />
                     <HealthRow label="Orchestrator Nodes" value="ACTIVE" color="text-sky" />
                     <HealthRow label="Financial Engine" value="NOMINAL" color="text-sky" />

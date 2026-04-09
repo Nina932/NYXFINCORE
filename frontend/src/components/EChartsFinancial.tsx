@@ -498,3 +498,6 @@ export function CapitalHierarchyMap({ data }: { data: any[] }) {
 
   return <ReactECharts option={option} style={{ height: 220, width: '100%' }} />;
 }
+
+// Default export for generic ECharts usage
+export default ReactECharts;

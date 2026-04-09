@@ -49,6 +49,7 @@ import SensitivityPage from './pages/SensitivityPage';
 import SubledgerPage from './pages/SubledgerPage';
 import Company360Page from './pages/Company360Page';
 import LandingPage from './pages/LandingPage';
+import InstitutionalLedgerPage from './pages/InstitutionalLedgerPage';
 import React from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import { AnimatePresence } from 'framer-motion';
@@ -125,6 +126,7 @@ function App() {
               <Route path="/sensitivity" element={<ErrorBoundary compact fallbackTitle="Sensitivity"><SensitivityPage /></ErrorBoundary>} />
               <Route path="/subledger" element={<ErrorBoundary compact fallbackTitle="Sub-Ledger"><SubledgerPage /></ErrorBoundary>} />
               <Route path="/company-360" element={<ErrorBoundary compact fallbackTitle="Company 360"><Company360Page /></ErrorBoundary>} />
+              <Route path="/institutional-ledger" element={<ErrorBoundary compact fallbackTitle="Institutional Ledger"><InstitutionalLedgerPage /></ErrorBoundary>} />
               <Route path="/tools" element={<PlaceholderPage title="Tools" />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>

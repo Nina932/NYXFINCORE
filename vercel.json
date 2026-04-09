@@ -15,6 +15,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/flywheel/trigger-cycle",
+      "destination": "backend/main.py"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "backend/main.py"
     },
@@ -25,6 +29,12 @@
     {
       "source": "/(.*)",
       "destination": "frontend/$1"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/flywheel/trigger-cycle",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

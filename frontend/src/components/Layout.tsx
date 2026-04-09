@@ -34,6 +34,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: '/lineage', label: 'Data Lineage', icon: LinkSimpleHorizontal },
       { to: '/ontology', label: 'Ontology', icon: Pulse },
       { to: '/company-360', label: 'Company 360\u00B0', icon: Target },
+      { to: '/institutional-ledger', label: 'Forensic Marts', icon: ShieldCheck },
     ],
   },
   {
@@ -131,6 +132,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/eval': 'AI Evaluation',
   '/tools': 'Tools',
   '/subledger': 'Sub-Ledger Analysis',
+  '/institutional-ledger': 'Institutional Ledger',
 };
 
 /* ─── Context-aware suggestions per page ─── */
@@ -356,6 +358,15 @@ export default function Layout() {
         } catch (e) {
           console.warn('Failed to parse Agent Map Command:', e);
         }
+      }
+
+      // 1b. Parse __NAVIGATE_TO__ absolute control
+      const navRegex = /__NAVIGATE_TO__\/(\S+)/g;
+      let navMatch;
+      while ((navMatch = navRegex.exec(reply)) !== null) {
+        const path = `/${navMatch[1]}`;
+        setTimeout(() => navigate(path), 500);
+        cleanReply = cleanReply.replace(navMatch[0], '');
       }
 
       // 2. Parse and execute legacy ACTION commands from AI response
