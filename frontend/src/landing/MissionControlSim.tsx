@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Shield, Cpu, Activity, Zap, CheckCircle2, Database } from 'lucide-react';
+import NyxLogo from '../components/NyxLogo';
 
 interface TraceStep {
   agent: string;
@@ -13,7 +14,7 @@ const TRACE_STEPS: TraceStep[] = [
   { agent: 'Ingestion Controller', action: 'Extracting GL Data from sftp://1c-server/exports...', status: 'complete', icon: Database },
   { agent: 'Sovereign Auditor', action: 'Verifying VAT compliance on 12,402 transactions...', status: 'complete', icon: Shield },
   { agent: 'Logistics Intel', action: 'Cross-referencing Brent Crude @ $82.4 with BTC Pipeline flow rates...', status: 'complete', icon: Activity },
-  { agent: 'NYX Orchestrator', action: 'Synthesizing multi-vector risk map for Georgia-Turkey corridor...', status: 'active', icon: Cpu },
+  { agent: 'NYX Orchestrator', action: 'Synthesizing multi-vector risk map for Georgia-Turkey corridor...', status: 'active', icon: NyxLogo },
   { agent: 'Strategic Captain', action: 'Drafting executive mandate: Re-calibrate supply hedge by 14.2%...', status: 'pending', icon: Zap },
 ];
 
@@ -28,7 +29,7 @@ const MissionControlSim: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-4xl mx-auto glass-premium overflow-hidden border border-white/5 bg-black/40 shadow-2xl shadow-sky/10">
+    <div className="w-full max-w-4xl mx-auto glass-premium overflow-hidden border border-white/5 bg-bg0/40 shadow-2xl shadow-sky/10">
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/5">
         <div className="flex items-center gap-2">
@@ -70,7 +71,7 @@ const MissionControlSim: React.FC = () => {
                   {isComplete ? (
                     <CheckCircle2 className="w-4 h-4 text-emerald" />
                   ) : (
-                    <Icon className={`w-4 h-4 ${isActive ? 'animate-pulse' : 'opacity-40'}`} />
+                      <Icon size={16} className={`w-4 h-4 ${isActive ? 'animate-pulse' : 'opacity-40'}`} />
                   )}
                 </div>
 

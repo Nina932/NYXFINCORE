@@ -15,7 +15,8 @@ import {
   Network
 } from 'lucide-react';
 // Landing page is standalone — no react-router
-import MissionControlSim from '../components/marketing/MissionControlSim';
+import MissionControlSim from './MissionControlSim';
+import NyxLogo from '../components/NyxLogo';
 
 const LandingPage: React.FC = () => {
   const [requestSent, setRequestSent] = React.useState(false);
@@ -30,9 +31,7 @@ const LandingPage: React.FC = () => {
       {/* Premium Sticky Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 landing-nav flex items-center justify-between px-8">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-sky/20 border border-sky/30 flex items-center justify-center animate-pulse">
-            <Shield className="w-5 h-5 text-sky" />
-          </div>
+          <NyxLogo size={32} />
           <span className="font-bold text-xl tracking-tighter text-heading">NYX <span className="text-sky">CORE</span></span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-[10px] font-bold tracking-[0.2em] uppercase text-muted">
@@ -64,8 +63,8 @@ const LandingPage: React.FC = () => {
             <Zap className="w-3 h-3" /> Mission Critical Strategic Intelligence
           </div>
           <h1 className="text-5xl md:text-8xl font-black text-heading mb-8 tracking-tighter leading-[0.9]">
-            Autonomous <br /> 
-            <span className="text-glow-cyan">Financial Ops</span>
+            Sovereign <br /> 
+            <span className="text-glow-cyan">Strategic Intel</span>
           </h1>
           <p className="text-muted/80 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
             The industrial-grade digital twin for sovereign capital. 
@@ -245,9 +244,11 @@ const LandingPage: React.FC = () => {
             className="max-w-4xl mx-auto glass-premium p-16 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-sky/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <h2 className="text-4xl md:text-6xl font-bold text-heading mb-8">Ready to deploy?</h2>
+            <h2 className="text-4xl md:text-6xl font-bold text-heading mb-8">Sovereign Intelligence</h2>
             <p className="text-muted text-lg mb-12 max-w-xl mx-auto">
-              Join the institutional networks leveraging NYX CORE to redefine strategic operations and financial transparency.
+              The institutional-grade digital twin for sovereign capital. 
+              Real-time logistics, forensic auditing, and cross-border 
+              intelligence for mission-critical operations.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <button 
@@ -302,7 +303,7 @@ const LandingPage: React.FC = () => {
                   className="p-8 rounded-lg bg-emerald/10 border border-emerald/30 text-emerald text-sm font-medium"
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Shield className="w-4 h-4" /> REQUEST LOGGED
+                    <NyxLogo size={16} /> REQUEST LOGGED
                   </div>
                   System verification in progress. Our team will contact you shortly.
                 </motion.div>
