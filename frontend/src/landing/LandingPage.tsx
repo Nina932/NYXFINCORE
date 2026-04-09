@@ -174,19 +174,19 @@ const LandingPage: React.FC = () => {
             
             {[
               { 
-                step: '01', icon: <Database />, title: '📥 STRATEGIC INGESTION', color: 'sky',
+                step: '01', icon: Database, title: '📥 STRATEGIC INGESTION', color: 'sky',
                 desc: 'Consolidate 100+ sources including SAP, 1C, and Bank APIs into a secure, sovereign Lake Space.'
               },
               { 
-                step: '02', icon: <Cpu />, title: '🔄 PROCESSING ENGINE', color: 'violet-400',
+                step: '02', icon: Cpu, title: '🔄 PROCESSING ENGINE', color: 'violet-400',
                 desc: 'Auto-schema detection and AI-powered ETL transforms raw logistics data into actionable financial models.'
               },
               { 
-                step: '03', icon: <Network />, title: '⚙️ INTELLIGENCE LAYER', color: 'emerald',
+                step: '03', icon: Network, title: '⚙️ INTELLIGENCE LAYER', color: 'emerald',
                 desc: 'Agentic SQL Mind generates complex reports, detects variances, and performs forensic audits in seconds.'
               },
               { 
-                step: '04', icon: <Zap />, title: '📊 STRATEGIC COMMAND', color: 'gold',
+                step: '04', icon: Zap, title: '📊 STRATEGIC COMMAND', color: 'gold',
                 desc: 'Final tactical insights delivered via browser-based HUD, Mobile, or direct API writeback.'
               }
             ].map((item, i) => (
@@ -199,7 +199,7 @@ const LandingPage: React.FC = () => {
               >
                 <div className="text-4xl font-black text-white/5 absolute top-4 right-4">{item.step}</div>
                 <div className={`w-12 h-12 rounded bg-white/5 flex items-center justify-center text-sky border border-white/10 group-hover:scale-110 transition-transform`}>
-                  {React.cloneElement(item.icon as React.ReactElement, { className: 'w-6 h-6' })}
+                  <item.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-sm font-bold text-heading tracking-widest uppercase">{item.title}</h3>
                 <p className="text-xs text-muted leading-relaxed font-medium">
@@ -303,17 +303,17 @@ const LandingPage: React.FC = () => {
             {[
               {
                 title: 'Forensic Audit & Anti-Fraud',
-                icon: <Shield />,
+                icon: Shield,
                 desc: 'Real-time analysis of 1C and SAP ledgers to detect invoice anomalies, tax variances, and unauthorized reversals across regional territories.'
               },
               {
                 title: 'Cross-Border Supply Chain AI',
-                icon: <Globe />,
+                icon: Globe,
                 desc: 'Global logistics tracking of fuel shipments, container vessels, and port inventory with predictive risk scoring for geopolitical volatility.'
               },
               {
                 title: 'Executive Liquidity Pulse',
-                icon: <BarChart3 />,
+                icon: BarChart3,
                 desc: 'Consolidated CFO-level visibility into group-wide cash positions, debt structure, and real-time revenue performance in Georgia and beyond.'
               }
             ].map((useCase, i) => (
@@ -323,7 +323,7 @@ const LandingPage: React.FC = () => {
                 className="glass-premium p-10 flex flex-col gap-6 border border-white/5"
               >
                 <div className="w-14 h-14 rounded-xl bg-sky/10 border border-sky/30 flex items-center justify-center text-sky">
-                  {React.cloneElement(useCase.icon as React.ReactElement, { className: 'w-7 h-7' })}
+                  <useCase.icon className="w-7 h-7" />
                 </div>
                 <h3 className="text-xl font-bold text-heading">{useCase.title}</h3>
                 <p className="text-sm text-muted leading-relaxed">{useCase.desc}</p>
