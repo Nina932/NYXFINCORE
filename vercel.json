@@ -23,10 +23,6 @@
       "destination": "backend/main.py"
     },
     {
-      "source": "/app/(.*)",
-      "destination": "/app/index.html"
-    },
-    {
       "source": "/(.*)",
       "destination": "/$1"
     }
