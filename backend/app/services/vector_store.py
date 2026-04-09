@@ -34,6 +34,16 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+# Modular LlamaIndex imports
+try:
+    from llama_index.core import VectorStoreIndex, StorageContext, Document, QueryBundle
+    from llama_index.vector_stores.postgres import PostgresVectorStore
+    from llama_index.embeddings.openai import OpenAIEmbedding
+    HAS_LLAMA = True
+except ImportError:
+    HAS_LLAMA = False
+    logger.warning("LlamaIndex modular packages not found. Falling back to SQL search.")
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # FINANCIAL DOMAIN RULES
@@ -145,105 +155,76 @@ class VectorStoreService:
 
     Indexes financial records, domain rules, and agent memories so that
     the agent can retrieve relevant context before answering questions.
-    Tries LlamaIndex + ChromaDB for advanced RAG; falls back to ChromaDB only;
-    falls back to SQL keyword matching when ChromaDB is not installed.
+    Uses LlamaIndex + PostgresVectorStore (pgvector) on Neon for
+    institutional-grade semantic search without the 500MB Vercel limit.
     """
 
     # ── construction ──────────────────────────────────────────────────────
 
     def __init__(self) -> None:
-        self.collection_name: str = "finai_knowledge"
+        self.table_name: str = "vector_store"
+        self.schema_name: str = "public"
         self.is_initialized: bool = False
-
-        # Attempt LlamaIndex + ChromaDB import
-        try:
-            from llama_index.core import VectorStoreIndex, StorageContext
-            from llama_index.vector_stores.chroma import ChromaVectorStore
-            import chromadb
-            self._llamaindex = True
-            self._chromadb = chromadb
-            self._llama_index = None
-            self._storage_context = None
-            self._client = chromadb.PersistentClient(path="./data/chromadb")
-            self._collection = None
-            logger.info("LlamaIndex + ChromaDB initialized")
-        except ImportError as exc:
-            logger.warning("LlamaIndex not available (%s) — trying ChromaDB only", exc)
+        
+        self._llamaindex = HAS_LLAMA
+        self._index = None
+        self._vector_store = None
+        
+        # Prepare connection strings
+        # LlamaIndex PostgresVectorStore needs:
+        # 1. postgresql://... for psycopg2 (sync/DDL)
+        # 2. postgresql+asyncpg://... for asyncpg (async queries)
+        raw_url = settings.DATABASE_URL
+        if "sqlite" in raw_url:
             self._llamaindex = False
-            # Attempt ChromaDB only
-            try:
-                import chromadb
-                self._chromadb = chromadb
-                self._client = chromadb.PersistentClient(path="./data/chromadb")
-                self._collection = None
-                logger.info("ChromaDB client created (no LlamaIndex)")
-            except ImportError:
-                self._chromadb = None
-                self._client = None
-                self._collection = None
-                logger.info("ChromaDB not available — using text search fallback")
-            except Exception as exc:
-                self._chromadb = None
-                self._client = None
-                self._collection = None
-                logger.warning("ChromaDB initialization failed (%s) — using text search fallback", exc)
-        except Exception as exc:
-            logger.warning("LlamaIndex + ChromaDB initialization failed (%s) — falling back", exc)
-            self._llamaindex = False
-            self._chromadb = None
-            self._client = None
-            self._collection = None
+            logger.info("SQLite detected: Vector search disabled (needs PostgreSQL/pgvector)")
+        else:
+            # Convert async url to sync for DDL
+            self.sync_url = raw_url.replace("+asyncpg", "")
+            self.async_url = raw_url if "+asyncpg" in raw_url else raw_url.replace("postgresql://", "postgresql+asyncpg://")
+            logger.info("VectorStore service created with Postgres (pgvector) backend")
 
     # ── initialisation ────────────────────────────────────────────────────
 
     async def initialize(self) -> None:
         """
-        Prepare the underlying store. Safe to call multiple times.
+        Prepare PGVectorStore and OpenAI Embeddings. Safe to call multiple times.
         """
-        if self.is_initialized:
+        if self.is_initialized or not self._llamaindex:
             return
 
-        if self._llamaindex and self._client is not None:
-            try:
-                from llama_index.core import VectorStoreIndex, StorageContext
-                from llama_index.vector_stores.chroma import ChromaVectorStore
-
-                chroma_store = ChromaVectorStore(chroma_collection=self._client.get_or_create_collection(
-                    name=self.collection_name,
-                    metadata={"hnsw:space": "cosine"},
-                ))
-                self._storage_context = StorageContext.from_defaults(vector_store=chroma_store)
-                self._llama_index = VectorStoreIndex.from_documents([], storage_context=self._storage_context)
-                logger.info("VectorStore initialized (mode: llamaindex+chromadb)")
-            except Exception as exc:
-                logger.warning("LlamaIndex initialization failed (%s) — falling back to ChromaDB", exc)
-                self._llamaindex = False
-                self._setup_chromadb_only()
-        elif self._chromadb and self._client is not None:
-            self._setup_chromadb_only()
-        else:
-            logger.info("VectorStore initialized (mode: text_search)")
-
-        self.is_initialized = True
-
-    def _setup_chromadb_only(self) -> None:
-        """Setup ChromaDB without LlamaIndex."""
         try:
-            self._collection = self._client.get_or_create_collection(
-                name=self.collection_name,
-                metadata={"hnsw:space": "cosine"},
+            # Use OpenAI for "Thin" embeddings (avoids massive local model downloads)
+            from llama_index.core import Settings
+            # text-embedding-3-small is the modern, high-efficiency standard
+            Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+            
+            # Setup Postgres Vector Store
+            self._vector_store = PostgresVectorStore.from_params(
+                host=None, # Parsed from connection string
+                port=None,
+                database=None,
+                user=None,
+                password=None,
+                table_name=self.table_name,
+                schema_name=self.schema_name,
+                connection_string=self.sync_url,
+                async_connection_string=self.async_url,
+                embed_dim=1536, # OpenAI small embedding dimension
+                perform_setup=True, # Will CREATE TABLE if missing
+                debug=settings.DEBUG
             )
-            logger.info(
-                "VectorStore initialized (mode: chromadb, collection: %s, docs: %d)",
-                self.collection_name,
-                self._collection.count(),
-            )
+            
+            storage_context = StorageContext.from_defaults(vector_store=self._vector_store)
+            # Initialize an empty index (will load existing from DB)
+            self._index = VectorStoreIndex.from_documents([], storage_context=storage_context)
+            
+            logger.info("VectorStore initialized (mode: pgvector + openai)")
+            self.is_initialized = True
         except Exception as exc:
-            logger.warning(
-                "ChromaDB collection init failed (%s) — falling back to text search",
-                exc,
-            )
-            self._collection = None
+            logger.error("Failed to initialize PostgresVectorStore: %s", exc)
+            self._llamaindex = False
+            self.is_initialized = True
 
     # ══════════════════════════════════════════════════════════════════════
     #  INDEXING
@@ -320,7 +301,6 @@ class VectorStoreService:
 
             # Create LlamaIndex document if available
             if self._llamaindex:
-                from llama_index.core import Document
                 llama_doc = Document(
                     text=content,
                     metadata={
@@ -453,25 +433,21 @@ class VectorStoreService:
         # ── persist to FinancialDocument table (always) ───────────────────
         await self._save_documents_to_db(documents, dataset_id, db)
 
-        # ── persist to LlamaIndex + ChromaDB (if available) ───────────────
-        if self._llamaindex and self._llama_index is not None and llama_documents:
+        # ── persist to LlamaIndex + PGVectorStore (if available) ───────────
+        if self._llamaindex and self._index is not None and llama_documents:
             try:
                 for doc in llama_documents:
-                    self._llama_index.insert(doc)
-                logger.info("Indexed %d documents into LlamaIndex", len(llama_documents))
+                    self._index.insert(doc)
+                logger.info("Indexed %d documents into PGVectorStore", len(llama_documents))
             except Exception as exc:
-                logger.warning("LlamaIndex indexing failed (%s) — continuing", exc)
-
-        # ── persist to ChromaDB only (fallback) ───────────────────────────
-        elif self._chromadb and self._collection is not None:
-            await self._add_to_chromadb(documents, dataset_id)
+                logger.warning("PGVectorStore indexing failed (%s) — continuing", exc)
 
         total = len(documents)
         logger.info(
             "index_dataset: indexed %d documents for dataset %d (mode: %s)",
             total,
             dataset_id,
-            "llamaindex" if self._llamaindex else "chromadb" if self._chromadb else "text_search",
+            "pgvector" if self._llamaindex else "text_search",
         )
         return {"indexed": total, "dataset_id": dataset_id}
 
@@ -496,50 +472,19 @@ class VectorStoreService:
         source = "knowledge_graph" if len(rules) > len(FINANCIAL_RULES) else "legacy"
 
         # ── LlamaIndex path (preferred) ───────────────────────────────────
-        if self._llamaindex and self._llama_index is not None:
+        if self._llamaindex and self._index is not None:
             try:
                 from app.services.knowledge_graph import knowledge_graph
                 llama_docs = knowledge_graph.get_all_llamaindex_documents()
                 if llama_docs:
                     for doc in llama_docs:
-                        self._llama_index.insert(doc)
-                    logger.info("Indexed %d knowledge graph documents into LlamaIndex", len(llama_docs))
-                    return {"indexed": len(llama_docs), "source": "llamaindex"}
+                        self._index.insert(doc)
+                    logger.info("Indexed %d knowledge graph documents into PGVectorStore", len(llama_docs))
+                    return {"indexed": len(llama_docs), "source": "pgvector"}
             except Exception as exc:
-                logger.warning("LlamaIndex knowledge graph indexing failed (%s) — falling back", exc)
+                logger.warning("PGVectorStore knowledge graph indexing failed (%s) — falling back", exc)
 
-        # ── ChromaDB path ─────────────────────────────────────────────────
-        if self._chromadb and self._collection is not None:
-            ids: List[str] = []
-            contents: List[str] = []
-            metadatas: List[Dict[str, Any]] = []
-
-            for rule in rules:
-                doc_id = f"rule_{rule['rule_id']}"
-                ids.append(doc_id)
-                contents.append(rule["content"])
-                metadatas.append({
-                    "source": "financial_rule",
-                    "document_type": rule["doc_type"],
-                    "rule_id": rule["rule_id"],
-                })
-
-            # ChromaDB batch limit
-            batch_size = 5000
-            for start in range(0, len(ids), batch_size):
-                end = start + batch_size
-                try:
-                    self._collection.upsert(
-                        ids=ids[start:end],
-                        documents=contents[start:end],
-                        metadatas=metadatas[start:end],
-                    )
-                except Exception as exc:
-                    logger.error(
-                        "Failed to index financial rules in ChromaDB (batch %d-%d): %s",
-                        start, end, exc,
-                    )
-                    return {"indexed": 0, "error": str(exc)}
+        # ── Note: ChromaDB path removed for 'Thin-Client' architecture ──
 
         count = len(rules)
         logger.info(
@@ -602,19 +547,21 @@ class VectorStoreService:
                 except Exception:
                     pass
 
-        # ── ChromaDB ──────────────────────────────────────────────────────
-        if self._chromadb is not None and self._collection is not None:
-            ids = [f"memory_{d['metadata']['entity_id']}" for d in documents]
-            contents = [d["content"] for d in documents]
-            metadatas = [d["metadata"] for d in documents]
+        # ── LlamaIndex path (preferred) ───────────────────────────────────
+        if self._llamaindex and self._index is not None:
             try:
-                self._collection.upsert(
-                    ids=ids,
-                    documents=contents,
-                    metadatas=metadatas,
-                )
+                # Add memories to PGVectorStore
+                for doc in documents:
+                    # Create LlamaIndex Document for each memory
+                    from llama_index.core import Document as LlamaDoc
+                    l_doc = LlamaDoc(
+                        text=doc["content"],
+                        metadata=doc["metadata"]
+                    )
+                    self._index.insert(l_doc)
+                logger.info("Indexed %d memories into PGVectorStore", len(documents))
             except Exception as exc:
-                logger.error("Failed to index agent memories in ChromaDB: %s", exc)
+                logger.warning("PGVectorStore memory indexing failed (%s) — continuing", exc)
 
         # ── FinancialDocument table (text search fallback) ────────────────
         await self._save_documents_to_db(documents, dataset_id=None, db=db)
@@ -672,43 +619,33 @@ class VectorStoreService:
         """
         Search the knowledge store for documents relevant to *query*.
 
-        Args:
-            query:     Natural-language search string.
-            n_results: Maximum number of results to return.
-            filters:   Optional metadata filters (ChromaDB ``where`` clause).
-
         Returns:
-            List of ``{"content", "score", "metadata", "source"}`` dicts
-            sorted by relevance (highest score first).
+            List of {"content", "score", "metadata", "source"} dicts.
         """
         await self.initialize()
 
         if not query or not query.strip():
             return []
 
-        # ── LlamaIndex path (preferred) ───────────────────────────────────
-        if self._llamaindex and self._llama_index is not None:
+        # ── PGVectorStore path ─────────────────────────────────────────────
+        if self._llamaindex and self._index is not None:
             try:
-                from llama_index.core import QueryBundle
                 query_bundle = QueryBundle(query_str=query)
-                retriever = self._llama_index.as_retriever(similarity_top_k=n_results)
-                results = retriever.retrieve(query_bundle)
+                retriever = self._index.as_retriever(similarity_top_k=n_results)
+                # Use async retrieve for better performance in FastAPI
+                nodes = await retriever.aretrieve(query_bundle)
 
                 formatted_results = []
-                for node in results:
+                for node in nodes:
                     formatted_results.append({
                         "content": node.node.text,
                         "score": node.score,
                         "metadata": node.node.metadata,
-                        "source": "llamaindex"
+                        "source": "pgvector"
                     })
                 return formatted_results
             except Exception as exc:
-                logger.warning("LlamaIndex search failed (%s) — falling back to ChromaDB", exc)
-
-        # ── ChromaDB path ─────────────────────────────────────────────────
-        if self._chromadb and self._collection is not None:
-            return await self._search_chromadb(query, n_results, filters)
+                logger.warning("PGVectorStore search failed (%s) — falling back to text search", exc)
 
         # ── Text-search fallback ──────────────────────────────────────────
         return await self._search_text_fallback(query, n_results)
@@ -784,7 +721,7 @@ class VectorStoreService:
                 context_parts.append(kg_context)
 
             # ── Vector store / text search ─────────────────────────────
-            if self._chromadb is None or self._collection is None:
+            if not self._llamaindex or self._index is None:
                 results = await self._search_text_fallback_with_db(query, n_results, db)
             else:
                 results = await self.search(query, n_results=n_results)
@@ -1247,6 +1184,11 @@ class VectorStoreService:
         if not query or not query.strip():
             return []
 
+        # ── Note: Unified search is now handled by the LlamaIndex PGVectorStore retriever ──
+        # This legacy method is kept for signature compatibility but redirected.
+        if self._llamaindex and self._index is not None:
+            return await self.search(query, n_results=n_results)
+
         target_collections = collections or [self.collection_name, "finai_documents"]
         all_results: List[Dict[str, Any]] = []
         seen_contents: set = set()
@@ -1303,42 +1245,19 @@ class VectorStoreService:
 
     def get_store_stats(self) -> Dict[str, Any]:
         """Return statistics about the vector store."""
-        stats: Dict[str, Any] = {
-            "mode": "llamaindex" if self._llamaindex else "chromadb" if self._chromadb else "text_search",
+        return {
+            "mode": "pgvector" if self._llamaindex else "text_search",
             "initialized": self.is_initialized,
-            "collections": {},
+            "backend": "Neon Postgres" if self._llamaindex else "None",
+            "table": self.table_name
         }
-
-        if self._chromadb and self._client is not None:
-            try:
-                for coll_name in [self.collection_name, "finai_documents"]:
-                    try:
-                        coll = self._client.get_or_create_collection(name=coll_name)
-                        stats["collections"][coll_name] = {
-                            "count": coll.count(),
-                        }
-                    except Exception:
-                        stats["collections"][coll_name] = {"count": 0, "error": "unavailable"}
-            except Exception as exc:
-                stats["error"] = str(exc)
-
-        return stats
 
     @staticmethod
     def _sanitise_metadata(meta: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Ensure all metadata values are ChromaDB-compatible primitives
-        (str, int, float, bool).  Non-primitive values are JSON-serialised.
+        No-op for Postgres store which handles JSONB natively.
         """
-        clean: Dict[str, Any] = {}
-        for key, value in meta.items():
-            if isinstance(value, (str, int, float, bool)):
-                clean[key] = value
-            elif value is None:
-                clean[key] = ""
-            else:
-                clean[key] = json.dumps(value, default=str)
-        return clean
+        return meta
 
 
     # ══════════════════════════════════════════════════════════════════════
@@ -1439,41 +1358,26 @@ class VectorStoreService:
         Returns list of ``{"content", "score", "metadata"}`` dicts.
         Falls back to keyword search in FinancialDocument table if ChromaDB unavailable.
         """
-        await self.initialize()
-
-        if not query:
-            return []
-
-        # ── ChromaDB semantic search ───────────────────────────────────────
-        if self._chromadb and self._client is not None:
+        # ── pgvector semantic search ───────────────────────────────────────
+        if self._llamaindex and self._index is not None:
             try:
-                doc_collection = self._client.get_or_create_collection(
-                    name=collection_name,
-                    metadata={"hnsw:space": "cosine"},
-                )
-                if doc_collection.count() == 0:
-                    # No ChromaDB docs yet — fall through to DB fallback below
-                    raise ValueError("empty collection")
-
-                results = doc_collection.query(
-                    query_texts=[query],
-                    n_results=min(n_results, doc_collection.count()),
-                )
-
+                retriever = self._index.as_retriever(similarity_top_k=n_results)
+                results = retriever.retrieve(query)
+                
                 formatted = []
-                docs = results.get("documents", [[]])[0]
-                metas = results.get("metadatas", [[]])[0]
-                dists = results.get("distances", [[]])[0]
-                for doc, meta, dist in zip(docs, metas, dists):
+                for node in results:
+                    # Filter by logical collection if specified
+                    if collection_name and node.node.metadata.get("collection") != collection_name:
+                        continue
+                        
                     formatted.append({
-                        "content": doc,
-                        "score": max(0.0, 1.0 - dist),
-                        "metadata": meta or {},
+                        "content": node.node.text,
+                        "score": node.score,
+                        "metadata": node.node.metadata,
                     })
                 return formatted
-
             except Exception as exc:
-                logger.warning("Document ChromaDB search failed: %s", exc)
+                logger.warning("Document pgvector search failed: %s", exc)
 
         # ── DB keyword-search fallback ─────────────────────────────────────
         if db is not None:
@@ -1526,24 +1430,22 @@ class VectorStoreService:
 
         Returns number of chunks removed.
         """
-        # Remove from ChromaDB
+        # Remove from PGVectorStore
         removed = 0
-        if self._chromadb and self._client is not None:
+        if self._llamaindex and self._index is not None:
             try:
-                doc_collection = self._client.get_or_create_collection(
-                    name=collection_name,
-                    metadata={"hnsw:space": "cosine"},
-                )
-                # Get IDs matching this document
-                results = doc_collection.get(
-                    where={"document_id": document_id},
-                )
-                ids_to_delete = results.get("ids", [])
-                if ids_to_delete:
-                    doc_collection.delete(ids=ids_to_delete)
-                    removed = len(ids_to_delete)
+                # Standard LlamaIndex PGVectorStore deletion by metadata
+                # Note: This requires the vector store implementation to supported filtered deletion
+                # or we delete from the underlying table directly if needed.
+                # For safety and reliability, we remove from the underlying vector table.
+                await db.execute(text(
+                    f"DELETE FROM {self.schema_name}.{self.table_name} "
+                    "WHERE (metadata_->>'document_id')::text = :doc_id"
+                ), {"doc_id": str(document_id)})
+                await db.flush()
+                logger.info("Deleted chunks for document %d from PGVectorStore", document_id)
             except Exception as exc:
-                logger.warning("Failed to delete chunks from ChromaDB: %s", exc)
+                logger.warning("Failed to delete chunks from PGVectorStore: %s", exc)
 
         # Remove from FinancialDocument table
         try:
