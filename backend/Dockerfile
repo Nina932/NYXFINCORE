@@ -42,18 +42,11 @@ ENV APP_ENV=production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD python -c "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"
 
+# Make startup script executable
+RUN chmod +x start_production.sh
+
 # Expose port
 EXPOSE 8000
 
-# Start with Gunicorn + Uvicorn workers (production)
-CMD ["gunicorn", "main:app", \
-     "--worker-class", "uvicorn.workers.UvicornWorker", \
-     "--workers", "4", \
-     "--bind", "0.0.0.0:8000", \
-     "--timeout", "120", \
-     "--graceful-timeout", "30", \
-     "--max-requests", "1000", \
-     "--max-requests-jitter", "100", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--log-level", "info"]
+# Start with automated migrations
+CMD ["./start_production.sh"]
