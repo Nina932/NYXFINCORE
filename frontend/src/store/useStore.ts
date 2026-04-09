@@ -108,6 +108,12 @@ export interface FinAIState {
   doc_type: string | null;  // 'trial_balance' | 'pnl_report' | null
   account_classifications: Record<string, unknown>[] | null;
   classification_summary: Record<string, unknown> | null;
+  
+  // Institutional Marts
+  fact_ledger: any[];
+  setFactLedger: (facts: any[]) => void;
+  fetchInstitutionalLedger: (period?: string) => Promise<void>;
+  triggerWriteback: (anomalies: any[]) => Promise<any>;
 
   // UI state
   lang: 'en' | 'ka';
@@ -157,6 +163,7 @@ const EMPTY_STATE = {
   doc_type: null,
   account_classifications: null,
   classification_summary: null,
+  fact_ledger: [] as any[],
   isLoading: false,
   error: null,
 };
@@ -307,6 +314,31 @@ export const useStore = create<FinAIState>((set, get) => ({
   setAlerts: (alerts) => set({ alerts }),
   setOrchestrator: (data) => set({ orchestrator: data }),
   setIntelligence: (data) => set({ intelligence: data }),
+  setFactLedger: (fact_ledger) => set({ fact_ledger }),
+  
+  fetchInstitutionalLedger: async () => {
+    set({ isLoading: true });
+    try {
+      const { api } = await import('../api/client');
+      const data = await api.getInstitutionalLedger();
+      set({ fact_ledger: data || [] });
+    } catch (err) {
+      console.error('Failed to fetch ledger:', err);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  triggerWriteback: async (anomalies: any[]) => {
+    try {
+      const { api } = await import('../api/client');
+      await api.postWriteback(anomalies);
+    } catch (err) {
+      console.error('Writeback failed:', err);
+      throw err;
+    }
+  },
+
   setLang: (lang) => {
     set({ lang });
     setTranslationLang(lang);
