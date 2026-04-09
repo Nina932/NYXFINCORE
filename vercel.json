@@ -24,7 +24,11 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/$1"
+      "destination": "frontend/$1"
+    },
+    {
+      "source": "/",
+      "destination": "frontend/index.html"
     }
   ],
   "crons": [
