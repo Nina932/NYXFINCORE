@@ -209,12 +209,26 @@ async def eia_inventories(user=Depends(get_optional_user)):
 @router.get("/logistics/benchmark", summary="Deep comparison between two major operators")
 async def benchmark_competitors(target_a: str, target_b: str, user=Depends(get_optional_user)):
     """
-    Compares two competitors (e.g., SOCAR vs Rompetrol) on sourcing, 
+    Compares two competitors (e.g., SOCAR vs Rompetrol) on sourcing,
     logistics margins, and supply resilience.
     """
     try:
         from app.services.logistics_intelligence_service import logistics_intelligence
         data = await logistics_intelligence.benchmark_competitors(target_a, target_b)
+        return _serialise(data)
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/logistics/competitor-prices", summary="All competitor retail fuel prices")
+async def competitor_prices_summary(user=Depends(get_optional_user)):
+    """
+    Comprehensive pricing comparison for all Georgian fuel market competitors.
+    Includes retail prices (GEL/L), station counts, market shares, and primary suppliers.
+    """
+    try:
+        from app.services.logistics_intelligence_service import logistics_intelligence
+        data = await logistics_intelligence.get_competitor_prices_summary()
         return _serialise(data)
     except Exception as e:
         return {"error": str(e)}

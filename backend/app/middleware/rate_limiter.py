@@ -152,12 +152,14 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
                 "Rate limit exceeded: ip=%s path=%s limit=%d/%ds",
                 client_ip, path[:80], max_requests, window,
             )
+            from app.errors import build_error_dict
             return JSONResponse(
                 status_code=429,
-                content={
-                    "detail": "Too many requests. Please slow down.",
-                    "retry_after": window,
-                },
+                content=build_error_dict(
+                    detail="Too many requests. Please slow down.",
+                    error_code="RATE_LIMITED",
+                    path=path,
+                ),
                 headers={
                     "Retry-After": str(window),
                     "X-RateLimit-Limit": str(max_requests),

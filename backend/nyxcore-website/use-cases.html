@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore real-world applications of NYX Core FinAI - from financial automation to fraud detection and AI-powered insights.">
+  <meta name="theme-color" content="#000000">
+  <title>Use Cases | NYX Core FinAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #00050D;
+      --card: rgba(10,22,40,0.7);
+      --border: rgba(255,255,255,0.1);
+      --accent: #4fd1c5;
+      --emerald: #10b981;
+      --purple: #863bff;
+      --text-primary: #fff;
+      --text-secondary: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(0, 5, 13, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+    }
+
+    nav .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    nav .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    nav .logo-core {
+      color: #00E5FF;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    .btn-cta {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.625rem 1.5rem;
+      border-radius: 100px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(79, 209, 197, 0.2);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      margin-top: 80px;
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(79, 209, 197, 0.08), rgba(99, 102, 241, 0.08));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(79, 209, 197, 0.15);
+      border: 1px solid rgba(79, 209, 197, 0.3);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .hero-section h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+    }
+
+    /* Use Cases Grid */
+    .use-cases-section {
+      padding: 60px 0;
+    }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      margin: 60px 0;
+    }
+
+    .use-case-card {
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .use-case-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(79, 209, 197, 0.3);
+      transform: translateY(-10px);
+    }
+
+    .use-case-badge {
+      display: inline-flex;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .use-case-badge.teal { background: rgba(79, 209, 197, 0.2); color: var(--accent); }
+    .use-case-badge.purple { background: rgba(134, 59, 255, 0.2); color: var(--purple); }
+    .use-case-badge.amber { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .use-case-badge.emerald { background: rgba(16, 185, 129, 0.2); color: var(--emerald); }
+    .use-case-badge.blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .use-case-badge.rose { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
+
+    .use-case-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .use-case-card > p:first-of-type {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .use-case-benefits {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .use-case-benefits li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .use-case-benefits li::before {
+      content: "✓";
+      color: var(--accent);
+      font-weight: 700;
+      min-width: 18px;
+    }
+
+    .use-case-card a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      transition: gap 0.2s ease;
+    }
+
+    .use-case-card a:hover {
+      gap: 10px;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      padding: 80px 0;
+      background: linear-gradient(180deg, rgba(79, 209, 197, 0.02), rgba(99, 102, 241, 0.02));
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(79, 209, 197, 0.15);
+      border: 1px solid rgba(79, 209, 197, 0.3);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .section-header p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .step-item {
+      position: relative;
+      text-align: center;
+    }
+
+    .step-item::after {
+      content: "→";
+      position: absolute;
+      right: -24px;
+      top: 30px;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .step-item:last-child::after {
+      display: none;
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent), rgba(79, 209, 197, 0.6));
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--bg);
+    }
+
+    .step-item h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .step-item p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Screenshot Showcase */
+    .screenshot-showcase { margin-top: 2rem; }
+    .screenshot-frame {
+      background: #070a10;
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0, 229, 255, 0.08), 0 0 1px rgba(0, 229, 255, 0.3);
+    }
+    .screenshot-dots {
+      display: flex; gap: 6px; padding: 12px 16px;
+      background: #050810; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .screenshot-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+    .screenshot-dots span:first-child { background: #ff5f57; }
+    .screenshot-dots span:nth-child(2) { background: #febc2e; }
+    .screenshot-dots span:last-child { background: #28c840; }
+    .screenshot-frame img { width: 100%; height: auto; display: block; }
+    .screenshot-caption {
+      text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem;
+      margin-top: 1rem; font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Dashboard Section */
+    .dashboard-section {
+      padding: 80px 0;
+    }
+
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .dashboard-mockup {
+      background: #0c1220;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .dashboard-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #0a0e18;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dashboard-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dashboard-dot:nth-child(1) { background: #ff5f57; }
+    .dashboard-dot:nth-child(2) { background: #ffbd2e; }
+    .dashboard-dot:nth-child(3) { background: #28c940; }
+
+    .dashboard-content {
+      padding: 28px;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .kpi-change {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .kpi-change.positive { color: #22c55e; }
+    .kpi-change.negative { color: #ef4444; }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    .chart-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .chart-title {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 140px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 60px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(79, 209, 197, 0.08), rgba(99, 102, 241, 0.08));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      margin: 80px 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .cta-section h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .cta-section p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #3ab8ad);
+      color: var(--bg);
+      padding: 12px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(79, 209, 197, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      padding: 12px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 100px;
+      border: 1px solid rgba(79, 209, 197, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(79, 209, 197, 0.1);
+      border-color: rgba(79, 209, 197, 0.6);
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 22, 40, 0.5);
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .footer-section p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Fade Up Animation */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .step-item::after {
+        display: none;
+      }
+
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .use-cases-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav .nav-links {
+        display: none;
+      }
+
+      .hero-section h1 {
+        font-size: 1.8rem;
+      }
+
+      .use-cases-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-row {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-section {
+        padding: 40px 24px;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Enhanced Animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+
+    .screenshot-frame { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease; }
+    .screenshot-frame:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 100px rgba(0, 229, 255, 0.18), 0 0 2px rgba(0, 229, 255, 0.6); }
+
+    @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); } 50% { box-shadow: 0 0 40px rgba(0, 229, 255, 0.25); } }
+    .screenshot-frame { animation: glow-pulse 4s ease-in-out infinite; }
+
+    .use-case-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo-section">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:72px;height:72px"><defs><filter id="ng" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b1"/><feGaussianBlur stdDeviation="12" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g stroke="#1E3D5A" stroke-width="0.7" fill="none" opacity="0.3"><polygon points="91,74.4 82,90 64,90 55,74.4 64,58.8 82,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" repeatCount="indefinite"/></polygon><polygon points="118,58.8 109,74.4 91,74.4 82,58.8 91,43.2 109,43.2"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="118,90 109,105.6 91,105.6 82,90 91,74.4 109,74.4"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1s" repeatCount="indefinite"/></polygon><polygon points="118,121.2 109,136.8 91,136.8 82,121.2 91,105.6 109,105.6"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1.5s" repeatCount="indefinite"/></polygon><polygon points="145,74.4 136,90 118,90 109,74.4 118,58.8 136,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2s" repeatCount="indefinite"/></polygon><polygon points="145,105.6 136,121.2 118,121.2 109,105.6 118,90 136,90"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2.5s" repeatCount="indefinite"/></polygon></g><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" fill="#00C8FF" opacity="0.04"/><polygon points="100,30 150,60 150,120 100,150 50,120 50,60" stroke="#00E5FF" stroke-width="1" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.3;0" dur="3s" repeatCount="indefinite"/></polygon><polygon points="100,25 155,57.5 155,122.5 100,155 45,122.5 45,57.5" stroke="#00E5FF" stroke-width="0.5" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.15;0" dur="3s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none" filter="url(#ng)"><animate attributeName="stroke-opacity" values="1;0.65;1" dur="3s" repeatCount="indefinite"/></polygon></svg>
+        NYX <span class="logo-core">CORE</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="platform.html">Platform</a></li>
+        <li><a href="use-cases.html" class="active">Use Cases</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="about.html#contact"><button class="btn-cta">Request Demo</button></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-badge">Real-World Applications</div>
+      <h1>Financial Intelligence in Action</h1>
+      <p class="hero-subtitle">See how NYX Core FinAI transforms financial operations across industries</p>
+    </div>
+  </section>
+
+  <!-- Use Cases Grid -->
+  <section class="use-cases-section">
+    <div class="container">
+      <div class="use-cases-grid">
+        <!-- 1. Financial Statement Automation -->
+        <div class="use-case-card fade-up">
+          <span class="use-case-badge teal">Core</span>
+          <h3>Financial Statement Automation</h3>
+          <p>Automated P&L, Balance Sheet & Cash Flow Generation</p>
+          <ul class="use-case-benefits">
+            <li>Turn 5-10 day monthly close into minutes</li>
+            <li>Decimal-precise calculations with full audit trail</li>
+            <li>Multi-period comparison and variance analysis</li>
+          </ul>
+          <a href="#learn-more">Learn More →</a>
+        </div>
+
+        <!-- 2. Fraud & Anomaly Detection -->
+        <div class="use-case-card fade-up">
+          <span class="use-case-badge purple">Intelligence</span>
+          <h3>Fraud & Anomaly Detection</h3>
+          <p>Statistical Anomaly Detection Across Financial Data</p>
+          <ul class="use-case-benefits">
+            <li>Three proven methods: Z-score, IQR fences, Benford's Law</li>
+            <li>Automatic flagging of suspicious transactions</li>
+            <li>Configurable thresholds per metric</li>
+          </ul>
+          <a href="#learn-more">Learn More →</a>
+        </div>
+
+        <!-- 3. Revenue & Financial Forecasting -->
+        <div class="use-case-card fade-up">
+          <span class="use-case-badge amber">Forecasting</span>
+          <h3>Revenue & Financial Forecasting</h3>
+          <p>Ensemble Forecasting with 5 Statistical Methods</p>
+          <ul class="use-case-benefits">
+            <li>Moving Average, Exponential Smoothing, OLS, CAGR, Seasonal</li>
+            <li>Backtest-weighted model selection for optimal accuracy</li>
+            <li>Multi-period projections with confidence intervals</li>
+          </ul>
+          <a href="#learn-more">Learn More →</a>
+        </div>
+
+        <!-- 4. Georgian & Regional Compliance -->
+        <div class="use-case-card fade-up">
+          <span class="use-case-badge emerald">Compliance</span>
+          <h3>Georgian & Regional Compliance</h3>
+          <p>Built-in Georgian Chart of Accounts & Tax Compliance</p>
+          <ul class="use-case-benefits">
+            <li>134 Georgian COA entries (bilingual Georgian/English)</li>
+            <li>1C accounting system integration</li>
+            <li>Automated regulatory report formatting</li>
+          </ul>
+          <a href="#learn-more">Learn More →</a>
+        </div>
+
+        <!-- 5. Multi-Company Consolidation -->
+        <div class="use-case-card fade-up">
+          <span class="use-case-badge blue">Enterprise</span>
+          <h3>Multi-Company Consolidation</h3>
+          <p>Consolidate Financial Data Across Multiple Entities</p>
+          <ul class="use-case-benefits">
+            <li>Intercompany elimination rules</li>
+            <li>Currency translation support</li>
+            <li>Unified reporting across subsidiaries</li>
+          </ul>
+          <a href="#learn-more">Learn More →</a>
+        </div>
+
+        <!-- 6. AI-Powered Financial Chat -->
+        <div class="use-case-card fade-up">
+          <span class="use-case-badge rose">AI</span>
+          <h3>AI-Powered Financial Chat</h3>
+          <p>Natural Language Interface for Financial Analysis</p>
+          <ul class="use-case-benefits">
+            <li>Ask questions in plain language about your financial data</li>
+            <li>Multi-agent routing for complex queries</li>
+            <li>Context-aware follow-up conversations</li>
+          </ul>
+          <a href="#learn-more">Learn More →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Process</div>
+        <h2>How It Works</h2>
+        <p>Three simple steps from raw data to actionable financial intelligence</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-item fade-up">
+          <div class="step-number">1</div>
+          <h3>Ingest & Normalize</h3>
+          <p>Upload 1C data, Excel, CSV. Auto-detect schema, map accounts.</p>
+        </div>
+
+        <div class="step-item fade-up">
+          <div class="step-number">2</div>
+          <h3>Analyze & Detect</h3>
+          <p>Multi-agent processing: calculations, anomalies, forecasts, insights.</p>
+        </div>
+
+        <div class="step-item fade-up">
+          <div class="step-number">3</div>
+          <h3>Report & Act</h3>
+          <p>Generate reports, view dashboards, export to PDF/Excel, get alerts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Preview -->
+  <section class="dashboard-section">
+    <div class="container">
+      <div class="dashboard-header">
+        <div class="section-badge">Visual Intelligence</div>
+        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 12px;">See Your Data Come Alive</h2>
+      </div>
+
+      <div class="screenshot-showcase fade-up">
+        <div class="screenshot-frame">
+          <div class="screenshot-dots"><span></span><span></span><span></span></div>
+          <img src="assets/dashboard-main.png" alt="NYX Core Sovereign Strategic Dashboard" loading="lazy">
+        </div>
+        <div class="screenshot-caption">Sovereign Strategic Dashboard — Real-time financial intelligence at institutional scale</div>
+      </div>
+    </div>
+
+    <div class="screenshot-showcase" style="margin-top: 2rem;">
+      <div class="screenshot-frame">
+        <img src="assets/modules.png" alt="SAP FI Modules — Accounts Receivable, Payable, Fixed Assets, Working Capital" loading="lazy">
+      </div>
+      <div class="screenshot-caption">SAP FI Modules — Accounts Receivable, Payable, Fixed Assets, Working Capital management</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+      <div class="screenshot-showcase" style="margin-top: 0;">
+        <div class="screenshot-frame">
+          <img src="assets/sub-ledgeranalysis.png" alt="Sub-Ledger Analysis — AR & AP aging, concentration risk heatmap" loading="lazy">
+        </div>
+        <div class="screenshot-caption">Sub-Ledger Analysis — AR/AP aging distribution with concentration risk heatmap</div>
+      </div>
+      <div class="screenshot-showcase" style="margin-top: 0;">
+        <div class="screenshot-frame">
+          <img src="assets/balancesheet.png" alt="Balance Sheet — Automated IFRS-compliant financial statements" loading="lazy">
+        </div>
+        <div class="screenshot-caption">Balance Sheet — Automated IFRS-compliant statement generation with full audit trail</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Additional Platform Screenshots -->
+  <section class="dashboard-section">
+    <div class="container">
+      <div class="dashboard-header">
+        <div class="section-badge">Platform Intelligence</div>
+        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 12px;">Enterprise-Grade Analytics</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div class="screenshot-showcase" style="margin-top: 0;">
+          <div class="screenshot-frame">
+            <img src="assets/system.png" alt="System Status — Agent Registry and LLM Stack" loading="lazy">
+          </div>
+          <div class="screenshot-caption">System Status — Agent Registry, Knowledge Graph, LLM Provider Stack</div>
+        </div>
+        <div class="screenshot-showcase" style="margin-top: 0;">
+          <div class="screenshot-frame">
+            <img src="assets/pre-builttemplates.png" alt="Pre-built Analytics Templates" loading="lazy">
+          </div>
+          <div class="screenshot-caption">Pre-built Templates — Ready-to-use analytics and reporting templates</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section>
+    <div class="container">
+      <div class="cta-section fade-up">
+        <h2>Start Your Financial Intelligence Journey</h2>
+        <p>Join leading finance teams transforming their operations with NYX Core FinAI</p>
+        <div class="cta-buttons">
+          <a href="about.html#contact" class="btn-primary" style="text-decoration:none;display:inline-block;">Request Demo</a>
+          <a href="pricing.html" class="btn-secondary" style="text-decoration:none;display:inline-block;">View Pricing</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:52px"><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="rgba(0,200,255,0.04)"><animate attributeName="stroke-opacity" values="1;0.5;1" dur="4s" repeatCount="indefinite"/></polygon></svg>
+            <span style="font-weight: 700;">NYX CORE</span>
+          </div>
+          <p>Sovereign Financial Intelligence</p>
+        </div>
+        <div class="footer-section">
+          <h4>Product</h4>
+          <p><a href="platform.html" style="color: var(--text-secondary); text-decoration: none;">Features</a></p>
+          <p><a href="pricing.html" style="color: var(--text-secondary); text-decoration: none;">Pricing</a></p>
+          <p><a href="use-cases.html" style="color: var(--text-secondary); text-decoration: none;">Use Cases</a></p>
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <p><a href="about.html" style="color: var(--text-secondary); text-decoration: none;">About</a></p>
+          <p><a href="index.html" style="color: var(--text-secondary); text-decoration: none;">Blog</a></p>
+          <p><a href="index.html" style="color: var(--text-secondary); text-decoration: none;">Careers</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright 2026 NYX Core Thinker LLC. All rights reserved. Based in Tbilisi, Georgia.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal animation
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.use-case-card, .screenshot-showcase, .step-item, section').forEach(el => {
+      el.classList.add('reveal');
+      revealObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

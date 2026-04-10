@@ -46,13 +46,13 @@ const SovereignMacroOverlay = ({ brent: propBrent, usdGel: propUsdGel, nbgRate: 
 
     return (
         <div className="absolute top-20 right-6 z-[60] w-52 space-y-2 pointer-events-none">
-            <div className="flex items-center gap-2 mb-3 bg-slate-950/80 backdrop-blur-2xl border border-white/10 rounded px-3 py-1.5 w-fit shadow-2xl">
-                <Globe size={12} className="text-sky-500 animate-pulse" />
-                <span className="text-[9px] font-black text-sky-200 tracking-[.2em] uppercase">Macro Pulse</span>
+            <div className="flex items-center gap-2 mb-3 bg-bg1/90 backdrop-blur-sm border border-white/6 rounded px-3 py-1.5 w-fit">
+                <Globe size={12} className="text-muted" />
+                <span className="text-[9px] font-semibold text-muted tracking-[.2em] uppercase">Macro Pulse</span>
             </div>
 
             {indicators.map((ind, idx) => (
-                <div key={idx} className="group pointer-events-auto bg-slate-900/60 backdrop-blur-xl border border-white/5 rounded-xl p-3 hover:bg-slate-800/80 transition-all duration-300 shadow-xl">
+                <div key={idx} className="group pointer-events-auto bg-bg1/80 backdrop-blur-sm border border-white/5 rounded-lg p-3 hover:border-white/10 transition-all duration-200">
                     <div className="flex items-start justify-between">
                         <div className="space-y-1">
                             <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">{ind.label}</div>

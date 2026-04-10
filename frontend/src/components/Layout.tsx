@@ -324,7 +324,7 @@ export default function Layout() {
     try {
       const token = user?.token || localStorage.getItem('token') || '';
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+      const timeout = setTimeout(() => controller.abort(), 120000); // 120s timeout — NVIDIA API can be slow
       const res = await fetch('/api/agent/captain/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -407,10 +407,26 @@ export default function Layout() {
         }
       }
 
+      // 3. Auto-dispatch map command based on user's original question keywords
+      //    This bridges the Intelligence Panel chat with the Strategic Map.
+      const msgLower = msg.toLowerCase();
+      const mapIntent =
+        /(rival|competitor|socar|lukoil|gulf|rompetrol)/i.test(msgLower) ? 'COMPETITOR_INTEL' :
+        /(risk|geopolit|sanction|threat|war)/i.test(msgLower)           ? 'RISK_SCAN' :
+        /(price|brent|wti|cost|fuel price)/i.test(msgLower)             ? 'PRICE_INTEL' :
+        /(pipeline|transit|corridor|route|transport|lane)/i.test(msgLower) ? 'SHOW_TRANSITS' :
+        /(supplier|supply|procurement|source|buy)/i.test(msgLower)      ? 'OIL_DISTRIBUTION' :
+        null;
+      if (mapIntent) {
+        window.dispatchEvent(new CustomEvent('AGENT_MAP_COMMAND', {
+          detail: { intent: mapIntent, rationale: `Intelligence Panel: ${msg.substring(0, 80)}` },
+        }));
+      }
+
       setMessages((m) => [...m, { role: 'ai', content: cleanReply.trim(), model: data.model }]);
     } catch (err: any) {
       const errMsg = err?.name === 'AbortError'
-        ? 'Request timed out (60s). Try a shorter question or check backend status.'
+        ? 'Request timed out (120s). Try a shorter question or check backend status.'
         : `Connection failed: ${err?.message || 'Unknown error'}. Check if backend is running on port 9200.`;
       setMessages((m) => [...m, { role: 'ai', content: errMsg }]);
     } finally {
@@ -595,7 +611,7 @@ export default function Layout() {
             <NotificationBell />
             
             <div className="flex items-center gap-2 px-2 py-1 rounded bg-bg2 border border-b1">
-               <div className={`w-1.5 h-1.5 rounded-full ${systemOnline ? 'bg-emerald shadow-[0_0_8px_#48BB78]' : 'bg-rose shadow-[0_0_8px_#f56565]'}`} />
+               <div className={`w-1.5 h-1.5 rounded-full ${systemOnline ? 'bg-emerald' : 'bg-rose'}`} />
                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">{systemOnline ? 'Sync' : 'Lost'}</span>
             </div>
 
@@ -624,7 +640,7 @@ export default function Layout() {
         {/* Thinking bar (Dynamics) */}
         <div className="h-[2px] bg-bg0 overflow-hidden shrink-0">
           {isThinking && (
-            <div className="h-full w-1/3 bg-sky/50 shadow-[0_0_12px_#00d8ff] animate-[tbar_1.4s_ease-in-out_infinite]" />
+            <div className="h-full w-1/3 bg-accent-op/40 animate-[tbar_1.4s_ease-in-out_infinite]" />
           )}
         </div>
 

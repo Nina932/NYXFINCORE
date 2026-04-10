@@ -24,54 +24,54 @@
   --color-b3: rgba(255,255,255,.08);
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.08);
+  --shadow-glow: 0 1px 4px rgba(0, 0, 0, 0.2);
 
   /* Dual Accent Tokens */
-  --color-accent-op: #3b82f6; /* Blue Steel */
-  --color-accent-fin: #d4a853; /* Muted Gold */
+  --color-accent-op: #5b8def; /* Palantir Slate Blue */
+  --color-accent-fin: #a89060; /* Subdued Antique Gold */
 }
 
-/* ─── Dark Theme — NYX Core: Deep Navy + Cyan/Gold Dual Accent ─── */
+/* ─── Dark Theme — Palantir Corporate Intelligence ─── */
 :root, [data-theme="dark"] {
-  /* Institutional Slate Architecture — Deepened for Authority */
-  --bg0: #050a14;        /* Deep Space Navy */
-  --bg1: #0a101e;        /* Surface Navy */
-  --bg2: #121a2b;        /* Elevated Surface */
-  --bg3: #1e293b;        /* Hover / Interaction */
-  --bg4: #334155;        /* Boundary / Active */
-  --bg05: rgba(5, 10, 20, 0.88);
+  /* Palantir-grade surface hierarchy — matte, no glow */
+  --bg0: #0b0e14;        /* Near-black canvas */
+  --bg1: #12161e;        /* Card surface */
+  --bg2: #1a1f2a;        /* Elevated surface */
+  --bg3: #252b38;        /* Hover / interaction */
+  --bg4: #343c4d;        /* Boundary / active */
+  --bg05: rgba(11, 14, 20, 0.92);
 
-  /* Borders — Ultra-thin institutional standard */
-  --b1: rgba(255,255,255,0.03);
-  --b2: rgba(255,255,255,0.05);
-  --b3: rgba(255,255,255,0.08);
-  --b4: rgba(255,255,255,0.12);
-  --border-glass: rgba(255,255,255,0.05);
+  /* Borders — Crisp, no glow */
+  --b1: rgba(255,255,255,0.04);
+  --b2: rgba(255,255,255,0.07);
+  --b3: rgba(255,255,255,0.10);
+  --b4: rgba(255,255,255,0.15);
+  --border-glass: rgba(255,255,255,0.06);
 
-  /* Dual Accent Framework */
-  --accent-op: #3b82f6;   /* Steel Blue (Operational) */
-  --accent-fin: #d4a853;  /* Muted Gold (Financial) */
-  --accent-active: var(--accent-op); /* Default to Op */
+  /* Dual Accent Framework — Corporate subdued */
+  --accent-op: #5b8def;   /* Palantir Slate Blue */
+  --accent-fin: #a89060;  /* Subdued Antique Gold */
+  --accent-active: var(--accent-op);
 
-  /* Semantic Palettes */
+  /* Semantic Palettes — Muted corporate */
   --sky: var(--accent-active);
   --gold: var(--accent-fin);
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
+  --success: #3d9970;
+  --warning: #d4a04a;
+  --error: #c0392b;
 
-  /* Typography — Optimized for high-density legibility */
-  --text: #cbd5e1;
-  --muted: #94a3b8;
-  --dim: #64748b;
-  --heading: #f8fafc;
+  /* Typography — High-contrast readability */
+  --text: #c5cdd8;
+  --muted: #8692a2;
+  --dim: #566173;
+  --heading: #e8ecf1;
 
 }
 
-/* ═══ Energy & Electrical Keyframes ═══ */
+/* ═══ Utility Keyframes — Palantir: Minimal, purposeful motion ═══ */
 @keyframes energy-flicker {
-  0%, 100% { opacity: 0.8; filter: brightness(1); }
-  50% { opacity: 0.4; filter: brightness(1.5); }
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.6; }
 }
 
 @keyframes energy-surge {
@@ -81,7 +81,7 @@
 
 @keyframes institutional-float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-2px); }
 }
 
 @keyframes institutional-shimmer {
@@ -90,18 +90,18 @@
 }
 
 .energy-pulse {
-  animation: energy-flicker 3s infinite ease-in-out;
+  animation: energy-flicker 4s infinite ease-in-out;
 }
 
 .institutional-shimmer {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.02) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: institutional-shimmer 4s infinite linear;
+  animation: institutional-shimmer 6s infinite linear;
 }
 
 :root {
@@ -648,40 +648,38 @@ a:hover { color:var(--blue); }
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:6px}
 ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
 
-/* ─── Premium Glassmorphism & Industrial Surfaces ─── */
+/* ─── Corporate Card Surfaces — Palantir Foundry style ─── */
 .glass {
-  background: linear-gradient(135deg, rgba(15, 20, 32, 0.75) 0%, rgba(5, 10, 20, 0.8) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px -4px rgba(0,0,0,0.5);
-  transition: all var(--transition-premium);
+  background: rgba(18, 22, 30, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 200ms ease;
   position: relative;
   overflow: hidden;
 }
 
 .glass-premium {
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%),
-              linear-gradient(135deg, rgba(10, 16, 28, 0.8) 0%, rgba(5, 10, 20, 0.9) 100%);
-  backdrop-filter: blur(40px);
-  border: 0.5px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  box-shadow: 0 20px 50px -12px rgba(0,0,0,0.6),
-              inset 0 1px 1px rgba(255,255,255,0.05);
+  background: rgba(18, 22, 30, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
 
 .glass::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  background: transparent;
   pointer-events: none;
 }
 
 .glass:hover {
-  border-color: rgba(0,216,255,0.25);
-  box-shadow: 0 8px 32px -1px rgba(0,216,255,0.1);
-  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  transform: translateY(-1px);
 }
 
 .surface-industrial {
@@ -708,13 +706,12 @@ a:hover { color:var(--blue); }
 }
 
 @keyframes text-shimmer {
-  0% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.8; filter: brightness(1.2); }
-  100% { opacity: 1; filter: brightness(1); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
 }
 
 .shimmer-active {
-  animation: text-shimmer 2s infinite ease-in-out;
+  animation: text-shimmer 3s infinite ease-in-out;
 }
 .glass-lg {
   background:var(--glass-flat);
@@ -809,15 +806,15 @@ a:hover { color:var(--blue); }
   100% { transform: translateY(100%); opacity: 0; }
 }
 .scan-line {
-  position: absolute; inset: 0; width: 100%; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--sky), transparent);
-  animation: scanning 4s linear infinite; pointer-events: none;
+  position: absolute; inset: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(91,141,239,0.3), transparent);
+  animation: scanning 5s linear infinite; pointer-events: none;
 }
 @keyframes pulse-cyan {
-  0%, 100% { box-shadow: 0 0 8px rgba(0, 242, 255, 0.3); border-color: var(--sky); }
-  50% { box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); border-color: var(--sky); }
+  0%, 100% { border-color: rgba(91,141,239,0.15); }
+  50% { border-color: rgba(91,141,239,0.30); }
 }
-.operational-glow { animation: pulse-cyan 3s infinite; }
+.operational-glow { animation: pulse-cyan 4s infinite; }
 
 @keyframes technical-shimmer {
   0% { background-position: -200% 0; }
@@ -1172,14 +1169,12 @@ body {
   width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--sky);
-  box-shadow: 0 0 8px var(--sky);
-  animation: pulse-ring 2s infinite;
+  animation: pulse-ring 3s infinite;
 }
 
 @keyframes pulse-ring {
-  0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(0, 216, 255, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 216, 255, 0); }
-  100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(0, 216, 255, 0); }
+  0%, 100% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1); opacity: 1; }
 }
 
 .glass-industrial {
@@ -1336,18 +1331,18 @@ body {
   animation: fade-in .2s ease both;
 }
 
-/* ─── NYX Core — Living Dashboard Animations ─── */
+/* ─── Dashboard Animations — Corporate, no glow ─── */
 @keyframes kpi-glow {
-  0%, 100% { text-shadow: 0 0 8px rgba(0,242,255,0.3), 0 0 20px rgba(0,242,255,0.1); }
-  50% { text-shadow: 0 0 16px rgba(0,242,255,0.5), 0 0 40px rgba(0,242,255,0.2); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.88; }
 }
 @keyframes gold-glow {
-  0%, 100% { text-shadow: 0 0 8px rgba(201,169,110,0.3), 0 0 20px rgba(201,169,110,0.1); }
-  50% { text-shadow: 0 0 16px rgba(201,169,110,0.5), 0 0 40px rgba(201,169,110,0.2); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.88; }
 }
 @keyframes border-pulse {
-  0%, 100% { border-color: rgba(0,242,255,0.08); }
-  50% { border-color: rgba(0,242,255,0.20); }
+  0%, 100% { border-color: var(--b2); }
+  50% { border-color: var(--b3); }
 }
 @keyframes gradient-shift {
   0% { background-position: 0% 50%; }
@@ -1356,7 +1351,7 @@ body {
 }
 @keyframes attention-blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50% { opacity: 0.5; }
 }
 @keyframes draw-line {
   from { stroke-dashoffset: 1000; }
@@ -1367,63 +1362,61 @@ body {
   to { transform: scaleX(1); }
 }
 .kpi-value-glow {
-  animation: kpi-glow 3s ease-in-out infinite;
+  animation: kpi-glow 4s ease-in-out infinite;
 }
 .kpi-value-gold-glow {
-  animation: gold-glow 3s ease-in-out infinite;
+  animation: gold-glow 4s ease-in-out infinite;
 }
 .panel-living {
-  animation: border-pulse 4s ease-in-out infinite;
+  animation: border-pulse 6s ease-in-out infinite;
 }
 .attention-blink {
-  animation: attention-blink 2s ease-in-out infinite;
+  animation: attention-blink 3s ease-in-out infinite;
 }
 .bg-animated-cyan {
-  background: linear-gradient(270deg, rgba(0,242,255,0.05), rgba(0,200,255,0.02), rgba(0,242,255,0.05));
-  background-size: 600% 600%;
-  animation: gradient-shift 8s ease infinite;
+  background: rgba(91,141,239,0.03);
 }
 
-/* ─── KPI Card — Premium hover with cyan glow ─── */
+/* ─── KPI Card — Corporate flat, no glow ─── */
 .kpi-card {
-  background: linear-gradient(135deg, rgba(11,27,58,0.6), rgba(34,45,66,0.4));
-  backdrop-filter: blur(12px);
+  background: var(--bg1);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--b2);
-  border-radius: var(--r3);
+  border-radius: 6px;
   padding: 20px 24px;
   position: relative;
   overflow: hidden;
-  transition: all .3s ease;
+  transition: all .2s ease;
 }
 .kpi-card:hover {
-  border-color: rgba(0,242,255,0.2);
-  box-shadow: 0 0 24px rgba(0,242,255,0.08), var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: var(--b3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
 }
 .kpi-card::after {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--sky), transparent);
+  background: var(--accent-op);
   opacity: 0;
   transition: opacity .3s;
 }
 .kpi-card:hover::after { opacity: 0.6; }
 
-/* ─── Panel card — floating above gradient ─── */
+/* ─── Panel card — Palantir flat surface ─── */
 .nyx-panel {
-  background: linear-gradient(135deg, rgba(11,27,58,0.5), rgba(34,45,66,0.35));
-  backdrop-filter: blur(16px);
+  background: var(--bg1);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--b2);
-  border-radius: var(--r3);
-  box-shadow: var(--shadow-lg);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   overflow: hidden;
-  transition: all .3s ease;
+  transition: all .2s ease;
 }
 .nyx-panel:hover {
-  border-color: rgba(0,242,255,0.12);
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(0,242,255,0.04);
+  border-color: var(--b3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .stagger-item:nth-child(1) { animation-delay:.02s }
 .stagger-item:nth-child(2) { animation-delay:.04s }
@@ -1460,8 +1453,8 @@ body,
 /* ═══ HOVER MICRO-INTERACTIONS ═══ */
 .hover-lift { transition:transform .15s ease,box-shadow .15s ease }
 .hover-lift:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg) }
-.hover-glow { transition:box-shadow .2s ease }
-.hover-glow:hover { box-shadow:var(--shadow-glow) }
+.hover-glow { transition:border-color .2s ease }
+.hover-glow:hover { border-color:var(--b3) }
 .hover-scale { transition:transform .12s ease }
 .hover-scale:hover { transform:scale(1.02) }
 .hover-border { transition:border-color .15s ease }
@@ -1545,14 +1538,12 @@ body,
 
 /* ═══ PULSE INDICATOR (for live data) ═══ */
 .pulse-live {
-  width:8px;height:8px;border-radius:50%;background:var(--emerald);
-  box-shadow:0 0 0 0 rgba(50,164,103,.5);
-  animation:pulse-ring 2s infinite;
+  width:6px;height:6px;border-radius:50%;background:var(--success);
+  animation:pulse-live-fade 3s infinite;
 }
-@keyframes pulse-ring {
-  0%{box-shadow:0 0 0 0 rgba(50,164,103,.4)}
-  70%{box-shadow:0 0 0 8px rgba(50,164,103,0)}
-  100%{box-shadow:0 0 0 0 rgba(50,164,103,0)}
+@keyframes pulse-live-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ═══ NUMBER ANIMATION ═══ */
@@ -1720,8 +1711,8 @@ details > *:not(summary) {
 
 /* Glow pulse for critical values */
 @keyframes glow-critical {
-  0%, 100% { text-shadow: 0 0 8px rgba(239,68,68,0.3); }
-  50% { text-shadow: 0 0 16px rgba(239,68,68,0.5); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 .value-critical {
   color: var(--rose);
@@ -1797,7 +1788,7 @@ details > *:not(summary) {
 }
 .react-grid-item.react-draggable-dragging {
   z-index: 100;
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(59,130,246,0.15);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 
 /* ─── Workshop canvas fix ─── */
@@ -1817,14 +1808,11 @@ details > *:not(summary) {
 }
 .tour-spotlight {
   position: fixed;
-  border-radius: 12px;
-  box-shadow: 0 0 0 9999px rgba(5, 8, 18, 0.75),
-              0 0 24px rgba(0,242,255,0.2),
-              inset 0 0 12px rgba(0,242,255,0.06);
-  border: 1.5px solid rgba(0,242,255,0.3);
+  border-radius: 8px;
+  box-shadow: 0 0 0 9999px rgba(5, 8, 18, 0.80);
+  border: 1.5px solid rgba(91,141,239,0.4);
   pointer-events: none;
   z-index: 10001;
-  animation: tour-spotlight-pulse 2s ease-in-out infinite;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .tour-tooltip {
@@ -1834,7 +1822,7 @@ details > *:not(summary) {
   backdrop-filter: blur(16px);
   border: 1px solid rgba(201,169,110,0.2);
   border-radius: 14px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 20px rgba(201,169,110,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   z-index: 10002;
   animation: tour-tooltip-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -1855,8 +1843,8 @@ details > *:not(summary) {
 .tour-btn-next {
   display: flex; align-items: center; gap: 4px;
   padding: 8px 18px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--sky), var(--blue));
-  color: #000; border: none; cursor: pointer;
+  background: var(--accent-op);
+  color: #fff; border: none; cursor: pointer;
   font-size: 11px; font-weight: 700; font-family: var(--font);
   transition: all 0.15s;
 }
@@ -1864,8 +1852,8 @@ details > *:not(summary) {
 @keyframes tour-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes tour-tooltip-in { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes tour-spotlight-pulse {
-  0%, 100% { border-color: rgba(0,242,255,0.3); box-shadow: 0 0 0 9999px rgba(5,8,18,0.75), 0 0 24px rgba(0,242,255,0.2); }
-  50% { border-color: rgba(201,169,110,0.35); box-shadow: 0 0 0 9999px rgba(5,8,18,0.75), 0 0 32px rgba(201,169,110,0.15); }
+  0%, 100% { border-color: rgba(91,141,239,0.4); }
+  50% { border-color: rgba(91,141,239,0.6); }
 }
 @keyframes tour-cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
@@ -1932,7 +1920,7 @@ details > *:not(summary) {
   transform: translateY(-2px);
 }
 .kpi-value-glow {
-  text-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+  /* No text-shadow — Palantir corporate */
 }
 
 /* Quick action button — used on dashboard */
@@ -2229,14 +2217,13 @@ details > *:not(summary) {
 }
 
 .glow-cyan {
-  box-shadow: 0 0 15px rgba(0, 216, 255, 0.4);
-  border-color: var(--sky) !important;
+  border-color: var(--accent-op) !important;
 }
 
 .matrix-grid {
-  background-image: 
-    linear-gradient(rgba(0, 216, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 216, 255, 0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 30px 30px;
 }
 
@@ -2250,7 +2237,7 @@ details > *:not(summary) {
 .scanline-mount {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(to bottom, transparent, rgba(0, 216, 255, 0.2), transparent);
+  background: linear-gradient(to bottom, transparent, rgba(91, 141, 239, 0.08), transparent);
   pointer-events: none;
   z-index: 100;
   animation: scanline-mount 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -2275,9 +2262,8 @@ details > *:not(summary) {
 }
 
 .tech-icon-wrapper:hover .tech-icon-hex {
-  border-color: var(--sky);
-  box-shadow: 0 0 10px rgba(0, 216, 255, 0.2);
-  transform: scale(1.05);
+  border-color: var(--b3);
+  transform: scale(1.03);
 }
 
 .tech-icon-inner {
@@ -2299,8 +2285,7 @@ details > *:not(summary) {
   width: 6px;
   height: 6px;
   border-radius: 1px;
-  background: var(--sky);
-  box-shadow: 0 0 4px var(--sky);
+  background: var(--accent-op);
   transition: all 0.2s ease;
 }
 
@@ -2319,28 +2304,14 @@ details > *:not(summary) {
 }
 
 .text-glow-cyan {
-  color: var(--sky);
-  text-shadow: 0 0 15px rgba(0, 216, 255, 0.5), 0 0 30px rgba(0, 216, 255, 0.2);
+  color: var(--accent-op);
 }
 
 .text-glow-gold {
-  color: var(--gold);
-  text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+  color: var(--accent-fin);
 }
 
-.glass-premium {
-  background: rgba(24, 31, 46, 0.4);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: all var(--transition-snap);
-}
-
-.glass-premium:hover {
-  border-color: var(--accent-active);
-  background: rgba(24, 31, 46, 0.6);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
+/* glass-premium duplicate override — keep corporate */
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
@@ -2391,10 +2362,9 @@ details > *:not(summary) {
   transform: scale(1.05);
 }
 
-/* ─── Unistream Inspired Landing Utilities ─── */
+/* ─── Landing Utilities ─── */
 .text-glow-cyan {
-  color: var(--sky);
-  text-shadow: 0 0 15px rgba(0, 216, 255, 0.4), 0 0 30px rgba(0, 216, 255, 0.2);
+  color: var(--accent-op);
 }
 
 .landing-hero-bg {

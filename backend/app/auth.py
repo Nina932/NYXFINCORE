@@ -51,6 +51,15 @@ from app.database import get_db
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# Phase G-4: Revocation table verification flag
+# ---------------------------------------------------------------------------
+# On first successful revocation-check query, this flips to True.
+# Before verification, a DB failure is treated as a startup grace period
+# (warning logged, token allowed through once).  After verification, any
+# failure causes fail-closed rejection.
+_revocation_table_verified: bool = False
+
+# ---------------------------------------------------------------------------
 # Password hashing  (bcrypt directly — passlib 1.7.4 incompatible with bcrypt>=4)
 # ---------------------------------------------------------------------------
 
@@ -128,7 +137,8 @@ async def _get_user_from_token(
     if not user_id:
         return None
 
-    # Phase G-4: Check token revocation blacklist
+    # Phase G-4: Check token revocation blacklist (fail-closed)
+    global _revocation_table_verified
     jti = payload.get("jti")
     if jti:
         try:
@@ -137,8 +147,26 @@ async def _get_user_from_token(
             if revoked.scalar_one_or_none():
                 logger.debug("Token revoked: jti=%s", jti)
                 return None
-        except Exception:
-            pass  # Table may not exist yet; allow through
+            # Query succeeded — table exists and is reachable
+            _revocation_table_verified = True
+        except Exception as exc:
+            if not _revocation_table_verified:
+                # One-time grace period: table may not exist yet during
+                # initial startup / migration.  Log a warning and allow
+                # through this once.  The flag stays False so the very
+                # next successful query will lock it in.
+                logger.warning(
+                    "Revocation check failed (table not yet verified, "
+                    "allowing through as startup grace): %s", exc,
+                )
+            else:
+                # Table was reachable before — this is a real failure.
+                # Fail closed: reject the token.
+                logger.error(
+                    "Revocation check failed (fail-closed, rejecting "
+                    "token jti=%s): %s", jti, exc,
+                )
+                return None
 
     # Import here to avoid circular import
     from app.models.all_models import User

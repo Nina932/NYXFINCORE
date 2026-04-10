@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NYX Core FinAI - Multi-agent financial intelligence platform with deterministic computation engine">
+    <meta name="keywords" content="financial intelligence, multi-agent, accounting automation, AI">
+    <meta name="author" content="NYX Core">
+    <title>Platform | NYX Core FinAI</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ========== CSS VARIABLES & RESET ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #00050D;
+            --card-bg: rgba(10, 22, 40, 0.7);
+            --accent: #4fd1c5;
+            --logo: #863bff;
+            --border: rgba(79, 209, 197, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --font-outfit: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: var(--font-outfit);
+            font-weight: 400;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        /* ========== TYPOGRAPHY ========== */
+        h1 { font-size: 3.5rem; font-weight: 800; letter-spacing: -0.02em; }
+        h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+        h3 { font-size: 1.5rem; font-weight: 700; }
+        h4 { font-size: 1.2rem; font-weight: 600; }
+        p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+        code { font-family: var(--font-mono); background: rgba(79, 209, 197, 0.1); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.9rem; color: var(--accent); }
+        pre { background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; overflow-x: auto; margin: 1rem 0; }
+        pre code { background: none; padding: 0; }
+
+        /* ========== NAVIGATION ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 5, 13, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        nav .logo svg { width: 72px; height: 72px; }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover { color: var(--accent); }
+
+        nav .cta {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.65rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+
+        nav .cta:hover { transform: scale(1.05); }
+
+        @media (max-width: 768px) {
+            nav .nav-links { display: none; }
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            padding: 0.75rem 1.8rem;
+            border-radius: 50px;
+            font-family: var(--font-outfit);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(79, 209, 197, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(79, 209, 197, 0.1);
+        }
+
+        /* ========== HERO SECTION ========== */
+        section {
+            scroll-margin-top: 80px;
+            padding: 5rem 0;
+        }
+
+        .hero {
+            padding: 8rem 0 5rem;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(79, 209, 197, 0.2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* ========== ARCHITECTURE SECTION ========== */
+        .architecture-section {
+            background: linear-gradient(180deg, transparent, rgba(79, 209, 197, 0.05));
+            padding: 6rem 0;
+        }
+
+        .architecture-section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .supervisor-box {
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 24px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 0 40px rgba(79, 209, 197, 0.15);
+        }
+
+        .supervisor-box h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .agent-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 209, 197, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .agent-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(79, 209, 197, 0.2);
+        }
+
+        .agent-card:hover::before { left: 100%; }
+
+        .agent-card h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-card ul {
+            list-style: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .agent-card li {
+            padding: 0.4rem 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .agent-card li::before {
+            content: '→ ';
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .arch-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item .label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ========== FINANCIAL ENGINE ========== */
+        .engine-section {
+            background: linear-gradient(180deg, transparent, rgba(134, 59, 255, 0.05));
+            padding: 6rem 0;
+        }
+
+        .engine-section h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .engine-subtitle {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .engine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .engine-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .engine-card:hover {
+            border-color: var(--logo);
+            box-shadow: 0 16px 40px rgba(134, 59, 255, 0.15);
+        }
+
+        .engine-card h4 {
+            color: var(--logo);
+            margin-bottom: 1rem;
+        }
+
+        .engine-card pre {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(134, 59, 255, 0.2);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* ========== INTELLIGENCE GRID ========== */
+        .intelligence-section {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent, rgba(79, 209, 197, 0.03));
+        }
+
+        .intelligence-section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .intelligence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .intelligence-module {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .intelligence-module::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--accent), var(--logo));
+            border-radius: 24px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .intelligence-module:hover::before { opacity: 0.1; }
+
+        .intelligence-module:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .intelligence-module h4 {
+            color: var(--accent);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            margin-top: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ========== WORKFLOWS ========== */
+        .workflows-section {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, rgba(79, 209, 197, 0.05), transparent);
+        }
+
+        .workflows-section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .workflow-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .workflow-card h4 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .step {
+            background: rgba(79, 209, 197, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.75rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .step-arrow {
+            color: var(--accent);
+            font-weight: bold;
+            opacity: 0.6;
+        }
+
+        /* ========== TECH STACK ========== */
+        .tech-section {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent, rgba(134, 59, 255, 0.03));
+        }
+
+        .tech-section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .tech-card:hover {
+            border-color: var(--logo);
+            box-shadow: 0 12px 30px rgba(134, 59, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .tech-card h4 {
+            color: var(--logo);
+            margin-bottom: 1rem;
+        }
+
+        .tech-card ul {
+            list-style: none;
+        }
+
+        .tech-card li {
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .tech-card li::before {
+            content: '◆ ';
+            color: var(--accent);
+            margin-right: 0.5rem;
+        }
+
+        /* ========== SECURITY SECTION ========== */
+        .security-section {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, rgba(79, 209, 197, 0.03), transparent);
+        }
+
+        .security-section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .security-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .security-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 16px 40px rgba(79, 209, 197, 0.15);
+        }
+
+        .security-card h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .security-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ========== CTA SECTION ========== */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(79, 209, 197, 0.1), rgba(134, 59, 255, 0.1));
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--logo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-section p {
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.8rem; }
+            section { padding: 3rem 0; }
+            nav .logo svg { width: 72px; height: 72px; }
+        }
+
+        /* Screenshot Showcase */
+        .screenshot-showcase { margin-top: 2rem; }
+        .screenshot-showcase.small { margin-top: 0; }
+        .screenshot-frame {
+          background: #070a10;
+          border: 1px solid rgba(0, 229, 255, 0.15);
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 20px 80px rgba(0, 229, 255, 0.08), 0 0 1px rgba(0, 229, 255, 0.3);
+          position: relative;
+        }
+        .screenshot-dots {
+          display: flex; gap: 6px; padding: 12px 16px;
+          background: #050810; border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .screenshot-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+        .screenshot-dots span:first-child { background: #ff5f57; }
+        .screenshot-dots span:nth-child(2) { background: #febc2e; }
+        .screenshot-dots span:last-child { background: #28c840; }
+        .screenshot-frame img { width: 100%; height: auto; display: block; }
+        .screenshot-caption {
+          text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem;
+          margin-top: 1rem; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em;
+        }
+        .screenshot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        @media (max-width: 900px) { .screenshot-grid { grid-template-columns: 1fr; } }
+
+        /* Enhanced Animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.15s; }
+        .reveal-delay-2 { transition-delay: 0.3s; }
+        .reveal-delay-3 { transition-delay: 0.45s; }
+
+        .screenshot-frame { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease; }
+        .screenshot-frame:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 100px rgba(0, 229, 255, 0.18), 0 0 2px rgba(0, 229, 255, 0.6); }
+
+        @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); } 50% { box-shadow: 0 0 40px rgba(0, 229, 255, 0.25); } }
+        .screenshot-showcase .screenshot-frame { animation: glow-pulse 4s ease-in-out infinite; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .badge { animation: float 3s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+
+<!-- ========== NAVIGATION ========== -->
+<nav>
+    <div class="container">
+        <a href="index.html" class="logo">
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:72px;height:72px"><defs><filter id="ng" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b1"/><feGaussianBlur stdDeviation="12" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g stroke="#1E3D5A" stroke-width="0.7" fill="none" opacity="0.3"><polygon points="91,74.4 82,90 64,90 55,74.4 64,58.8 82,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" repeatCount="indefinite"/></polygon><polygon points="118,58.8 109,74.4 91,74.4 82,58.8 91,43.2 109,43.2"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="118,90 109,105.6 91,105.6 82,90 91,74.4 109,74.4"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1s" repeatCount="indefinite"/></polygon><polygon points="118,121.2 109,136.8 91,136.8 82,121.2 91,105.6 109,105.6"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1.5s" repeatCount="indefinite"/></polygon><polygon points="145,74.4 136,90 118,90 109,74.4 118,58.8 136,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2s" repeatCount="indefinite"/></polygon><polygon points="145,105.6 136,121.2 118,121.2 109,105.6 118,90 136,90"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2.5s" repeatCount="indefinite"/></polygon></g><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" fill="#00C8FF" opacity="0.04"/><polygon points="100,30 150,60 150,120 100,150 50,120 50,60" stroke="#00E5FF" stroke-width="1" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.3;0" dur="3s" repeatCount="indefinite"/></polygon><polygon points="100,25 155,57.5 155,122.5 100,155 45,122.5 45,57.5" stroke="#00E5FF" stroke-width="0.5" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.15;0" dur="3s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none" filter="url(#ng)"><animate attributeName="stroke-opacity" values="1;0.65;1" dur="3s" repeatCount="indefinite"/></polygon></svg>
+            NYX <span style="color: #00E5FF;">Core</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="platform.html" class="active">Platform</a></li>
+            <li><a href="use-cases.html">Use Cases</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="about.html#contact" class="cta">Request Demo</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="hero fade-up">
+    <div class="container">
+        <span class="badge">Technology Deep-Dive</span>
+        <h1>Multi-Agent Financial Intelligence</h1>
+        <p class="subtitle">A deterministic financial computation engine with real multi-agent orchestration and optional LLM enhancement for emerging market compliance.</p>
+    </div>
+</section>
+
+<!-- ========== ARCHITECTURE SECTION ========== -->
+<section class="architecture-section fade-up">
+    <div class="container">
+        <h2>Real Multi-Agent Architecture</h2>
+
+        <div class="screenshot-showcase">
+          <div class="screenshot-frame">
+            <div class="screenshot-dots"><span></span><span></span><span></span></div>
+            <img src="assets/data-lineage.png" alt="Operational Data Lineage — End-to-end financial traceability" loading="lazy">
+          </div>
+          <div class="screenshot-caption">Data Lineage — ERP ingestion through AP Automation, COA Classification, Consolidation to IFRS Financial Statements</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FINANCIAL ENGINE ========== -->
+<section class="engine-section fade-up">
+    <div class="container">
+        <h2>Deterministic Financial Core</h2>
+        <p class="engine-subtitle">Zero LLM dependency in calculations. Pure mathematics and statistical rigor.</p>
+
+        <div class="engine-grid">
+            <div class="engine-card">
+                <h4>P&L Waterfall</h4>
+                <pre><code>Revenue
+  - COGS
+  = Gross Profit
+  - OpEx
+  = EBITDA
+  - D&A
+  = EBIT
+  - Interest
+  = PBT
+  - Tax
+  = Net Profit</code></pre>
+            </div>
+
+            <div class="engine-card">
+                <h4>Anomaly Detection</h4>
+                <pre><code>Z-score Analysis
+  threshold: ±3σ
+
+IQR Fencing
+  bounds: [Q1-1.5×IQR,
+          Q3+1.5×IQR]
+
+Benford's Law
+  χ² goodness-of-fit</code></pre>
+            </div>
+
+            <div class="engine-card">
+                <h4>Forecasting Models</h4>
+                <pre><code>Moving Average (SMA)
+Exponential Smoothing (SES)
+
+OLS Regression
+  trend extraction
+
+CAGR Calculation
+Seasonal Decomposition</code></pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== INTELLIGENCE MODULES ========== -->
+<section class="intelligence-section fade-up">
+    <div class="container">
+        <h2>Intelligence Grid</h2>
+
+        <div class="screenshot-grid" style="margin-top: 2rem;">
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/ontology.png" alt="Knowledge Graph — Intelligence Matrix" loading="lazy">
+            </div>
+            <div class="screenshot-caption">Ontology Explorer — 489 accounts, IAS standards, structural analytics</div>
+          </div>
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/orchestrator.png" alt="Orchestrator Mission Control" loading="lazy">
+            </div>
+            <div class="screenshot-caption">Orchestrator — 7-stage pipeline with composable AI workflows</div>
+          </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== WORKFLOWS ========== -->
+<section class="workflows-section fade-up">
+    <div class="container">
+        <h2>Composable AI Workflows</h2>
+
+        <div class="screenshot-grid" style="margin-top: 2rem;">
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/warehouse.png" alt="Data Warehouse with AI Agent" loading="lazy">
+            </div>
+            <div class="screenshot-caption">Data Warehouse — Pre-built analytics and AI Data Agent</div>
+          </div>
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/flywheel.png" alt="Data Flywheel — Self-improving AI loop" loading="lazy">
+            </div>
+            <div class="screenshot-caption">Data Flywheel — Collect, Score, Learn, Calibrate, Improve</div>
+          </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== SYSTEM & ANALYTICS ========== -->
+<section class="intelligence-section fade-up">
+    <div class="container">
+        <h2>System Intelligence & Analytics</h2>
+
+        <div class="screenshot-showcase" style="margin-top: 2rem;">
+          <div class="screenshot-frame">
+            <div class="screenshot-dots"><span></span><span></span><span></span></div>
+            <img src="assets/system.png" alt="System Status — Agent Registry, Knowledge Graph, LLM Stack" loading="lazy">
+          </div>
+          <div class="screenshot-caption">System Status — Agent Registry, Knowledge Graph health, LLM Provider Stack monitoring</div>
+        </div>
+
+        <div class="screenshot-grid" style="margin-top: 2rem;">
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/modules.png" alt="SAP FI Modules — Financial module intelligence" loading="lazy">
+            </div>
+            <div class="screenshot-caption">SAP FI Modules — AR, AP, Fixed Assets, Working Capital management</div>
+          </div>
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/pre-builttemplates.png" alt="Pre-built Analytics Templates" loading="lazy">
+            </div>
+            <div class="screenshot-caption">Pre-built Templates — Ready-to-use analytics and reporting templates</div>
+          </div>
+        </div>
+
+        <div class="screenshot-grid" style="margin-top: 2rem;">
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/esg.png" alt="ESG & Sustainability Dashboard" loading="lazy">
+            </div>
+            <div class="screenshot-caption">ESG & Sustainability — Carbon footprint tracking and emissions analysis</div>
+          </div>
+          <div class="screenshot-showcase small">
+            <div class="screenshot-frame">
+              <img src="assets/balancesheet.png" alt="Balance Sheet Analysis" loading="lazy">
+            </div>
+            <div class="screenshot-caption">Balance Sheet — Automated IFRS-compliant financial statement generation</div>
+          </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== KNOWLEDGE GRAPH ========== -->
+<section class="engine-section fade-up">
+    <div class="container">
+        <h2>Domain-Encoded Intelligence</h2>
+        <p class="engine-subtitle">Comprehensive Georgian accounting domain knowledge baked in.</p>
+
+        <div class="engine-grid">
+            <div class="engine-card">
+                <h4>700+</h4>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0;">Domain entities</p>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Georgian accounting concepts, IFRS standards, local compliance rules</p>
+            </div>
+            <div class="engine-card">
+                <h4>134</h4>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0;">Chart of Accounts</p>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Bilingual Georgian/English, mapped to IFRS and local standards</p>
+            </div>
+            <div class="engine-card">
+                <h4>3</h4>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0;">Relationship Types</p>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">parent_of, flows_to, classifies with typed edges</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== TECHNOLOGY STACK ========== -->
+<section class="tech-section fade-up">
+    <div class="container">
+        <h2>Technology Stack</h2>
+
+        <div class="tech-grid">
+            <div class="tech-card">
+                <h4>Backend</h4>
+                <ul>
+                    <li>FastAPI 0.104+</li>
+                    <li>Python 3.12</li>
+                    <li>SQLAlchemy 2.0</li>
+                    <li>Pydantic v2</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <h4>Database</h4>
+                <ul>
+                    <li>PostgreSQL 15+</li>
+                    <li>Numeric(18,6)</li>
+                    <li>Alembic migrations</li>
+                    <li>JSONB support</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <h4>AI & LLM</h4>
+                <ul>
+                    <li>Claude (Anthropic)</li>
+                    <li>Grok (xAI)</li>
+                    <li>Mistral</li>
+                    <li>Ollama (local)</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <h4>Frontend</h4>
+                <ul>
+                    <li>React 18 + Vite</li>
+                    <li>TypeScript</li>
+                    <li>Tauri Desktop</li>
+                    <li>TailwindCSS</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <h4>Security</h4>
+                <ul>
+                    <li>JWT authentication</li>
+                    <li>Bcrypt hashing</li>
+                    <li>Rate limiting</li>
+                    <li>Audit trails</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <h4>Infrastructure</h4>
+                <ul>
+                    <li>Docker containers</li>
+                    <li>Nginx reverse proxy</li>
+                    <li>Vercel CDN</li>
+                    <li>GitHub Actions CI/CD</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== SECURITY SECTION ========== -->
+<section class="security-section fade-up">
+    <div class="container">
+        <h2>Security & Compliance</h2>
+
+        <div class="security-grid">
+            <div class="security-card">
+                <h4>JWT & Token Revocation</h4>
+                <p>Bearer token authentication with revocation support and refresh token rotation for seamless session management.</p>
+            </div>
+
+            <div class="security-card">
+                <h4>Rate Limiting</h4>
+                <p>Sliding window rate limiting with per-IP enforcement and adaptive throttling to prevent abuse and ensure availability.</p>
+            </div>
+
+            <div class="security-card">
+                <h4>Audit Trails</h4>
+                <p>Complete audit logging for all operations with timestamp and user tracking for compliance and forensics.</p>
+            </div>
+
+            <div class="security-card">
+                <h4>Data Encryption</h4>
+                <p>AES-256 encryption for sensitive data at rest and TLS 1.3 in transit with perfect forward secrecy.</p>
+            </div>
+
+            <div class="security-card">
+                <h4>Role-Based Access</h4>
+                <p>Fine-grained permissions with role hierarchies and scope-based controls for multi-tenant environments.</p>
+            </div>
+
+            <div class="security-card">
+                <h4>Compliance</h4>
+                <p>SOC 2 ready with GDPR considerations and accounting standard adherence for emerging market regulations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="cta-section fade-up">
+    <div class="container">
+        <h2>See It In Action</h2>
+        <p>Experience the power of multi-agent financial intelligence</p>
+        <a href="about.html#contact" class="btn btn-primary" style="text-decoration:none;display:inline-block;">Request Demo</a>
+    </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 2rem; margin-bottom: 2rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:52px"><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="rgba(0,200,255,0.04)"><animate attributeName="stroke-opacity" values="1;0.5;1" dur="4s" repeatCount="indefinite"/></polygon></svg>
+            <span style="font-weight: 700;"><span style="color: #00E5FF;">NYX </span><span style="color: #00E5FF;">CORE</span></span>
+          </div>
+          <p style="color: rgba(255,255,255,0.5);">Sovereign Financial Intelligence</p>
+        </div>
+        <div style="display: flex; gap: 3rem;">
+          <div>
+            <h4 style="margin-bottom: 0.75rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Product</h4>
+            <p><a href="platform.html" style="color: rgba(255,255,255,0.5); text-decoration: none;">Platform</a></p>
+            <p><a href="pricing.html" style="color: rgba(255,255,255,0.5); text-decoration: none;">Pricing</a></p>
+            <p><a href="use-cases.html" style="color: rgba(255,255,255,0.5); text-decoration: none;">Use Cases</a></p>
+          </div>
+          <div>
+            <h4 style="margin-bottom: 0.75rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Company</h4>
+            <p><a href="about.html" style="color: rgba(255,255,255,0.5); text-decoration: none;">About</a></p>
+            <p><a href="about.html#contact" style="color: rgba(255,255,255,0.5); text-decoration: none;">Contact</a></p>
+          </div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; text-align: center;">
+        <p>&copy; 2026 NYX Core Thinker LLC. All rights reserved. Based in Tbilisi, Georgia.</p>
+      </div>
+    </div>
+</footer>
+
+<script>
+  // Scroll reveal animation
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal, .fade-up, section').forEach(el => {
+    el.classList.add('reveal');
+    revealObserver.observe(el);
+  });
+
+  // Stagger screenshot grid children
+  document.querySelectorAll('.screenshot-grid').forEach(grid => {
+    grid.querySelectorAll('.screenshot-showcase').forEach((el, i) => {
+      el.classList.add('reveal', 'reveal-delay-' + Math.min(i + 1, 3));
+      revealObserver.observe(el);
+    });
+  });
+</script>
+
+</body>
+</html>

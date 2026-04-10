@@ -83,11 +83,21 @@ async def lifespan(app: FastAPI):
             )
 
     # ── LLM availability check ─────────────────────────────────────
-    if not settings.ANTHROPIC_API_KEY:
+    any_llm = bool(
+        settings.ANTHROPIC_API_KEY or settings.NVIDIA_API_KEY_GEMMA
+        or settings.NVIDIA_API_KEY or settings.GEMINI_API_KEY
+    )
+    if any_llm:
+        if settings.NVIDIA_API_KEY_GEMMA:
+            logger.info("Primary LLM: Gemma 4 31B IT (NVIDIA build.nvidia.com)")
+        elif settings.ANTHROPIC_API_KEY:
+            logger.info("Primary LLM: %s (Anthropic)", settings.ANTHROPIC_MODEL)
+        elif settings.GEMINI_API_KEY:
+            logger.info("Primary LLM: Gemini 2.5 Flash (Google)")
+    else:
         logger.warning(
-            "ANTHROPIC_API_KEY is not set. The conversational AI chat will be unavailable. "
-            "All deterministic financial APIs (P&L, Balance Sheet, Cash Flow, GL Pipeline, "
-            "Forecasting, Anomaly Detection) remain fully operational."
+            "No LLM API key configured. Conversational AI chat will be unavailable. "
+            "All deterministic financial APIs remain fully operational."
         )
 
     await init_db()
@@ -327,12 +337,12 @@ async def security_headers_middleware(request: Request, call_next):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
-# Global error handler
-@app.exception_handler(Exception)
-async def global_error_handler(request: Request, exc: Exception):
-    logger.error(f"Unhandled error: {exc}", exc_info=True)
-    msg = str(exc) if settings.DEBUG else "Internal server error"
-    return JSONResponse(status_code=500, content={"detail": msg})
+# Global error handlers — standardized ErrorResponse format
+from fastapi import HTTPException as _HTTPException
+from app.errors import finai_http_exception_handler, finai_generic_exception_handler
+
+app.add_exception_handler(_HTTPException, finai_http_exception_handler)
+app.add_exception_handler(Exception, finai_generic_exception_handler)
 
 # ── Prometheus metrics endpoint ──
 @app.get("/metrics", tags=["observability"])
@@ -412,13 +422,20 @@ async def api_root():
 async def health():
     from app.database import check_db_health
     db_health = await check_db_health()
-    llm_ok = bool(settings.ANTHROPIC_API_KEY)
+    # Any LLM key enables chat: NVIDIA Gemma 4 (primary), Claude, or Gemini
+    llm_ok = bool(settings.ANTHROPIC_API_KEY or settings.NVIDIA_API_KEY_GEMMA or settings.NVIDIA_API_KEY or settings.GEMINI_API_KEY)
+    primary_model = (
+        "gemma-4-31b-it (NVIDIA)" if settings.NVIDIA_API_KEY_GEMMA
+        else f"{settings.ANTHROPIC_MODEL} (Anthropic)" if settings.ANTHROPIC_API_KEY
+        else "gemini-2.5-flash (Google)" if settings.GEMINI_API_KEY
+        else "none"
+    )
     return {
         "status":  "healthy" if db_health.get("status") == "healthy" else "degraded",
         "version": "2.0.0",
         "env":     settings.APP_ENV,
         "agent_mode": settings.AGENT_MODE,
-        "model":   settings.ANTHROPIC_MODEL,
+        "model":   primary_model,
         "api_key": "configured" if llm_ok else "missing",
         "llm_available": llm_ok,
         "company_name": settings.COMPANY_NAME,
@@ -431,9 +448,52 @@ async def health():
         },
     }
 
+@app.get("/health/detailed", tags=["system"])
+async def health_detailed():
+    """Comprehensive health check -- probes all services (database, vector store,
+    Ollama, Redis, knowledge graph, ontology, warehouse, scheduler, agents,
+    Anthropic API, SMTP).  May take 1-3 seconds due to network probes."""
+    from app.services.health import get_full_health
+    result = await get_full_health()
+    # Return 503 if the platform is unhealthy (required service down)
+    if result["status"] == "unhealthy":
+        return JSONResponse(status_code=503, content=result)
+    return result
+
+
+@app.get("/api/system/services", tags=["system"])
+async def system_services():
+    """Service catalog -- lists every service with its required/optional status
+    and current runtime health."""
+    from app.services.health import get_full_health
+    from app.services.service_manifest import get_manifest_summary
+
+    manifest = get_manifest_summary()
+    health = await get_full_health()
+    services_health = health.get("services", {})
+
+    # Merge runtime status into the manifest
+    for entry in manifest:
+        svc_name = entry["service"]
+        if svc_name in services_health:
+            entry["status"] = services_health[svc_name]["status"]
+            entry["details"] = services_health[svc_name]["details"]
+        else:
+            entry["status"] = "unchecked"
+            entry["details"] = "No health probe configured"
+
+    return {
+        "platform_status": health["status"],
+        "service_count": len(manifest),
+        "required_count": sum(1 for e in manifest if e["required"]),
+        "optional_count": sum(1 for e in manifest if not e["required"]),
+        "services": manifest,
+    }
+
+
 @app.get("/api/config/public", tags=["system"])
 async def public_config():
-    """Public configuration endpoint — returns non-sensitive settings for the frontend."""
+    """Public configuration endpoint -- returns non-sensitive settings for the frontend."""
     return {
         "company_name": settings.COMPANY_NAME,
         "default_currency": settings.DEFAULT_CURRENCY,

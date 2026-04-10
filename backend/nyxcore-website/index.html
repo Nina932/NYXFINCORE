@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NYX Core — The AI CFO for Emerging Markets</title>
+  <meta name="description" content="NYX Core — Multi-agent AI platform transforming monthly financial closes from days to minutes. 8+ specialized agents, 5-tier LLM fallback, and deterministic financial intelligence.">
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#00050D">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-deep: #00050D;
+      --bg-card: rgba(10, 22, 40, 0.7);
+      --accent: #00E5FF;
+      --accent-teal: #4fd1c5;
+      --accent-emerald: #10b981;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* --- NAVIGATION --- */
+    nav {
+      position: fixed; top: 0; width: 100%;
+      padding: 1.2rem 2rem;
+      background: rgba(0, 5, 13, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.3s ease;
+    }
+    nav.scrolled { padding: 0.8rem 2rem; background: rgba(0, 5, 13, 0.95); }
+
+    .nav-container {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-weight: 800; font-size: 1.3rem; letter-spacing: -0.05em;
+      text-decoration: none; color: #fff;
+    }
+    .nav-logo .core { color: var(--accent); }
+    .nav-links { display: flex; gap: 2.5rem; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+    .nav-links a:hover { color: var(--accent-teal); }
+    .nav-cta {
+      padding: 0.75rem 1.75rem; background: var(--accent-teal); color: var(--bg-deep);
+      border-radius: 100px; text-decoration: none; font-weight: 700; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease;
+    }
+    .nav-cta:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(79, 209, 197, 0.3); }
+
+    /* --- SHARED --- */
+    section { padding: 100px 0; position: relative; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+    .section-tag {
+      font-family: var(--font-mono); color: var(--accent-teal); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; display: inline-block;
+    }
+    .section-title { font-size: 3rem; font-weight: 800; line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+    .section-subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin-bottom: 3rem; line-height: 1.7; }
+
+    /* --- HERO --- */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; position: relative;
+      padding-top: 80px;
+      background: radial-gradient(circle at 70% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 60%);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(0, 229, 255, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.04) 0%, transparent 50%);
+      animation: hero-glow 8s ease-in-out infinite alternate; z-index: 0;
+    }
+    @keyframes hero-glow { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    .hero-container {
+      max-width: 1400px; margin: 0 auto; padding: 0 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      width: 100%; position: relative; z-index: 1;
+    }
+    .hero-content h1 {
+      font-size: 3.8rem; line-height: 1.1; margin-bottom: 1.5rem; font-weight: 800;
+      background: linear-gradient(90deg, #ffffff 0%, var(--accent) 40%, #ffffff 60%, #94a3b8 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 5s linear infinite;
+    }
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    .hero-content p { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2.5rem; line-height: 1.7; }
+    .hero-buttons { display: flex; gap: 1.5rem; }
+
+    .btn {
+      padding: 1rem 2.5rem; border-radius: 100px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-block;
+      font-size: 0.9rem; border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--accent-teal); color: var(--bg-deep); }
+    .btn-primary:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(79, 209, 197, 0.4); }
+    .btn-secondary { background: transparent; color: var(--text-primary); border: 1px solid var(--glass-border); }
+    .btn-secondary:hover { border-color: var(--accent-teal); background: rgba(79, 209, 197, 0.1); transform: translateY(-5px); }
+
+    /* --- SCREENSHOT FRAMES --- */
+    .screenshot-showcase { margin-top: 3rem; }
+    .screenshot-showcase.small { margin-top: 0; }
+    .screenshot-frame {
+      background: #070a10; border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 16px;
+      overflow: hidden; position: relative;
+      box-shadow: 0 20px 80px rgba(0, 229, 255, 0.08), 0 0 1px rgba(0, 229, 255, 0.3);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+    .screenshot-frame:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 100px rgba(0, 229, 255, 0.18), 0 0 2px rgba(0, 229, 255, 0.6); }
+    @keyframes glow-pulse { 0%, 100% { box-shadow: 0 20px 80px rgba(0, 229, 255, 0.08), 0 0 1px rgba(0, 229, 255, 0.3); } 50% { box-shadow: 0 25px 90px rgba(0, 229, 255, 0.15), 0 0 3px rgba(0, 229, 255, 0.5); } }
+
+    .screenshot-dots { display: flex; gap: 6px; padding: 12px 16px; background: #050810; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+    .screenshot-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); }
+    .screenshot-dots span:first-child { background: #ff5f57; }
+    .screenshot-dots span:nth-child(2) { background: #febc2e; }
+    .screenshot-dots span:last-child { background: #28c840; }
+    .screenshot-frame img, .screenshot-frame video { width: 100%; height: auto; display: block; }
+    .screenshot-caption { text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-top: 1rem; font-family: var(--font-mono); letter-spacing: 0.02em; }
+    .screenshot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+    /* --- CARDS --- */
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--glass-border); padding: 2.5rem;
+      border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, transparent 70%);
+      opacity: 0; transition: opacity 0.3s ease; z-index: 0;
+    }
+    .card:hover { border-color: var(--accent-teal); transform: translateY(-10px); background: rgba(10, 22, 40, 0.9); }
+    .card:hover::before { opacity: 1; }
+    .card-inner { position: relative; z-index: 1; }
+    .card-icon { font-size: 2.2rem; color: var(--accent-teal); margin-bottom: 1rem; }
+    .card h3 { font-size: 1.3rem; margin-bottom: 0.75rem; font-weight: 700; }
+    .card p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* --- PROBLEM SECTION --- */
+    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; align-items: center; }
+    .pain-point {
+      display: flex; gap: 1.25rem; padding: 2rem; background: var(--bg-card);
+      border: 1px solid var(--glass-border); border-radius: 16px; margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .pain-point:hover { border-color: #ff5f57; background: rgba(255, 95, 87, 0.05); }
+    .pain-icon { font-size: 1.5rem; color: #ff5f57; margin-top: 0.2rem; }
+    .pain-point h4 { color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .pain-point p { color: var(--text-secondary); font-size: 0.95rem; }
+
+    /* --- WORKFLOW PIPELINE --- */
+    .pipeline { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin: 3rem 0; }
+    .pipeline-step {
+      background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.25);
+      color: var(--accent); padding: 0.75rem 1.5rem; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 600; font-family: var(--font-mono);
+      white-space: nowrap; transition: all 0.3s ease;
+    }
+    .pipeline-step:hover { background: rgba(0, 229, 255, 0.15); transform: translateY(-3px); }
+    .pipeline-arrow { color: var(--accent); font-size: 1.2rem; opacity: 0.5; }
+
+    /* --- COMPARISON TABLE --- */
+    .comparison-table {
+      width: 100%; border-collapse: collapse; margin-top: 3rem;
+      background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden;
+    }
+    .comparison-table th, .comparison-table td { padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--glass-border); }
+    .comparison-table th { background: rgba(0, 229, 255, 0.05); color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+    .comparison-table td { color: var(--text-secondary); font-size: 0.95rem; }
+    .comparison-table td:first-child { color: var(--text-primary); font-weight: 500; }
+    .comparison-table tbody tr:hover { background: rgba(0, 229, 255, 0.03); }
+    .check { color: var(--accent-teal); font-weight: 700; }
+    .cross { color: #64748b; }
+
+    /* --- METRICS --- */
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 3rem; }
+    .metric-card {
+      text-align: center; background: var(--bg-card); border: 1px solid var(--glass-border);
+      padding: 2rem; border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .metric-card:hover { border-color: var(--accent-teal); transform: translateY(-8px); box-shadow: 0 20px 60px rgba(79, 209, 197, 0.15); }
+    .metric-value { font-size: 3rem; font-weight: 800; color: var(--accent-teal); margin-bottom: 0.5rem; }
+    .metric-label { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+
+    /* --- MARKET BARS --- */
+    .market-bars { margin-top: 2rem; }
+    .market-bar-item { margin-bottom: 2rem; }
+    .market-bar-label { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .market-bar-name { color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; }
+    .market-bar-value { color: var(--accent); font-family: var(--font-mono); font-weight: 700; }
+    .market-bar-track { background: rgba(255,255,255,0.05); border-radius: 8px; height: 12px; overflow: hidden; }
+    .market-bar-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--accent-teal), rgba(0, 229, 255, 0.6)); transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* --- ROADMAP --- */
+    .roadmap { display: flex; gap: 0; margin-top: 3rem; position: relative; }
+    .roadmap::before {
+      content: ''; position: absolute; top: 28px; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent-teal), rgba(0, 229, 255, 0.2));
+    }
+    .roadmap-phase {
+      flex: 1; text-align: center; position: relative; padding-top: 50px;
+    }
+    .roadmap-dot {
+      width: 20px; height: 20px; border-radius: 50%; background: var(--accent-teal);
+      border: 3px solid var(--bg-deep); position: absolute; top: 19px; left: 50%; transform: translateX(-50%);
+      z-index: 1; box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    }
+    .roadmap-phase.future .roadmap-dot { background: rgba(0, 229, 255, 0.3); box-shadow: none; }
+    .roadmap-label { font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .roadmap-title { color: var(--text-primary); font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+    .roadmap-desc { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; }
+
+    /* --- CTA BOX --- */
+    .cta-box {
+      background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 24px;
+      padding: 4rem 3rem; text-align: center;
+    }
+    .cta-box h3 { font-size: 2rem; margin-bottom: 1rem; }
+    .cta-box p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; }
+    .cta-buttons { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+
+    /* --- FOOTER --- */
+    footer { padding: 4rem 0; border-top: 1px solid var(--glass-border); }
+    footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; }
+    .footer-logo { font-weight: 800; font-size: 1.2rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
+    .footer-logo .core { color: var(--accent-teal); }
+    .footer-links { display: flex; gap: 2rem; font-size: 0.85rem; }
+    .footer-links a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+    .footer-links a:hover { color: var(--accent-teal); }
+    .footer-credit { font-size: 0.8rem; color: var(--text-secondary); }
+
+    /* --- ANIMATIONS --- */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+    .reveal-delay-4 { transition-delay: 0.6s; }
+
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .section-tag { animation: float 3s ease-in-out infinite; }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 1200px) {
+      .hero-container { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-content h1 { font-size: 3rem; }
+      .section-title { font-size: 2.5rem; }
+      .card-grid, .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .screenshot-grid { grid-template-columns: 1fr; }
+      .problem-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .roadmap { flex-direction: column; gap: 2rem; }
+      .roadmap::before { display: none; }
+      .roadmap-phase { padding-top: 0; padding-left: 40px; text-align: left; }
+      .roadmap-dot { left: 0; top: 5px; transform: none; }
+    }
+    @media (max-width: 640px) {
+      .card-grid, .metrics-grid { grid-template-columns: 1fr; }
+      .hero-buttons { flex-direction: column; }
+      .nav-cta { display: none; }
+      .comparison-table { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVIGATION ═══════════════ -->
+<nav id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:72px;height:72px"><defs><filter id="ng" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b1"/><feGaussianBlur stdDeviation="12" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g stroke="#1E3D5A" stroke-width="0.7" fill="none" opacity="0.3"><polygon points="91,74.4 82,90 64,90 55,74.4 64,58.8 82,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" repeatCount="indefinite"/></polygon><polygon points="118,58.8 109,74.4 91,74.4 82,58.8 91,43.2 109,43.2"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="118,90 109,105.6 91,105.6 82,90 91,74.4 109,74.4"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1s" repeatCount="indefinite"/></polygon><polygon points="118,121.2 109,136.8 91,136.8 82,121.2 91,105.6 109,105.6"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1.5s" repeatCount="indefinite"/></polygon><polygon points="145,74.4 136,90 118,90 109,74.4 118,58.8 136,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2s" repeatCount="indefinite"/></polygon><polygon points="145,105.6 136,121.2 118,121.2 109,105.6 118,90 136,90"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2.5s" repeatCount="indefinite"/></polygon></g><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" fill="#00C8FF" opacity="0.04"/><polygon points="100,30 150,60 150,120 100,150 50,120 50,60" stroke="#00E5FF" stroke-width="1" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.3;0" dur="3s" repeatCount="indefinite"/></polygon><polygon points="100,25 155,57.5 155,122.5 100,155 45,122.5 45,57.5" stroke="#00E5FF" stroke-width="0.5" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.15;0" dur="3s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none" filter="url(#ng)"><animate attributeName="stroke-opacity" values="1;0.65;1" dur="3s" repeatCount="indefinite"/></polygon></svg>
+      NYX <span class="core">CORE</span>
+    <a href="index.html" class="logo-section">
+      <div class="logo-icon">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px"><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none"></polygon></svg>
+      </div>
+      <div>NYX <span class="logo-core">CORE</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#intelligence">Intelligence</a></li>
+      <li><a href="#traction">Scale</a></li>
+      <li><a href="#contact" class="btn-nav">Connect</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══════════════ 1. HERO SECTION ═══════════════ -->
+<section class="hero reveal">
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <span class="section-tag">Decision-Centric AI</span>
+      <h1>Institutional Financial Intelligence for High-Growth Enterprises</h1>
+      <p class="section-subtitle" style="text-align: left;">Move beyond static accounting. NYX Core combines 12 autonomous AI agents with a deterministic financial engine to automate high-volume transaction datasets and deliver prescriptive decisions.</p>
+      <div class="hero-stats">
+        <div class="hero-stat-item">
+          <span class="stat-val">500+</span>
+          <span class="stat-label">Analysis Engines</span>
+        </div>
+        <div class="hero-stat-item">
+          <span class="stat-val">12</span>
+          <span class="stat-label">Specialized Agents</span>
+        </div>
+      </div>
+      <div class="cta-buttons" style="justify-content: flex-start;">
+        <a href="#contact" class="btn btn-primary">Request Institutional Demo</a>
+        <a href="#features" class="btn btn-secondary">Explore Capabilities</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="screenshot-frame main-shot">
+        <div class="screenshot-dots"><span></span><span></span><span></span></div>
+        <img src="assets/dashboard-main.png" alt="NYX Core Decision Command Center">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 2. PROBLEM/SOLUTION STRIP ═══════════════ -->
+<section id="features" class="reveal">
+  <div class="container section-header">
+    <span class="section-tag">Industrial Intelligence</span>
+    <h2 class="section-title">From Data Chaos to Strategic Command</h2>
+    <p class="section-subtitle">Fragmented Excel sheets and manual closing cycles are the blind spots of the mid-market. NYX Core bridges the gap between raw data and audit-ready intelligence.</p>
+  </div>
+
+  <div class="container feature-showcase">
+    <!-- Block 1: Core -->
+    <div class="feature-block">
+      <div class="feature-info">
+        <div class="feature-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+        <h3>Financial Statement Automation</h3>
+        <p>Turn 5-10 day monthly close into minutes. We automate P&L, Balance Sheet, and Cash Flow generation with IFRS-compliant precision.</p>
+        <ul class="feature-list">
+          <li>Decimal-precise calculations with full audit trail.</li>
+          <li>Multi-period comparison and variance analysis.</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="assets/balancesheet.png" alt="Automated Balanced Sheet">
+      </div>
+    </div>
+
+    <!-- Block 2: Intelligence -->
+    <div class="feature-block reversed">
+      <div class="feature-info">
+        <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
+        <h3>Fraud & Anomaly Detection</h3>
+        <p>Statistical anomaly detection across high-volume transaction datasets. Moving beyond simple thresholds into pattern-based intelligence.</p>
+        <ul class="feature-list">
+          <li>Z-score, IQR fences, and Benford's Law analysis.</li>
+          <li>Automatic flagging of suspicious transactions.</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="assets/system.png" alt="Anomaly Detection System">
+      </div>
+    </div>
+
+    <!-- Block 3: Forecasting -->
+    <div class="feature-block">
+      <div class="feature-info">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Revenue & Financial Forecasting</h3>
+        <p>Ensemble forecasting using 5 distinct statistical methods. Backtested for optimal accuracy across volatile regional markets.</p>
+        <ul class="feature-list">
+          <li>Moving Average, Exponential Smoothing, OLS, CAGR, and Seasonal models.</li>
+          <li>Multi-period projections with confidence intervals.</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="assets/flywheel.png" alt="Flywheel Forecasting Engine">
+      </div>
+    </div>
+
+    <!-- Block 4: Compliance -->
+    <div class="feature-block reversed">
+      <div class="feature-info">
+        <div class="feature-icon"><i class="fas fa-landmark"></i></div>
+        <h3>Georgian & Regional Compliance</h3>
+        <p>Native support for localized accounting standards. Built-in mapping for Georgian 1C exports and bilingual regulatory reporting.</p>
+        <ul class="feature-list">
+          <li>134 Georgian COA entries (Bilingual Georgian/English).</li>
+          <li>Automated 1C accounting system integration.</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="assets/ontology.png" alt="Compliance Knowledge Graph">
+      </div>
+    </div>
+
+    <!-- Block 5: Enterprise -->
+    <div class="feature-block">
+      <div class="feature-info">
+        <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+        <h3>Multi-Company Consolidation</h3>
+        <p>Consolidate complex financial data across multiple entities instantly. Handle intercompany eliminations and currency translations in seconds.</p>
+        <ul class="feature-list">
+          <li>Intercompany elimination rules and currency translation.</li>
+          <li>Unified reporting across global subsidiaries.</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="assets/warehouse.png" alt="Consolidated Data Warehouse">
+      </div>
+    </div>
+
+    <!-- Block 6: AI Chat -->
+    <div class="feature-block reversed">
+      <div class="feature-info">
+        <div class="feature-icon"><i class="fas fa-comments"></i></div>
+        <h3>AI-Powered Financial Chat</h3>
+        <p>A natural language interface for forensic financial analysis. Ask complex questions about your GL and receive data-backed responses.</p>
+        <ul class="feature-list">
+          <li>Multi-agent routing for high-reasoning queries.</li>
+          <li>Context-aware follow-up for deep-dive analysis.</li>
+        </ul>
+      </div>
+      <div class="feature-img">
+        <img src="assets/operator-briefing.png" alt="AI Financial Briefing">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 3. AGENT FLOW (THE BRAIN) ═══════════════ -->
+<section id="intelligence" style="background: rgba(0, 229, 255, 0.02);" class="reveal">
+  <div class="container">
+    <span class="section-tag">System Architecture</span>
+    <h2 class="section-title">The 5-Stage Intelligence Pipeline</h2>
+    <p class="section-subtitle">NYX Core is not an "AI Wrapper." It is a 12-agent orchestration layer that bridges the gap between raw files and institutional ground truth.</p>
+
+    <div class="pipeline-flow">
+      <div class="pipeline-node">
+        <div class="node-icon"><i class="fas fa-file-import"></i></div>
+        <h4>Data Ingestion</h4>
+        <p>Multi-format parsing of raw GL data, 1C exports, and IFRS mappings.</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-node">
+        <div class="node-icon"><i class="fas fa-calculator"></i></div>
+        <h4>Deterministic Calc</h4>
+        <p>Hard-coded financial rules using Python Decimal logic. Zero hallucinations.</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-node">
+        <div class="node-icon"><i class="fas fa-brain"></i></div>
+        <h4>Predictive Insight</h4>
+        <p>Agents reason about anomalies, margins, and operational inefficiencies.</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-node highlight">
+        <div class="node-icon"><i class="fas fa-bolt"></i></div>
+        <h4>Prescriptive Actions</h4>
+        <p>Strategy agents propose ROI-ranked remediation steps automatically.</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-node">
+        <div class="node-icon"><i class="fas fa-shield-check"></i></div>
+        <h4>Institutional Audit</h4>
+        <p>Supervisor agent verifies every number against the source file lineage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 4. TRACTION / OPERATING SCALE ═══════════════ -->
+<section id="traction" class="reveal">
+  <div class="container">
+    <div class="metrics-row">
+      <div class="metric-text">
+        <span class="section-tag">Scale</span>
+        <h2 class="section-title">Built for Industrial Reliability</h2>
+        <p>NYX Core is tested against high-volume transaction datasets, designed to serve as the "Cognitive Operating System" for regional holding companies.</p>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">500+</div>
+          <div class="metric-label">Proprietary Logic Tools</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">12</div>
+          <div class="metric-label">Specialized AI Agents</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">0.01%</div>
+          <div class="metric-label">Precision Threshold</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">24/7</div>
+          <div class="metric-label">Continuous Audit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA / CONTACT ═══════════════ -->
+<section id="contact" class="reveal">
+  <div class="container">
+    <div class="cta-box">
+      <span class="section-tag">Engagement</span>
+      <h3>Shape the Future of Finance</h3>
+      <p>Secure an institutional pilot or request the full system technical specification.</p>
+      
+      <div style="max-width: 500px; margin: 2rem auto 0;">
+        <form action="https://formspree.io/f/connect@nyxcore.space" method="POST" id="investorForm">
+          <input type="text" name="name" placeholder="Full Name" required>
+          <input type="email" name="email" placeholder="Business Email" required>
+          <textarea name="message" placeholder="Briefly describe your requirements" rows="4"></textarea>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Connect with NYX Core</button>
+        </form>
+        <div id="formSuccess" style="display:none; text-align:center; padding-2rem; color:var(--accent-teal);">
+          <i class="fas fa-check-circle"></i> Message sent. Redirecting to NYX Core team.
+        </div>
+      </div>
+      <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-secondary);">Direct contact: connect@nyxcore.space</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:42px;height:42px"><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none"></polygon></svg>
+      NYX <span class="core">CORE</span>
+    </div>
+    <div class="footer-credit">
+      &copy; 2026 NYX Core Financial Intelligence. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Navbar Scroll Logic
+  window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // Reveal Animations
+  const reveals = document.querySelectorAll('.reveal');
+  const revealOnScroll = () => {
+    reveals.forEach(el => {
+      const windowHeight = window.innerHeight;
+      const revealTop = el.getBoundingClientRect().top;
+      if (revealTop < windowHeight - 150) {
+        el.classList.add('visible');
+      }
+    });
+  };
+  window.addEventListener('scroll', revealOnScroll);
+  // Form Submission Logic (AJAX)
+  const contactForm = document.getElementById('investorForm');
+  const formSuccess = document.getElementById('formSuccess');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('button');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Establishing Connection...';
+      btn.disabled = true;
+
+      const formData = new FormData(this);
+      
+      try {
+        const response = await fetch('https://formspree.io/f/connect@nyxcore.space', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          contactForm.style.display = 'none';
+          formSuccess.style.display = 'block';
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (error) {
+        btn.innerHTML = 'Error. Please Try Again.';
+        btn.disabled = false;
+        setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

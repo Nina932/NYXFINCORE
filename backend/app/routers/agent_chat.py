@@ -50,11 +50,20 @@ class FeedbackCreate(BaseModel):
 @router.get("/status")
 async def agent_status():
     """Check agent readiness — used by frontend to show/hide API key banner."""
-    has_key = bool(settings.ANTHROPIC_API_KEY)
+    has_any_llm = bool(
+        settings.ANTHROPIC_API_KEY or settings.NVIDIA_API_KEY_GEMMA
+        or settings.NVIDIA_API_KEY or settings.GEMINI_API_KEY
+    )
+    primary_model = (
+        "gemma-4-31b-it (NVIDIA)" if settings.NVIDIA_API_KEY_GEMMA
+        else settings.ANTHROPIC_MODEL if settings.ANTHROPIC_API_KEY
+        else "gemini-2.5-flash (Google)" if settings.GEMINI_API_KEY
+        else "none"
+    )
     status = {
-        "status":  "ready" if has_key else "no_api_key",
-        "model":   settings.ANTHROPIC_MODEL,
-        "api_key": "configured" if has_key else "missing",
+        "status":  "ready" if has_any_llm else "no_api_key",
+        "model":   primary_model,
+        "api_key": "configured" if has_any_llm else "missing",
         "agent_mode": settings.AGENT_MODE,
     }
     # Include multi-agent registry status
@@ -104,7 +113,30 @@ async def captain_chat(req: CaptainChatRequest, db: AsyncSession = Depends(get_d
     try:
         from app.services.local_llm import captain_llm
 
-        # Build context from current financial data if available
+        # Extract the actual user question and selected period from the frontend
+        # context blob.  The frontend sends:
+        #   "System: FinAI OS...\nPeriod: September 2025\n...\nUser's question: <q>"
+        raw_message = req.message.strip()
+        user_q_marker = "User's question: "
+        selected_period = None
+        if user_q_marker in raw_message:
+            user_message = raw_message[raw_message.rindex(user_q_marker) + len(user_q_marker):].strip()
+            # Extract the dashboard period so we query the right data
+            import re
+            period_match = re.search(r"Period:\s*(.+)", raw_message)
+            if period_match:
+                selected_period = period_match.group(1).strip()
+            logger.info(
+                "Captain: extracted question (%d chars) from context blob (%d chars), period=%s",
+                len(user_message), len(raw_message), selected_period,
+            )
+        else:
+            user_message = raw_message
+            logger.info("Captain: raw message (%d chars), no context blob detected", len(user_message))
+
+        # Build context from current financial data — use the dashboard's
+        # selected period when available so the AI answers about the same
+        # data the user is looking at.
         context = {}
         try:
             from app.services.data_store import data_store
@@ -114,11 +146,21 @@ async def captain_chat(req: CaptainChatRequest, db: AsyncSession = Depends(get_d
                 co_id = co["id"]
                 periods = data_store.get_all_periods(co_id)
                 if periods:
-                    fin = data_store.get_financials(co_id, periods[-1])
+                    # Use the period the dashboard is showing, or fall back to latest
+                    target_period = None
+                    if selected_period:
+                        # Fuzzy match: "September 2025" → "2025-09" or exact match
+                        for p in periods:
+                            if selected_period.lower() in p.lower() or p.lower() in selected_period.lower():
+                                target_period = p
+                                break
+                    if not target_period:
+                        target_period = periods[-1]
+                    fin = data_store.get_financials(co_id, target_period)
                     if fin:
                         context = {
                             "company": co.get("name", "Unknown"),
-                            "period": periods[-1],
+                            "period": target_period,
                             "periods_available": periods,
                             "revenue": fin.get("revenue", 0),
                             "cogs": fin.get("cogs", 0) or (fin.get("revenue", 0) - fin.get("gross_profit", 0)),
@@ -136,7 +178,7 @@ async def captain_chat(req: CaptainChatRequest, db: AsyncSession = Depends(get_d
             pass
 
         result = await captain_llm.route_and_call(
-            message=req.message,
+            message=user_message,
             context=context,
             use_nemo_retriever=req.use_nemo_retriever,
             lang=req.lang,
@@ -212,7 +254,10 @@ async def chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(400, "Message cannot be empty")
 
     # Check if ANY intelligence tier is available
-    has_api_key = bool(settings.ANTHROPIC_API_KEY)
+    has_api_key = bool(
+        settings.ANTHROPIC_API_KEY or settings.NVIDIA_API_KEY_GEMMA
+        or settings.NVIDIA_API_KEY or settings.GEMINI_API_KEY
+    )
     ollama_available = False
     try:
         from app.services.local_llm import local_llm
@@ -221,8 +266,7 @@ async def chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
         pass
 
     if not has_api_key and not ollama_available:
-        # Still allow — Tier 4 (template responses) will handle it
-        logger.warning("No API key and no Ollama — using template responses only")
+        logger.warning("No LLM API key and no Ollama — using template responses only")
 
     try:
         if settings.AGENT_MODE == "multi":

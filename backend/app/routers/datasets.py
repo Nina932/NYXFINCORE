@@ -9,13 +9,20 @@ from sqlalchemy import select, func
 from pathlib import Path
 import asyncio
 import gc
-import shutil, os, json, hashlib
+import shutil, os, json, hashlib, tempfile
 from app.database import get_db
 from app.models.all_models import Dataset, Transaction, RevenueItem, BudgetLine, COGSItem, GAExpenseItem, ProductMapping, DataLineage, BalanceSheetItem, TrialBalanceItem, Anomaly, COAMappingOverride, COAMasterAccount, DatasetSnapshot, ETLAuditEvent
 from app.services import file_parser as fp_module
 from app.services.file_parser import get_english_name
 from app.services.schema_registry_db import validate_schema_db
 from app.config import settings
+from app.errors import (
+    raise_not_found,
+    raise_validation_error,
+    raise_conflict,
+    raise_upload_error,
+    raise_unprocessable,
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,18 +53,32 @@ async def _upload_dataset_impl(file: UploadFile, db: AsyncSession):
     """Internal upload implementation (concurrency-protected by caller)."""
     ext = Path(file.filename).suffix.lower()
     if ext not in (".xlsx", ".xls", ".csv"):
-        raise HTTPException(400, f"Unsupported file type: {ext}. Use .xlsx, .xls, or .csv")
+        raise_validation_error(f"Unsupported file type: {ext}. Use .xlsx, .xls, or .csv", field="file")
 
-    # Read and check size
-    content = await file.read()
-    size_mb = len(content) / (1024 * 1024)
-    if size_mb > MAX_SIZE_MB:
-        raise HTTPException(413, f"File too large: {size_mb:.1f}MB. Max {MAX_SIZE_MB}MB.")
-
-    # Save to disk
+    # Stream to disk in 64KB chunks — never hold more than one chunk in memory
+    # during the size-check phase, preventing OOM on large uploads.
+    max_bytes = int(MAX_SIZE_MB * 1024 * 1024)
     save_path = UPLOAD_DIR / file.filename
-    with open(save_path, "wb") as f:
-        f.write(content)
+    total_bytes = 0
+    try:
+        with open(save_path, "wb") as f:
+            while True:
+                chunk = await file.read(65536)  # 64KB
+                if not chunk:
+                    break
+                total_bytes += len(chunk)
+                if total_bytes > max_bytes:
+                    raise_upload_error(f"File too large: {total_bytes / (1024 * 1024):.1f}MB+ (still uploading). Max {MAX_SIZE_MB}MB.")
+                f.write(chunk)
+    except HTTPException:
+        # Clean up partial file before re-raising
+        if save_path.exists():
+            save_path.unlink()
+        raise
+
+    # Read the completed file back from disk for the parser
+    with open(save_path, "rb") as f:
+        content = f.read()
 
     # Schema validation — skip DB-based validation to avoid session poisoning
     # TODO: re-enable once DB schema is fully migrated via Alembic
@@ -104,7 +125,7 @@ async def _upload_dataset_impl(file: UploadFile, db: AsyncSession):
         parsed = fp_module.parse_file(file.filename, content, strict=settings.STRICT_PARSING)
     except Exception as e:
         os.unlink(save_path)
-        raise HTTPException(422, f"Parse failed: {str(e)}")
+        raise_unprocessable(f"Parse failed: {str(e)}")
 
     await _log_etl_event(
         db,
@@ -116,7 +137,7 @@ async def _upload_dataset_impl(file: UploadFile, db: AsyncSession):
     )
 
     if not isinstance(parsed, dict):
-        raise HTTPException(422, f"Parser returned invalid data format: {type(parsed)}")
+        raise_unprocessable(f"Parser returned invalid data format: {type(parsed)}")
 
     fingerprint_data = _compute_dataset_fingerprint(parsed)
 
@@ -133,7 +154,7 @@ async def _upload_dataset_impl(file: UploadFile, db: AsyncSession):
             metadata={"fingerprint": fingerprint_data["fingerprint"], "duplicate_snapshot_ids": [d.id for d in duplicates]},
         )
         await db.commit()
-        raise HTTPException(409, "Duplicate upload detected: same dataset content already exists.")
+        raise_conflict("Duplicate upload detected: same dataset content already exists.")
     await _log_etl_event(
         db,
         dataset_id=None,
@@ -628,7 +649,7 @@ async def list_datasets(db: AsyncSession = Depends(get_db)):
 async def list_dataset_snapshots(dataset_id: int, db: AsyncSession = Depends(get_db)):
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
     res = await db.execute(
         select(DatasetSnapshot).where(DatasetSnapshot.dataset_id == dataset_id).order_by(DatasetSnapshot.version.desc())
     )
@@ -639,7 +660,7 @@ async def list_dataset_snapshots(dataset_id: int, db: AsyncSession = Depends(get
 async def list_etl_events(dataset_id: int, limit: int = 200, db: AsyncSession = Depends(get_db)):
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
     res = await db.execute(
         select(ETLAuditEvent).where(ETLAuditEvent.dataset_id == dataset_id).order_by(ETLAuditEvent.created_at.desc()).limit(limit)
     )
@@ -673,7 +694,7 @@ async def create_product_mapping(payload: dict, db: AsyncSession = Depends(get_d
 async def delete_product_mapping(mapping_id: int, db: AsyncSession = Depends(get_db)):
     m = (await db.execute(select(ProductMapping).where(ProductMapping.id == mapping_id))).scalar_one_or_none()
     if not m:
-        raise HTTPException(404, "Mapping not found")
+        raise_not_found("ProductMapping", mapping_id)
     await db.delete(m)
     await db.commit()
     return {"message": "Mapping deleted", "id": mapping_id}
@@ -692,9 +713,9 @@ async def upsert_coa_mapping(payload: dict, db: AsyncSession = Depends(get_db)):
     """Create or update a COA mapping override (upsert by account_code)."""
     code = (payload.get("account_code") or "").strip()
     if not code:
-        raise HTTPException(400, "account_code is required")
+        raise_validation_error("account_code is required", field="account_code")
     if not payload.get("ifrs_line_item"):
-        raise HTTPException(400, "ifrs_line_item is required")
+        raise_validation_error("ifrs_line_item is required", field="ifrs_line_item")
 
     existing = (await db.execute(
         select(COAMappingOverride).where(COAMappingOverride.account_code == code)
@@ -729,7 +750,7 @@ async def upsert_coa_mapping(payload: dict, db: AsyncSession = Depends(get_db)):
 async def delete_coa_mapping(mapping_id: int, db: AsyncSession = Depends(get_db)):
     m = (await db.execute(select(COAMappingOverride).where(COAMappingOverride.id == mapping_id))).scalar_one_or_none()
     if not m:
-        raise HTTPException(404, "COA mapping override not found")
+        raise_not_found("COAMappingOverride", mapping_id)
     await db.delete(m)
     await db.commit()
     return {"message": "COA mapping override deleted", "id": mapping_id}
@@ -766,16 +787,35 @@ async def import_coa_master(file: UploadFile = File(...), db: AsyncSession = Dep
     """Import ანგარიშები.xlsx — parse, derive IFRS, upsert all accounts."""
     from app.services.coa_import import parse_coa_xlsx, derive_ifrs_mappings
     from app.services.file_parser import GEORGIAN_COA
-    import tempfile
 
     ext = Path(file.filename).suffix.lower()
     if ext not in (".xlsx", ".xls"):
-        raise HTTPException(400, "Only .xlsx/.xls files are supported for COA import")
+        raise_validation_error("Only .xlsx/.xls files are supported for COA import", field="file")
 
-    content = await file.read()
-    with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
-        tmp.write(content)
-        tmp_path = tmp.name
+    # Stream to temp file in 64KB chunks with size check (prevents OOM)
+    max_bytes = int(MAX_SIZE_MB * 1024 * 1024)
+    tmp = tempfile.NamedTemporaryFile(suffix=ext, delete=False)
+    tmp_path = tmp.name
+    total_bytes = 0
+    try:
+        while True:
+            chunk = await file.read(65536)  # 64KB
+            if not chunk:
+                break
+            total_bytes += len(chunk)
+            if total_bytes > max_bytes:
+                tmp.close()
+                os.unlink(tmp_path)
+                raise_upload_error(f"COA file too large: {total_bytes / (1024 * 1024):.1f}MB+ (still uploading). Max {MAX_SIZE_MB}MB.")
+            tmp.write(chunk)
+        tmp.close()
+    except HTTPException:
+        raise
+    except Exception:
+        tmp.close()
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        raise
 
     try:
         accounts = parse_coa_xlsx(tmp_path)
@@ -784,7 +824,7 @@ async def import_coa_master(file: UploadFile = File(...), db: AsyncSession = Dep
         os.unlink(tmp_path)
 
     if not accounts:
-        raise HTTPException(422, "No accounts found in uploaded file")
+        raise_unprocessable("No accounts found in uploaded file")
 
     created, updated = 0, 0
     for acct in accounts:
@@ -826,7 +866,7 @@ async def update_coa_master_account(account_id: int, payload: dict, db: AsyncSes
         select(COAMasterAccount).where(COAMasterAccount.id == account_id)
     )).scalar_one_or_none()
     if not acct:
-        raise HTTPException(404, "COA master account not found")
+        raise_not_found("COAMasterAccount", account_id)
 
     editable = ["ifrs_bs_line", "ifrs_pl_line", "ifrs_side", "ifrs_sub", "ifrs_pl_category", "is_contra",
                 "name_ka", "name_ru", "account_type", "account_type_en"]
@@ -850,7 +890,7 @@ async def delete_coa_master_account(account_id: int, db: AsyncSession = Depends(
         select(COAMasterAccount).where(COAMasterAccount.id == account_id)
     )).scalar_one_or_none()
     if not acct:
-        raise HTTPException(404, "COA master account not found")
+        raise_not_found("COAMasterAccount", account_id)
     await db.delete(acct)
     await db.commit()
     return {"message": "COA master account deleted", "id": account_id}
@@ -870,7 +910,7 @@ async def create_dataset_group(payload: dict, db: AsyncSession = Depends(get_db)
 
     name = payload.get("name")
     if not name:
-        raise HTTPException(400, "Group name is required")
+        raise_validation_error("Group name is required", field="name")
 
     group = DatasetGroup(
         name=name,
@@ -932,7 +972,7 @@ async def get_dataset_group(group_id: int, db: AsyncSession = Depends(get_db)):
     )
     group = result.scalar_one_or_none()
     if not group:
-        raise HTTPException(404, f"Group {group_id} not found")
+        raise_not_found("Group", group_id)
 
     ds_result = await db.execute(
         select(Dataset).where(Dataset.group_id == group_id)
@@ -957,7 +997,7 @@ async def delete_dataset_group(group_id: int, db: AsyncSession = Depends(get_db)
         select(DatasetGroup).where(DatasetGroup.id == group_id)
     )).scalar_one_or_none()
     if not group:
-        raise HTTPException(404, f"Group {group_id} not found")
+        raise_not_found("Group", group_id)
 
     # Ungroup all datasets in this group
     ds_result = await db.execute(
@@ -978,7 +1018,7 @@ async def get_dataset(dataset_id: int, db: AsyncSession = Depends(get_db)):
     from sqlalchemy import func as sqlfunc
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
 
     txns = (await db.execute(
         select(Transaction).where(Transaction.dataset_id == dataset_id)
@@ -1060,7 +1100,7 @@ async def activate_dataset(dataset_id: int, db: AsyncSession = Depends(get_db)):
     """Set this dataset as active — deactivates all others."""
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
 
     others = (await db.execute(select(Dataset).where(Dataset.is_active == True))).scalars().all()
     for o in others:
@@ -1077,7 +1117,7 @@ async def reparse_dataset(dataset_id: int, db: AsyncSession = Depends(get_db)):
     from sqlalchemy import delete as sql_delete
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
     if not d.upload_path or not os.path.exists(d.upload_path):
         raise HTTPException(400, "Original upload file not found — cannot re-parse")
 
@@ -1372,7 +1412,7 @@ async def reparse_dataset(dataset_id: int, db: AsyncSession = Depends(get_db)):
 async def delete_dataset(dataset_id: int, db: AsyncSession = Depends(get_db)):
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
     if d.is_seed:
         raise HTTPException(400, "Cannot delete seed dataset")
 
@@ -1401,7 +1441,7 @@ async def regenerate_balance_sheet(dataset_id: int, db: AsyncSession = Depends(g
 
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
 
     # Load COA overrides into file_parser
     coa_overrides = (await db.execute(select(COAMappingOverride))).scalars().all()
@@ -1499,7 +1539,7 @@ async def regenerate_pl(dataset_id: int, db: AsyncSession = Depends(get_db)):
 
     d = (await db.execute(select(Dataset).where(Dataset.id == dataset_id))).scalar_one_or_none()
     if not d:
-        raise HTTPException(404, "Dataset not found")
+        raise_not_found("Dataset", dataset_id)
 
     # Load COA caches
     coa_overrides = (await db.execute(select(COAMappingOverride))).scalars().all()
@@ -1632,13 +1672,13 @@ async def add_dataset_to_group(dataset_id: int, group_id: int, db: AsyncSession 
         select(DatasetGroup).where(DatasetGroup.id == group_id)
     )).scalar_one_or_none()
     if not group:
-        raise HTTPException(404, f"Group {group_id} not found")
+        raise_not_found("Group", group_id)
 
     ds = (await db.execute(
         select(Dataset).where(Dataset.id == dataset_id)
     )).scalar_one_or_none()
     if not ds:
-        raise HTTPException(404, f"Dataset {dataset_id} not found")
+        raise_not_found("Dataset", dataset_id)
 
     ds.group_id = group_id
     await db.commit()
@@ -1652,7 +1692,7 @@ async def remove_dataset_from_group(dataset_id: int, db: AsyncSession = Depends(
         select(Dataset).where(Dataset.id == dataset_id)
     )).scalar_one_or_none()
     if not ds:
-        raise HTTPException(404, f"Dataset {dataset_id} not found")
+        raise_not_found("Dataset", dataset_id)
 
     old_group = ds.group_id
     ds.group_id = None

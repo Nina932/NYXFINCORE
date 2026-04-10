@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="128" height="128">
+  <rect width="200" height="200" fill="#00050D" rx="32"/>
+  <polygon points="100,30 155,57.5 155,122.5 100,155 45,122.5 45,57.5" fill="#00E5FF" opacity="0.06"/>
+  <g stroke="#1E3D5A" stroke-width="0.7" fill="none" opacity="0.25">
+    <polygon points="91,74.4 82,90 64,90 55,74.4 64,58.8 82,58.8"/>
+    <polygon points="118,58.8 109,74.4 91,74.4 82,58.8 91,43.2 109,43.2"/>
+    <polygon points="118,90 109,105.6 91,105.6 82,90 91,74.4 109,74.4"/>
+    <polygon points="118,121.2 109,136.8 91,136.8 82,121.2 91,105.6 109,105.6"/>
+    <polygon points="145,74.4 136,90 118,90 109,74.4 118,58.8 136,58.8"/>
+    <polygon points="145,105.6 136,121.2 118,121.2 109,105.6 118,90 136,90"/>
+  </g>
+  <polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="5" fill="rgba(0,229,255,0.12)"/>
+  <text x="100" y="98" text-anchor="middle" dominant-baseline="central" font-family="Arial Black, Helvetica, sans-serif" font-weight="900" font-size="42" fill="#00E5FF" letter-spacing="-2">N</text>
+</svg>

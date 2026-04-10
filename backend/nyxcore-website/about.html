@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NYX Core FinAI - Sovereign financial intelligence for emerging markets">
+  <meta name="theme-color" content="#000000">
+  <title>About | NYX Core FinAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #00050D;
+      --card: rgba(10,22,40,0.7);
+      --border: rgba(255,255,255,0.1);
+      --accent: #4fd1c5;
+      --emerald: #10b981;
+      --purple: #863bff;
+      --text-primary: #fff;
+      --text-secondary: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(0, 5, 13, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+    }
+
+    nav .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    nav .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    nav .logo-core {
+      color: #00E5FF;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    .btn-cta {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.625rem 1.5rem;
+      border-radius: 100px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(79, 209, 197, 0.2);
+    }
+
+    /* Main Content */
+    main {
+      margin-top: 80px;
+    }
+
+    /* Sections */
+    .section {
+      padding: 4rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-label {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 6rem 2rem;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(79, 209, 197, 0.05), transparent);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(79, 209, 197, 0.1);
+      border: 1px solid rgba(79, 209, 197, 0.3);
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-heading {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Mission Section */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .mission-left h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .mission-left p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .mission-right {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      text-align: center;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .mission-right h4 {
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .stat-item {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(79, 209, 197, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Philosophy Grid */
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .philosophy-card {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .philosophy-card:hover {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, rgba(79, 209, 197, 0.05), transparent);
+      transform: translateY(-4px);
+    }
+
+    .philosophy-card h4 {
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .philosophy-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    .timeline-item {
+      margin-bottom: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+      grid-column: 1;
+      text-align: right;
+      padding-right: 2rem;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-dot {
+      grid-column: 2;
+      justify-self: start;
+      margin-left: -9px;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+      grid-column: 2;
+      text-align: left;
+      padding-left: 2rem;
+    }
+
+    .timeline-item:nth-child(even) .timeline-dot {
+      grid-column: 1;
+      justify-self: end;
+      margin-right: -9px;
+    }
+
+    .timeline-dot {
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      border: 3px solid var(--bg);
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-content {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .timeline-period {
+      color: var(--accent);
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-milestone {
+      color: var(--text-primary);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Market Opportunity */
+    .market-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .market-visualization {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .market-bar {
+      margin-bottom: 2rem;
+    }
+
+    .market-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      text-align: left;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .market-bar-fill {
+      background: linear-gradient(90deg, var(--accent), rgba(79, 209, 197, 0.5));
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .market-value {
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-align: left;
+      margin-top: 0.3rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .market-text h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .market-text p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Team Grid */
+    /* Contact Section */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+
+    .contact-form-wrapper {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(79, 209, 197, 0.05);
+      border: 1px solid rgba(79, 209, 197, 0.2);
+      color: var(--text-primary);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(79, 209, 197, 0.2);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, var(--accent), rgba(79, 209, 197, 0.8));
+      border: none;
+      color: var(--bg);
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(79, 209, 197, 0.2);
+    }
+
+    .contact-info {
+      background: var(--card);
+      border: 1px solid rgba(79, 209, 197, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .contact-item h4 {
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .contact-item p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .contact-item a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .contact-item a:hover {
+      opacity: 0.8;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 22, 40, 0.5);
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .footer-section p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Fade Animation */
+    .fade-up {
+      animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav .nav-links {
+        display: none;
+      }
+
+      .hero-heading {
+        font-size: 2rem;
+      }
+
+      .mission-grid,
+      .market-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .philosophy-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline::before {
+        display: none;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+        margin-bottom: 2rem;
+      }
+
+      .timeline-item:nth-child(odd) .timeline-content,
+      .timeline-item:nth-child(even) .timeline-content {
+        grid-column: 1;
+        text-align: left;
+        padding-left: 3rem;
+        padding-right: 0;
+      }
+
+      .timeline-item:nth-child(odd) .timeline-dot,
+      .timeline-item:nth-child(even) .timeline-dot {
+        grid-column: 1;
+        justify-self: start;
+        margin-left: 0;
+        position: absolute;
+        left: 0;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Enhanced Animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    .stat-item { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .stat-item:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 20px 60px rgba(79, 209, 197, 0.15); }
+
+    .philosophy-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    .timeline-content { transition: all 0.4s ease; }
+    .timeline-content:hover { border-color: var(--accent); box-shadow: 0 10px 40px rgba(79, 209, 197, 0.12); transform: translateY(-4px); }
+
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    .hero-heading { background: linear-gradient(90deg, #fff 0%, #00E5FF 50%, #fff 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
+
+    .market-bar-fill { transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo-section">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:72px;height:72px"><defs><filter id="ng" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b1"/><feGaussianBlur stdDeviation="12" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g stroke="#1E3D5A" stroke-width="0.7" fill="none" opacity="0.3"><polygon points="91,74.4 82,90 64,90 55,74.4 64,58.8 82,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" repeatCount="indefinite"/></polygon><polygon points="118,58.8 109,74.4 91,74.4 82,58.8 91,43.2 109,43.2"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="118,90 109,105.6 91,105.6 82,90 91,74.4 109,74.4"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1s" repeatCount="indefinite"/></polygon><polygon points="118,121.2 109,136.8 91,136.8 82,121.2 91,105.6 109,105.6"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="1.5s" repeatCount="indefinite"/></polygon><polygon points="145,74.4 136,90 118,90 109,74.4 118,58.8 136,58.8"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2s" repeatCount="indefinite"/></polygon><polygon points="145,105.6 136,121.2 118,121.2 109,105.6 118,90 136,90"><animate attributeName="stroke-opacity" values="0.3;0.12;0.3" dur="4s" begin="2.5s" repeatCount="indefinite"/></polygon></g><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" fill="#00C8FF" opacity="0.04"/><polygon points="100,30 150,60 150,120 100,150 50,120 50,60" stroke="#00E5FF" stroke-width="1" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.3;0" dur="3s" repeatCount="indefinite"/></polygon><polygon points="100,25 155,57.5 155,122.5 100,155 45,122.5 45,57.5" stroke="#00E5FF" stroke-width="0.5" fill="none" opacity="0"><animate attributeName="opacity" values="0;0.15;0" dur="3s" begin="0.5s" repeatCount="indefinite"/></polygon><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="none" filter="url(#ng)"><animate attributeName="stroke-opacity" values="1;0.65;1" dur="3s" repeatCount="indefinite"/></polygon></svg>
+        NYX <span class="logo-core">CORE</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="platform.html">Platform</a></li>
+        <li><a href="use-cases.html">Use Cases</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="about.html#contact"><button class="btn-cta">Request Demo</button></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section fade-up">
+      <div class="container">
+        <div class="hero-badge">Our Story</div>
+        <h1 class="hero-heading">Building Sovereign Financial Intelligence</h1>
+        <p class="hero-subtitle">From Tbilisi to the world — making enterprise-grade financial AI accessible to emerging markets</p>
+      </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="section fade-up">
+      <div class="container">
+        <div class="mission-grid">
+          <div class="mission-left">
+            <h3>Our Mission</h3>
+            <p>
+              We're democratizing financial intelligence for mid-market companies in emerging economies. Today, institutional-grade financial tools like Palantir and Anaplan are priced for Fortune 500 enterprises, leaving mid-market businesses relying on spreadsheets and outdated systems.
+            </p>
+            <p>
+              NYX Core bridges this gap with deterministic AI that's affordable, offline-capable, and locally compliant. We believe financial intelligence is a right, not a luxury.
+            </p>
+          </div>
+          <div class="mission-right">
+            <h4>Enterprise-Grade</h4>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">Financial intelligence designed for the modern business</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- By the Numbers Section -->
+    <section class="section fade-up">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">By the Numbers</span>
+          <h2 class="section-title">The Scale of NYX Core</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-item fade-up">
+            <div class="stat-number counter" data-target="98704" data-suffix="">0</div>
+            <div class="stat-label">Lines of Production Code</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="stat-number counter" data-target="130" data-suffix="+">0</div>
+            <div class="stat-label">Backend Services</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="stat-number counter" data-target="6" data-suffix="">0</div>
+            <div class="stat-label">Autonomous AI Agents</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="stat-number counter" data-target="134" data-suffix="">0</div>
+            <div class="stat-label">Georgian COA Accounts</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="stat-number counter" data-target="700" data-suffix="+">0</div>
+            <div class="stat-label">Knowledge Graph Entities</div>
+          </div>
+          <div class="stat-item fade-up">
+            <div class="stat-number counter" data-target="5" data-suffix="">0</div>
+            <div class="stat-label">LLM Provider Fallback Chain</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technology Philosophy Section -->
+    <section class="section fade-up">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Our Approach</span>
+          <h2 class="section-title">Technology Philosophy</h2>
+        </div>
+        <div class="philosophy-grid">
+          <div class="philosophy-card fade-up">
+            <h4>Deterministic First</h4>
+            <p>Financial math must be precise. Every calculation uses Python Decimal with ROUND_HALF_UP. Zero LLM dependency in core computations.</p>
+          </div>
+          <div class="philosophy-card fade-up">
+            <h4>Multi-Agent Architecture</h4>
+            <p>Real agents with independent health tracking, circuit breakers, and tool routing. Not wrappers. Not demos. Purpose-built for financial analysis.</p>
+          </div>
+          <div class="philosophy-card fade-up">
+            <h4>Knowledge-Driven</h4>
+            <p>700+ entities encoding Georgian accounting domain knowledge. The system understands the business, not just the numbers.</p>
+          </div>
+          <div class="philosophy-card fade-up">
+            <h4>Resilient by Design</h4>
+            <p>5-tier LLM fallback, offline capability, deterministic templates when AI is unavailable. Always operational.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section class="section fade-up">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Journey</span>
+          <h2 class="section-title">Development Roadmap</h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item fade-up">
+            <div class="timeline-content">
+              <div class="timeline-period">Q1 2025</div>
+              <div class="timeline-milestone">Foundation — Core engine, P&L/BS/CF pipeline, anomaly detection</div>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="timeline-item fade-up">
+            <div class="timeline-content">
+              <div class="timeline-period">Q2 2025</div>
+              <div class="timeline-milestone">Intelligence — Multi-agent system, knowledge graph, forecasting</div>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="timeline-item fade-up">
+            <div class="timeline-content">
+              <div class="timeline-period">Q3 2025</div>
+              <div class="timeline-milestone">Scale — Multi-company consolidation, API access, desktop app</div>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="timeline-item fade-up">
+            <div class="timeline-content">
+              <div class="timeline-period">Q1 2026</div>
+              <div class="timeline-milestone">Growth — Multi-industry support, enhanced compliance, ML forecasting</div>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="timeline-item fade-up">
+            <div class="timeline-content">
+              <div class="timeline-period">Q3 2026</div>
+              <div class="timeline-milestone">Enterprise — On-premise deployment, SSO, white-label, global expansion</div>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Market Opportunity Section -->
+    <section class="section fade-up">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Market</span>
+          <h2 class="section-title">Market Opportunity</h2>
+        </div>
+        <div class="market-grid">
+          <div class="market-visualization">
+            <div class="market-bar">
+              <div class="market-label">TAM (Total Addressable Market)</div>
+              <div class="market-bar-fill" style="width: 100%;"></div>
+              <div class="market-value">$15B</div>
+            </div>
+            <div class="market-bar">
+              <div class="market-label">SAM (Serviceable Available Market)</div>
+              <div class="market-bar-fill" style="width: 14%;"></div>
+              <div class="market-value">$2.1B</div>
+            </div>
+            <div class="market-bar">
+              <div class="market-label">SOM (Serviceable Obtainable Market)</div>
+              <div class="market-bar-fill" style="width: 1.2%;"></div>
+              <div class="market-value">$180M</div>
+            </div>
+          </div>
+          <div class="market-text">
+            <h3>Beachhead Strategy</h3>
+            <p>
+              We're targeting the Georgian and Caucasus region as our initial beachhead. This $180M market represents mid-market companies with urgent needs for modern financial intelligence.
+            </p>
+            <p>
+              From there, we expand to adjacent emerging markets that share regulatory and infrastructure characteristics. Our TAM of $15B in global mid-market financial software represents a clear expansion pathway.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section fade-up" id="contact">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Contact</span>
+          <h2 class="section-title">Get In Touch</h2>
+        </div>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Ready to see NYX Core in action? Let's talk.</p>
+        <div class="contact-grid">
+          <div class="contact-form-wrapper">
+            <form class="contact-form" id="contactForm" action="https://formspree.io/f/PLACEHOLDER" method="POST">
+              <input type="hidden" name="_subject" value="NYX Core - New Demo Request">
+              <input type="text" name="_gotcha" style="display:none">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+              </div>
+              <div class="form-group">
+                <label for="company">Company</label>
+                <input type="text" id="company" name="company" placeholder="Your company">
+              </div>
+              <div class="form-group">
+                <label for="interest">Interest</label>
+                <select id="interest" name="interest" required>
+                  <option value="">Select an option</option>
+                  <option value="demo">Request Demo</option>
+                  <option value="investment">Investment Inquiry</option>
+                  <option value="partnership">Partnership</option>
+                  <option value="enterprise">Enterprise License</option>
+                  <option value="general">General Inquiry</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="Tell us about your needs..." required></textarea>
+              </div>
+              <button type="submit" class="submit-btn" id="submitBtn">Request Demo</button>
+            </form>
+          </div>
+          <div class="contact-info">
+            <div class="contact-item">
+              <h4>Email</h4>
+              <p><a href="#contact">Use the form to reach us</a></p>
+            </div>
+            <div class="contact-item">
+              <h4>Location</h4>
+              <p>Tbilisi, Georgia</p>
+            </div>
+            <div class="contact-item">
+              <h4>Company</h4>
+              <p>NYX Core Thinker LLC</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:52px"><polygon points="100,42 142,66 142,114 100,138 58,114 58,66" stroke="#00E5FF" stroke-width="3" fill="rgba(0,200,255,0.04)"><animate attributeName="stroke-opacity" values="1;0.5;1" dur="4s" repeatCount="indefinite"/></polygon></svg>
+            <span style="font-weight: 700;">NYX CORE</span>
+          </div>
+          <p>Sovereign Financial Intelligence</p>
+        </div>
+        <div class="footer-section">
+          <h4>Product</h4>
+          <p><a href="platform.html" style="color: var(--text-secondary); text-decoration: none;">Features</a></p>
+          <p><a href="pricing.html" style="color: var(--text-secondary); text-decoration: none;">Pricing</a></p>
+          <p><a href="use-cases.html" style="color: var(--text-secondary); text-decoration: none;">Use Cases</a></p>
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <p><a href="about.html" style="color: var(--text-secondary); text-decoration: none;">About</a></p>
+          <p><a href="index.html" style="color: var(--text-secondary); text-decoration: none;">Blog</a></p>
+          <p><a href="index.html" style="color: var(--text-secondary); text-decoration: none;">Careers</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright 2026 NYX Core Thinker LLC. All rights reserved. Based in Tbilisi, Georgia.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Contact form submission via Formspree
+    const form = document.getElementById('contactForm');
+    const btn = document.getElementById('submitBtn');
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          btn.textContent = 'Sent Successfully!';
+          btn.style.background = 'linear-gradient(135deg, #00E5FF 0%, #00C8FF 100%)';
+          form.reset();
+          setTimeout(() => {
+            btn.textContent = 'Request Demo';
+            btn.style.background = '';
+            btn.disabled = false;
+          }, 3000);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch(err) {
+        btn.textContent = 'Error - Try Again';
+        btn.style.background = 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)';
+        btn.disabled = false;
+        setTimeout(() => {
+          btn.textContent = 'Request Demo';
+          btn.style.background = '';
+        }, 3000);
+      }
+    });
+
+    // Animated counter
+    function animateCounter(el) {
+      const target = parseInt(el.getAttribute('data-target'));
+      const suffix = el.getAttribute('data-suffix') || '';
+      const duration = 2000;
+      const start = performance.now();
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(target * eased);
+        el.textContent = current.toLocaleString() + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
+    // Scroll reveal
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          if (entry.target.classList.contains('counter')) {
+            animateCounter(entry.target);
+          }
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.stat-item, .philosophy-card, .timeline-item, .section, .counter').forEach(el => {
+      el.classList.add('reveal');
+      revealObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

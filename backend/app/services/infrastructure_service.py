@@ -6,79 +6,158 @@ from datetime import datetime
 
 class InfrastructureService:
     def __init__(self):
-        # Professional Infrastructure Assets
+        # ── Infrastructure Assets — Geographically accurate routes ──
+        # Coordinates follow actual geographic paths:
+        #   - Pipelines trace overland corridors (valleys, passes)
+        #   - Maritime routes follow coastlines and shipping lanes
+        #   - Rail follows actual railway alignments
         self.assets = {
             "routes": [
                 {
                     "id": "btc_pipeline",
-                    "name": "BTC Pipeline (Baku-Tbilisi-Ceyhan)",
+                    "name": "BTC Pipeline (Baku–Tbilisi–Ceyhan)",
                     "type": "crude_pipeline",
                     "commodity": "crude",
-                    "capacity_mbtu": 1.2,  # Million BBL/d
+                    "capacity_mbtu": 1.2,
                     "financial_weight": 0.45,
-                    "nodes": ["Baku", "Tbilisi", "Ceyhan"],
-                    "coords": [[49.86, 40.40], [44.82, 41.71], [35.81, 36.88]],
+                    "nodes": ["Sangachal", "Gardabani", "Tbilisi", "Erzurum", "Ceyhan"],
+                    # Follows actual BTC right-of-way: Sangachal terminal → Kura valley
+                    # → Borjomi gap → eastern Turkey highlands → Ceyhan
+                    "coords": [
+                        [49.40, 40.18],  # Sangachal Terminal (start)
+                        [48.50, 40.60],  # Yevlakh area
+                        [47.20, 41.00],  # Mingachevir pass
+                        [46.30, 41.20],  # Gazakh border area
+                        [45.08, 41.46],  # Gardabani (Georgia entry)
+                        [44.82, 41.71],  # Tbilisi
+                        [44.00, 41.65],  # Borjomi corridor
+                        [43.30, 41.60],  # Akhaltsikhe
+                        [42.70, 41.20],  # Turkey border (Posof)
+                        [41.27, 39.90],  # Erzurum
+                        [39.50, 39.20],  # Sivas approach
+                        [37.80, 37.80],  # Kahramanmaraş
+                        [35.81, 36.88],  # Ceyhan terminal
+                    ],
                 },
                 {
                     "id": "middle_corridor_rail",
-                    "name": "Middle Corridor Rail Link",
+                    "name": "Middle Corridor Rail (Baku–Tbilisi–Kars)",
                     "type": "rail",
                     "commodity": "rail",
                     "capacity_mbtu": 0.4,
                     "financial_weight": 0.20,
-                    "nodes": ["Baku", "Alyat", "Gardabani", "Tbilisi"],
-                    "coords": [[49.86, 40.40], [49.41, 39.95], [45.08, 41.46], [44.82, 41.71]],
+                    "nodes": ["Alyat", "Baku", "Gardabani", "Tbilisi", "Akhalkalaki", "Kars"],
+                    # Baku-Tbilisi-Kars railway alignment
+                    "coords": [
+                        [49.41, 39.95],  # Alyat port/rail terminal
+                        [49.86, 40.40],  # Baku station
+                        [48.30, 40.70],  # Hajigabul junction
+                        [47.15, 41.05],  # Yevlakh junction
+                        [46.30, 41.20],  # Gazakh
+                        [45.08, 41.46],  # Gardabani
+                        [44.82, 41.71],  # Tbilisi Central
+                        [43.80, 41.40],  # Marabda junction
+                        [43.50, 41.40],  # Akhalkalaki
+                        [43.08, 40.60],  # Kars (Turkey)
+                    ],
                 },
                 {
                     "id": "scp_pipeline",
-                    "name": "South Caucasus Pipeline (SCP)",
+                    "name": "South Caucasus Pipeline (SCP/TANAP)",
                     "type": "gas_pipeline",
                     "commodity": "gas",
                     "capacity_mbtu": 25,
                     "financial_weight": 0.30,
-                    "nodes": ["Baku", "Gardabani", "Erzurum"],
-                    "coords": [[49.86, 40.40], [45.08, 41.46], [41.27, 39.90]],
+                    "nodes": ["Sangachal", "Gardabani", "Erzurum"],
+                    # Parallel to BTC through Azerbaijan → Georgia → Turkey
+                    "coords": [
+                        [49.40, 40.18],  # Sangachal Terminal
+                        [48.50, 40.55],  # Near Yevlakh
+                        [47.20, 40.95],  # Mingachevir
+                        [46.30, 41.15],  # Gazakh border
+                        [45.08, 41.46],  # Gardabani metering station
+                        [44.50, 41.55],  # West Georgia
+                        [43.30, 41.30],  # Akhaltsikhe
+                        [42.70, 40.80],  # Turkey border
+                        [41.27, 39.90],  # Erzurum (TANAP connection)
+                    ],
+                },
+                {
+                    "id": "wrep_pipeline",
+                    "name": "WREP Pipeline (Baku–Supsa)",
+                    "type": "crude_pipeline",
+                    "commodity": "crude",
+                    "capacity_mbtu": 0.15,
+                    "financial_weight": 0.10,
+                    "nodes": ["Sangachal", "Tbilisi", "Supsa"],
+                    # Western Route Export Pipeline
+                    "coords": [
+                        [49.40, 40.18],  # Sangachal
+                        [47.20, 41.00],  # Central Azerbaijan
+                        [45.08, 41.46],  # Gardabani
+                        [44.82, 41.71],  # Tbilisi
+                        [43.50, 42.00],  # Zestafoni
+                        [42.06, 41.81],  # Supsa Terminal
+                    ],
                 },
                 {
                     "id": "black_sea_shipping_rompetrol",
-                    "name": "Constanța-Batumi Lane",
+                    "name": "Constanța–Batumi Tanker Lane",
                     "type": "tanker_route",
                     "commodity": "cargo",
                     "capacity_mbtu": 1.5,
                     "financial_weight": 0.15,
                     "nodes": ["Constanța", "Batumi"],
-                    "coords": [[28.63, 44.18], [41.63, 41.61]],
-                },
-                {
-                    "id": "wrep_pipeline",
-                    "name": "WREP (Baku-Supsa) Pipeline",
-                    "type": "crude_pipeline",
-                    "commodity": "crude",
-                    "capacity_mbtu": 0.15,
-                    "financial_weight": 0.10,
-                    "nodes": ["Baku", "Supsa"],
-                    "coords": [[49.86, 40.40], [42.06, 41.81]],
+                    # Follows Black Sea shipping lane — hugs south coast
+                    "coords": [
+                        [28.63, 44.18],  # Constanța port
+                        [30.50, 43.50],  # Off Varna
+                        [33.00, 42.60],  # Mid Black Sea south
+                        [35.50, 42.00],  # Off Sinop
+                        [37.50, 41.50],  # Off Trabzon approach
+                        [39.50, 41.40],  # Near Rize
+                        [40.50, 41.50],  # Approaching Georgia
+                        [41.63, 41.61],  # Batumi port
+                    ],
                 },
                 {
                     "id": "black_sea_shipping_tanker",
-                    "name": "Novorossiysk-Batumi Lane",
+                    "name": "Novorossiysk–Batumi Lane",
                     "type": "tanker_route",
                     "commodity": "cargo",
                     "capacity_mbtu": 1.8,
                     "financial_weight": 0.10,
                     "nodes": ["Novorossiysk", "Batumi"],
-                    "coords": [[37.77, 44.72], [41.63, 41.61]],
+                    # Short Black Sea crossing — eastern coast
+                    "coords": [
+                        [37.77, 44.72],  # Novorossiysk
+                        [38.50, 44.00],  # Off Tuapse
+                        [39.50, 43.20],  # Off Sochi
+                        [40.20, 42.50],  # Georgian coast north
+                        [41.00, 42.00],  # Approaching Batumi
+                        [41.63, 41.61],  # Batumi port
+                    ],
                 },
                 {
                     "id": "odesa_lane",
-                    "name": "Batumi-Constanța-Odesa Strategic Lane",
+                    "name": "Batumi–Constanța–Odesa Lane",
                     "type": "tanker_route",
                     "commodity": "cargo",
                     "capacity_mbtu": 1.2,
                     "financial_weight": 0.15,
                     "nodes": ["Batumi", "Constanța", "Odesa"],
-                    "coords": [[41.63, 41.61], [28.63, 44.18], [30.72, 46.48]],
-                }
+                    # Reverse of the Constanța-Batumi lane + extension to Odesa
+                    "coords": [
+                        [41.63, 41.61],  # Batumi port
+                        [39.50, 41.40],  # Off Trabzon
+                        [36.00, 42.00],  # Central south Black Sea
+                        [33.00, 42.80],  # Mid Black Sea
+                        [30.50, 43.50],  # Off Bulgarian coast
+                        [28.63, 44.18],  # Constanța
+                        [29.50, 44.80],  # Northwest Black Sea
+                        [30.72, 46.48],  # Odesa
+                    ],
+                },
             ],
             "hubs": [
                 {

@@ -20,14 +20,14 @@ interface GeoMapProps {
   height?: string;
 }
 
-/* ─── Color Palette ─── */
-const GOLD       = '#d4a953a4';
-const EMERALD    = '#10b981';
-const ROSE       = '#f43f5e';
-const ORANGE     = '#fb923c';
-const SKY        = '#00D8FF';
-const SLATE_FILL = 'rgba(100, 116, 139, 0.08)';
-const BORDER_CLR = 'rgba(148, 163, 184, 0.2)';
+/* ─── Color Palette — Palantir: muted, corporate ─── */
+const GOLD       = 'rgba(168, 144, 96, 0.65)';
+const EMERALD    = '#3d9970';
+const ROSE       = '#c0392b';
+const ORANGE     = '#d4a04a';
+const SKY        = '#5b8def';
+const SLATE_FILL = 'rgba(100, 116, 139, 0.05)';
+const BORDER_CLR = 'rgba(148, 163, 184, 0.12)';
 
 /* ─── Types ─── */
 interface RegionRisk { risk_score: number; level: string; color: string; border_color: string; primary_driver: string; factors: string[]; }
@@ -68,7 +68,7 @@ interface RiskData {
 const ModeButton = ({ active, icon, label, onClick }: any) => (
   <button 
     onClick={onClick}
-    className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all text-left flex items-center gap-2 pointer-events-auto shadow-xl backdrop-blur-md ${active ? 'bg-accent-op/30 text-accent-op border border-accent-op/50 shadow-[0_0_20px_rgba(212,168,83,0.2)]' : 'bg-bg3/40 text-muted hover:bg-bg2/60 border border-white/5 opacity-80 hover:opacity-100'}`}
+    className={`px-3 py-1.5 rounded text-[9px] font-bold transition-all text-left flex items-center gap-2 pointer-events-auto backdrop-blur-sm ${active ? 'bg-accent-op/15 text-accent-op border border-accent-op/30' : 'bg-bg3/40 text-muted hover:bg-bg2/60 border border-white/5 opacity-80 hover:opacity-100'}`}
   >
     {icon} {label}
   </button>
@@ -139,7 +139,7 @@ const TacticalRolloutTray = ({ asset, isOpen, onClose, viewMode }: { asset: any;
                         </div>
                         <div className="mt-2 h-1 w-full bg-white/5 rounded-full overflow-hidden">
                             <motion.div 
-                                className="h-full bg-emerald shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                                className="h-full bg-emerald" 
                                 initial={{ width: 0 }}
                                 animate={{ width: `${asset.storage_telemetry.current_fill * 100}%` }}
                                 transition={{ duration: 1.2, ease: "easeOut" }}
@@ -152,7 +152,7 @@ const TacticalRolloutTray = ({ asset, isOpen, onClose, viewMode }: { asset: any;
                 ) : (
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-1.5 h-10 bg-emerald rounded-full shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
+                            <div className="w-1.5 h-10 bg-emerald rounded-full " />
                             <div>
                                 <div className="text-[9px] text-muted font-black uppercase">Margin</div>
                                 <div className="text-xs font-bold text-emerald">+1.4%</div>
@@ -176,7 +176,7 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [showTray, setShowTray] = useState(false);
   const [filterTarget, setFilterTarget] = useState<string>('all');
-  const [mapFocus, setMapFocus] = useState<{center: [number, number], zoom: number}>({ center: [38, 42], zoom: 4.2 });
+  const [mapFocus, setMapFocus] = useState<{center: [number, number], zoom: number}>({ center: [38, 41.5], zoom: 5.0 });
   const chartRef = React.useRef<any>(null);
   const { activeCommand, clearCommand } = useAgentMapInteraction();
 
@@ -212,22 +212,43 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
 
   useEffect(() => {
       if (!activeCommand) return;
-      
-      // Reactive Intent Handling
-      if (activeCommand.intent === 'RISK_SCAN') setViewMode('RISK');
-      if (activeCommand.intent === 'PRICE_INTEL') setViewMode('MARKET');
-      
-      // Keyword & Context Detection for "Live" experience
+
+      // ── Reactive Intent → View Mode Switching ──
+      const intent = activeCommand.intent || '';
+      if (intent === 'RISK_SCAN')                                    setViewMode('RISK');
+      else if (intent === 'PRICE_INTEL')                             setViewMode('MARKET');
+      else if (intent === 'COMPETITOR_INTEL')                        setViewMode('COMPETITOR');
+      else if (intent === 'SHOW_TRANSITS' || intent === 'LOGISTICS') setViewMode('LOGISTICS');
+      else if (intent === 'OIL_DISTRIBUTION' || intent === 'PROCUREMENT') setViewMode('PROCUREMENT');
+
+      // ── Keyword & Context Detection for camera/filter ──
       const lowerRation = activeCommand.rationale?.toLowerCase() || "";
-      if (lowerRation.includes('gas') || activeCommand.intent?.includes('GAS')) {
+      if (lowerRation.includes('gas') || intent.includes('GAS')) {
           setFilterTarget('gas');
           setMapFocus({ center: [43, 41], zoom: 6.5 }); // Zoom to Caucasus/pipelines
       } else if (lowerRation.includes('crude')) {
           setFilterTarget('crude');
           setMapFocus({ center: [35, 38], zoom: 5.5 });
+      } else if (intent === 'COMPETITOR_INTEL') {
+          setFilterTarget('all');
+          setMapFocus({ center: [36, 41], zoom: 3.8 }); // Wide view to see all competitor routes
+      } else if (intent === 'OIL_DISTRIBUTION' || intent === 'PROCUREMENT') {
+          setFilterTarget('all');
+          setMapFocus({ center: [40, 40], zoom: 3.5 }); // Wide for supplier routes
       } else {
           setFilterTarget('all');
       }
+
+      // Show toast notification for map mode change
+      const modeLabels: Record<string, string> = {
+        'RISK_SCAN': '🔴 RISK ENGINE',
+        'PRICE_INTEL': '💰 MARKET PRICES',
+        'COMPETITOR_INTEL': '🎯 RIVALS OVERLAY',
+        'SHOW_TRANSITS': '🌐 LOGISTICS',
+        'OIL_DISTRIBUTION': '⚡ SOURCING',
+      };
+      const label = modeLabels[intent];
+      if (label) toast.info(`Map: ${label} activated`, { duration: 3000 });
 
       // Cleanup command after transition
       const timer = setTimeout(clearCommand, 8000);
@@ -258,37 +279,76 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
   }, [riskData, viewMode]);
 
   const option = useMemo(() => {
-    const routesData = (riskData?.infrastructure?.routes || []).filter((r: any) => 
+    // ── Route type visual encoding ──
+    // Pipeline: solid line, thicker    | Maritime: dashed, medium  | Rail: dotted, thin
+    const TYPE_STYLE: Record<string, {dash: number[], width: number, symbol: string}> = {
+      'crude_pipeline': { dash: [],       width: 2.5, symbol: 'circle' },
+      'gas_pipeline':   { dash: [],       width: 2.0, symbol: 'circle' },
+      'tanker_route':   { dash: [8, 4],   width: 1.5, symbol: 'triangle' },
+      'rail':           { dash: [3, 3],   width: 1.5, symbol: 'diamond' },
+    };
+    const TYPE_COLOR: Record<string, string> = {
+      'crude':  '#5b8def',  // blue for crude pipelines
+      'gas':    'rgba(168, 144, 96, 0.8)', // gold for gas
+      'cargo':  '#7a8a9e',  // muted steel for maritime
+      'rail':   '#8e7cc3',  // subtle purple for rail
+    };
+
+    const routesData = (riskData?.infrastructure?.routes || []).filter((r: any) =>
         filterTarget === 'all' || r.commodity === filterTarget
-    ).map((r: any) => ({
-        name: r.name,
-        coords: r.coords,
-        type: r.type,
-        commodity: r.commodity,
-        throughput: r.throughput_actual || 1.0,
-        status: r.status,
-        lineStyle: { 
-            color: (r.status === 'CRITICAL' || (riskData?.sim_active && r.name.includes('Black Sea'))) ? ROSE : (r.commodity === 'gas' ? GOLD : r.commodity === 'crude' ? EMERALD : r.commodity === 'rail' ? '#a78bfa' : SKY),
-            width: r.status === 'CRITICAL' ? 4 : 2,
-            opacity: riskData?.sim_active && r.status === 'CRITICAL' ? 0.95 : 0.8
-        }
-    }));
+    ).map((r: any) => {
+        const isCritical = r.status === 'CRITICAL' || (riskData?.sim_active && r.name.includes('Black Sea'));
+        const style = TYPE_STYLE[r.type] || TYPE_STYLE['tanker_route'];
+        const baseColor = isCritical ? ROSE : (TYPE_COLOR[r.commodity] || SKY);
+        return {
+            name: r.name,
+            coords: r.coords,
+            routeType: r.type,
+            commodity: r.commodity,
+            throughput: r.throughput_actual || 1.0,
+            status: r.status,
+            health_score: r.health_score,
+            utilization_pct: r.utilization_pct,
+            pressure_bar: r.pressure_bar,
+            capacity: r.capacity_mbtu,
+            lineStyle: {
+                color: baseColor,
+                width: isCritical ? style.width + 1 : style.width,
+                type: style.dash.length ? style.dash : 'solid',
+                opacity: isCritical ? 0.9 : 0.65,
+            },
+        };
+    });
 
     return {
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'item',
-        backgroundColor: 'rgba(2, 6, 23, 0.95)',
-        borderColor: 'rgba(59, 130, 246, 0.3)',
+        backgroundColor: 'rgba(11, 14, 20, 0.95)',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
         borderWidth: 1,
-        textStyle: { color: '#fff', fontSize: 10, fontFamily: 'var(--font-mono)' },
+        textStyle: { color: '#c5cdd8', fontSize: 10, fontFamily: 'var(--font-mono)' },
         formatter: (params: any) => {
             if (params.seriesName === 'Assets') {
                 const h = params.data;
-                const storage = h.storage_telemetry ? `<br/><span style='color:var(--accent-op)'>STRG: ${(h.storage_telemetry.current_fill * 100).toFixed(0)}%</span>` : '';
-                return `<div class="p-2 uppercase tracking-tighter text-[9px] font-mono"><b>${params.name}</b><br/>${h.type}${storage}</div>`;
+                const typeLabel: Record<string, string> = { extraction: 'Extraction Hub', refinery: 'Refinery', port: 'Port Terminal', command: 'Command Center' };
+                const storage = h.storage_telemetry ? `<br/>Storage: <b>${(h.storage_telemetry.current_fill * 100).toFixed(0)}%</b> of ${(h.storage_telemetry.capacity_bbl/1e6).toFixed(1)}M BBL` : '';
+                return `<div style="padding:6px;font-size:10px;font-family:var(--font-mono)"><b>${params.name}</b><br/><span style="color:#8692a2">${typeLabel[h.type] || h.type}</span>${storage}</div>`;
             }
-            return `<div class="p-2 uppercase tracking-tighter text-[9px] font-mono"><b>${params.name}</b><br/>${params.data?.status || 'Active'}</div>`;
+            // Route tooltip — show type, status, throughput
+            const d = params.data || {};
+            const typeLabel: Record<string, string> = { crude_pipeline: '● Pipeline (crude)', gas_pipeline: '● Pipeline (gas)', tanker_route: '- - Maritime lane', rail: '··· Railway' };
+            const statusColors: Record<string, string> = { NOMINAL: '#3d9970', WATCH: '#d4a04a', CRITICAL: '#c0392b' };
+            const statusColor = statusColors[d.status] || '#8692a2';
+            return `<div style="padding:8px;font-size:10px;font-family:var(--font-mono);min-width:180px">` +
+              `<b>${params.name}</b><br/>` +
+              `<span style="color:#8692a2">${typeLabel[d.routeType] || d.routeType || ''}</span><br/>` +
+              `<span style="color:${statusColor};font-weight:600">Status: ${d.status || '—'}</span>` +
+              (d.health_score != null ? ` · Health ${d.health_score}%` : '') +
+              (d.throughput ? `<br/>Throughput: ${d.throughput.toFixed(2)} M/d` : '') +
+              (d.utilization_pct ? ` · Util: ${d.utilization_pct}%` : '') +
+              (d.pressure_bar ? `<br/>Pressure: ${d.pressure_bar} bar` : '') +
+              `</div>`;
         }
       },
       geo: {
@@ -302,56 +362,40 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
         emphasis: { itemStyle: { areaColor: 'rgba(59, 130, 246, 0.1)' } }
       },
       series: [
-        // LAYER 1: THE GLOW (Broad atmosphere)
+        // Infrastructure routes — type-differentiated rendering (no animation for clean Palantir look)
         {
-          name: 'RoutesGlow',
-          type: 'lines',
-          coordinateSystem: 'geo',
-          polyline: true,
-          zlevel: 4,
-          silent: true,
-          lineStyle: { 
-            width: 12, 
-            opacity: 0.12, 
-            shadowBlur: 25,
-            shadowColor: 'inherit',
-            color: 'inherit'
-          },
-          data: routesData
-        },
-        // LAYER 2: THE CORE (Solid high-tech line)
-        {
-          name: 'RoutesCore',
+          name: 'Routes',
           type: 'lines',
           coordinateSystem: 'geo',
           polyline: true,
           zlevel: 5,
-          effect: { 
-            show: true, 
-            period: (params: any) => Math.max(2, 8 / (params.data?.throughput || 1)), 
-            trailLength: 0.4, 
-            symbol: 'circle', 
-            symbolSize: 3, 
-            color: '#fff', 
-            shadowBlur: 10 
+          effect: {
+            show: false,
           },
-          lineStyle: { 
-            width: 2.2, 
-            opacity: 0.9, 
-            curveness: 0.1, 
-            shadowBlur: 8,
-            color: 'inherit'
+          lineStyle: {
+            width: 1.8,
+            opacity: 0.6,
+            color: 'inherit',
           },
-          data: routesData
+          data: routesData,
         },
         {
           name: 'Assets',
-          type: 'effectScatter',
+          type: 'scatter',
           coordinateSystem: 'geo',
           zlevel: 6,
-          symbolSize: (p:any) => p[2] === 100 ? 14 : 10,
-          rippleEffect: { brushType: 'stroke', scale: 3, period: 4 },
-          itemStyle: { color: (params: any) => params.data.type === 'refinery' ? ROSE : GOLD },
+          symbolSize: (p:any) => p[2] === 100 ? 12 : 9,
+          itemStyle: {
+            color: (params: any) => {
+              const t = params.data.type;
+              if (t === 'refinery') return '#c0392b';
+              if (t === 'port') return '#5b8def';
+              if (t === 'command') return '#3d9970';
+              return 'rgba(168, 144, 96, 0.8)';
+            },
+            borderColor: 'rgba(255,255,255,0.15)',
+            borderWidth: 1,
+          },
           label: {
               show: viewMode === 'MARKET',
               formatter: (params: any) => `$${params.data.price || 74.20}`,
@@ -380,30 +424,63 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
           type: 'lines',
           coordinateSystem: 'geo',
           zlevel: 10,
-          effect: { 
-            show: viewMode === 'PROCUREMENT', 
-            period: 3, trailLength: 0.5, color: '#fbbf24', symbol: 'arrow', symbolSize: 10 
-          },
-          lineStyle: { color: '#fbbf24', width: 6, curveness: 0.2, opacity: viewMode === 'PROCUREMENT' ? 0.9 : 0 },
+          effect: { show: false },
+          lineStyle: { color: '#d4a04a', width: 3, curveness: 0.2, opacity: viewMode === 'PROCUREMENT' ? 0.75 : 0 },
           data: (riskData?.strategy?.optimal_procurement?.path) ? [{
             coords: riskData.strategy.optimal_procurement.path,
             name: 'Recommended Corridor'
           }] : []
         },
         {
-          name: 'CompetitorSourcing',
+          name: 'CompetitorRoutes',
           type: 'lines',
           coordinateSystem: 'geo',
           zlevel: 6,
-          lineStyle: { type: 'dashed', width: 2, opacity: viewMode === 'COMPETITOR' ? 0.8 : 0, curveness: 0.2 },
-          data: viewMode === 'COMPETITOR' ? (riskData?.competitors || []).map((c: any) => {
-              const refinery = riskData?.infrastructure?.hubs?.find((h:any) => h.id === c.refinery_id);
-              if (!refinery) return null;
-              return {
-                  coords: [refinery.coord, [44.82, 41.71]],
-                  lineStyle: { color: c.color, shadowBlur: 10, shadowColor: c.color }
-              };
-          }).filter(Boolean) : []
+          polyline: true,
+          effect: { show: false },
+          lineStyle: { type: 'dashed', width: 2, opacity: viewMode === 'COMPETITOR' ? 0.7 : 0 },
+          data: viewMode === 'COMPETITOR' ? (riskData?.competitors || []).flatMap((c: any) =>
+              (c.routes || []).map((route: any) => {
+                  // Use actual multi-waypoint route coords from competitor data
+                  const coords = route.coords;
+                  if (!coords || coords.length < 2) return null;
+                  // For ECharts lines, we need sequential coordinate pairs
+                  // Build segments from waypoint chain
+                  return {
+                      coords: coords,
+                      name: `${c.short_name || c.name}: ${route.name}`,
+                      lineStyle: {
+                          color: c.color,
+                          shadowBlur: 0,
+                          width: route.type === 'pipeline' ? 3.5 : route.type === 'maritime' ? 2.5 : 2,
+                          type: route.type === 'pipeline' ? 'solid' : route.type === 'maritime' ? 'dashed' : 'dotted',
+                      }
+                  };
+              }).filter(Boolean)
+          ) : []
+        },
+        // Competitor supplier origin points (shown as scatter when in COMPETITOR mode)
+        {
+          name: 'CompetitorSuppliers',
+          type: 'scatter',
+          coordinateSystem: 'geo',
+          zlevel: 7,
+          symbol: 'diamond',
+          symbolSize: viewMode === 'COMPETITOR' ? 9 : 0,
+          itemStyle: { color: ORANGE, borderColor: 'rgba(255,255,255,0.15)', borderWidth: 1 },
+          label: {
+            show: viewMode === 'COMPETITOR',
+            formatter: (p: any) => p.name,
+            fontSize: 8, fontWeight: 'bold', color: '#fff',
+            position: 'right', distance: 8,
+          },
+          data: viewMode === 'COMPETITOR' ? (riskData?.competitors || []).flatMap((c: any) =>
+              (c.suppliers || []).map((s: any) => ({
+                name: `${s.name}`,
+                value: [...s.coords, 60],
+                itemStyle: { color: c.color },
+              }))
+          ) : []
         }
       ]
     };
@@ -428,8 +505,8 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
       <div className="absolute top-6 left-6 right-6 z-[80] flex justify-between items-start pointer-events-none">
           <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2 mb-1">
-                <Globe size={14} className="text-accent-op animate-pulse" />
-                <span className="text-[10px] font-black tracking-[.4em] uppercase text-accent-op/80 select-none">Strategic Intelligence</span>
+                <Globe size={14} className="text-accent-op" />
+                <span className="text-[9px] font-semibold tracking-[.3em] uppercase text-muted select-none">Strategic Intelligence</span>
               </div>
               <div className="flex items-center gap-2 pointer-events-auto">
                 <ModeButton active={viewMode === 'LOGISTICS'} icon={<Globe size={12} />} label="LOGISTICS" onClick={() => setViewMode('LOGISTICS')} />
@@ -472,10 +549,48 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
           </div>
       </div>
 
-      {/* FOOTER TICKER - UPGRADED WITH LIVE COMMODITY SIGNALS */}
-      <div className="absolute bottom-6 left-6 z-[80] glass-premium bg-bg3/70 px-6 py-2.5 rounded-xl border border-white/10 pointer-events-none backdrop-blur-xl flex items-center gap-6 shadow-2xl overflow-hidden max-w-[800px]">
-          <div className="flex items-center gap-2 pr-4 border-r border-white/10 flex-shrink-0">
-              <span className="text-[10px] text-accent-op font-black uppercase tracking-widest font-mono">LIVE_MARKET_PULSE</span>
+      {/* ROUTE LEGEND — Explains line types */}
+      {viewMode === 'LOGISTICS' && (
+        <div className="absolute bottom-20 left-6 z-[80] bg-bg1/90 backdrop-blur-sm px-4 py-3 rounded border border-white/6 pointer-events-none">
+          <div className="text-[8px] font-semibold text-muted uppercase tracking-[.15em] mb-2">Route Types</div>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-0 border-t-2 border-solid" style={{ borderColor: '#5b8def' }} />
+              <span className="text-[9px] text-dim">Crude Pipeline</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-0 border-t-2 border-solid" style={{ borderColor: 'rgba(168, 144, 96, 0.8)' }} />
+              <span className="text-[9px] text-dim">Gas Pipeline</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-0 border-t-2 border-dashed" style={{ borderColor: '#7a8a9e' }} />
+              <span className="text-[9px] text-dim">Maritime Lane</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-0 border-t-2 border-dotted" style={{ borderColor: '#8e7cc3' }} />
+              <span className="text-[9px] text-dim">Railway</span>
+            </div>
+          </div>
+        </div>
+      )}
+      {viewMode === 'COMPETITOR' && (
+        <div className="absolute bottom-20 left-6 z-[80] bg-bg1/90 backdrop-blur-sm px-4 py-3 rounded border border-white/6 pointer-events-none">
+          <div className="text-[8px] font-semibold text-muted uppercase tracking-[.15em] mb-2">Competitors</div>
+          <div className="flex flex-col gap-1.5">
+            {(riskData?.competitors || []).map((c: any) => (
+              <div key={c.id} className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full" style={{ background: c.color }} />
+                <span className="text-[9px] text-dim">{c.short_name || c.name} ({(c.market_share * 100).toFixed(0)}%)</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* FOOTER TICKER */}
+      <div className="absolute bottom-6 left-6 z-[80] bg-bg1/85 backdrop-blur-sm px-4 py-2 rounded border border-white/6 pointer-events-none flex items-center gap-6 overflow-hidden max-w-[700px]">
+          <div className="flex items-center gap-2 pr-3 border-r border-white/8 flex-shrink-0">
+              <span className="text-[9px] text-muted font-semibold uppercase tracking-wider font-mono">Market</span>
           </div>
           
           <div className="flex items-center gap-8 overflow-x-auto no-scrollbar whitespace-nowrap">
@@ -507,7 +622,7 @@ export default function IndustrialGeoMap({ title = 'STRATEGIC ASSETS & SUPPLY CH
           </div>
 
           <div className="flex items-center gap-3 pl-4 border-l border-white/10 flex-shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald" />
               <span className="text-[10px] text-heading font-black font-mono tracking-tighter uppercase">{lastRefresh?.toLocaleTimeString() || 'SYNCING'}</span>
           </div>
       </div>

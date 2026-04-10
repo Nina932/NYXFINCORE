@@ -321,7 +321,7 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-4 mt-8">
                 {alerts.slice(0, 3).map((a: any, i: number) => (
                     <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-bg2/40 border border-white/5 hover:border-accent-op/30 transition-all cursor-default group">
-                        <div className={`w-3 h-3 rounded-full shrink-0 ${a.severity === 'critical' ? 'bg-error shadow-[0_0_12px_var(--error)]' : 'bg-warning shadow-[0_0_12px_var(--warning)]'}`} />
+                        <div className={`w-3 h-3 rounded-full shrink-0 ${a.severity === 'critical' ? 'bg-error' : 'bg-warning'}`} />
                         <span className="text-[11px] text-text font-bold uppercase tracking-tight truncate">{a.message || a.alert_type}</span>
                     </div>
                 ))}
@@ -399,7 +399,7 @@ function BreakdownBar({ label, value, total, color }: { label: string; value: nu
           animate={{ width: `${width}%` }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
           style={{ height: '100%', background: color, borderRadius: 999 }}
-          className="shadow-[0_0_12px_rgba(255,255,255,0.1)]"
+          className=""
         />
       </div>
     </div>
@@ -412,7 +412,7 @@ function MetricRow({ label, value, highlight, status }: { label: string; value: 
     <div className="flex justify-between items-center py-0.5">
       <span className="text-[12px] text-muted font-medium">{label}</span>
       <div className="flex items-center gap-3">
-        {statusColor && <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: statusColor, boxShadow: `0 0 10px ${statusColor}` }} />}
+        {statusColor && <div className="w-1.5 h-1.5 rounded-full" style={{ background: statusColor }} />}
         <span className={`text-[13px] font-mono font-bold ${highlight ? 'text-accent-op' : ''}`} style={{ color: highlight ? undefined : statusColor || 'var(--heading)' }}>{value}</span>
       </div>
     </div>

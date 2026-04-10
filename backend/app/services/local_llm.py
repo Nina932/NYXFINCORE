@@ -53,7 +53,7 @@ NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 
 # Google Gemma 4 via NVIDIA API (build.nvidia.com — primary LLM, Georgian-capable)
 GEMMA4_MODEL = "google/gemma-4-31b-it"
-GEMMA4_TIMEOUT = 60  # seconds — fail fast, let CRA fallback handle slow API
+GEMMA4_TIMEOUT = 35  # seconds — NVIDIA API is slow; fail fast to Nemotron fallback
 
 # Anthropic Claude API
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
@@ -430,11 +430,10 @@ class FinAICaptainLLM:
                 {"role": "system", "content": system_msg},
                 {"role": "user", "content": f"{user_prefix}{message}"},
             ],
-            "max_tokens": 16384,
+            "max_tokens": 4096,
             "temperature": 1.0,
             "top_p": 0.95,
             "stream": False,
-            "chat_template_kwargs": {"enable_thinking": True},
         }
         headers = {
             "Authorization": f"Bearer {api_key}",

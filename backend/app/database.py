@@ -11,10 +11,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 # ── Engine ──
-_is_postgres = "postgresql" in settings.DATABASE_URL
-_is_sqlite = "sqlite" in settings.DATABASE_URL
+_raw_url = settings.DATABASE_URL
+_is_postgres = "postgresql" in _raw_url
+_is_sqlite = "sqlite" in _raw_url
 
+# Normalize DB URL for asyncpg
+_db_url = _raw_url
 if _is_postgres:
+    # Ensure async driver prefix
+    if _db_url.startswith("postgresql://"):
+        _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    # Strip query params that asyncpg doesn't support
+    if "?" in _db_url:
+        _db_url = _db_url.split("?")[0]
     _pool_kwargs = {
         "pool_pre_ping": True,
         "pool_size": 20,
@@ -23,12 +32,13 @@ if _is_postgres:
         "pool_recycle": 1800,  # recycle connections every 30 min
         "connect_args": {"ssl": True},
     }
+    logger.info("PostgreSQL async engine: %s...%s", _db_url[:40], _db_url[-20:])
 else:
     # SQLite doesn't support connection pooling parameters
     _pool_kwargs = {}
 
 engine = create_async_engine(
-    settings.DATABASE_URL.replace("?sslmode=require", ""),
+    _db_url,
     echo=False,
     future=True,
     **_pool_kwargs,

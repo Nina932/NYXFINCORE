@@ -24,11 +24,11 @@
     },
     {
       "source": "/(.*)",
-      "destination": "frontend/$1"
+      "destination": "backend/nyxcore-website/$1"
     },
     {
       "source": "/",
-      "destination": "frontend/index.html"
+      "destination": "backend/nyxcore-website/index.html"
     }
   ],
   "crons": [

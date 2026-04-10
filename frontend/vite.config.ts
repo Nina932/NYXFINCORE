@@ -44,6 +44,14 @@ export default defineConfig({
         target: 'http://localhost:9200',
         changeOrigin: true,
       },
+      '/ws': {
+        target: 'ws://localhost:9200',
+        ws: true,
+      },
+      '/health': {
+        target: 'http://localhost:9200',
+        changeOrigin: true,
+      },
     },
   },
 })

@@ -52,17 +52,46 @@ const MapOperatorBriefing = ({ activeCommand, isOpen, onClose }: MapOperatorBrie
         intent: 'PRICE_INTEL',
         command: { type: 'MAP_HIGHLIGHT' as const, intent: 'PRICE_ANALYSIS',
           rationale: '[MARKET INTEL] Scanning Brent/WTI spot prices and regional supplier FOB rates. Comparing delivered cost across 8 suppliers with transit tax overlays.' },
-        response: 'MARKET PRICE INTELLIGENCE:\n\n• Brent Crude: ~$85/BBL (check bottom bar for live)\n• WTI Crude: ~$81/BBL\n• Best Compliant Supplier: Basra Terminal $74.2/BBL\n• Türkmenbaşy: $76.1/BBL | Aktau: $75.8/BBL\n\nCOMPETITOR PRICING:\n• SOCAR: Vertical integration — lowest delivered cost\n• Rompetrol: Euro-5 premium (+$4-6/BBL)\n• Gulf: Aggressive retail, Batumi/Poti imports\n• Lukoil: Sanctions-impacted, limited supply\n\nClick suppliers (◆) on map for FOB prices.'
+        response: 'MARKET PRICE INTELLIGENCE:\n\n' +
+          'WHOLESALE ($/BBL):\n' +
+          '• Brent Crude: ~$85/BBL (live in bottom bar)\n' +
+          '• WTI Crude: ~$81/BBL\n' +
+          '• Best Supplier: Basra Terminal $74.2/BBL\n' +
+          '• Türkmenbaşy: $76.1 | Aktau: $75.8\n\n' +
+          'RETAIL COMPETITOR PRICES (GEL/L):\n' +
+          '• Wissol:    Reg ₾3.14 | Diesel ₾2.82 (cheapest)\n' +
+          '• SOCAR:     Reg ₾3.15 | Diesel ₾2.85\n' +
+          '• Rompetrol: Reg ₾3.16 | Diesel ₾2.84\n' +
+          '• Gulf:      Reg ₾3.18 | Diesel ₾2.83\n' +
+          '• Lukoil:    Reg ₾3.20 | Diesel ₾2.86 (most expensive)\n\n' +
+          'Market Avg: Regular ₾3.17 | Diesel ₾2.84\n' +
+          'Click suppliers (◆) on map for FOB + landed cost.'
       };
     }
 
     // 2. Competitors (check BEFORE "oil" — catches "competitor prices on map")
-    if (q.includes('competitor') || q.includes('socar') || q.includes('lukoil') || q.includes('gulf') || q.includes('rompetrol') || q.includes('rival')) {
+    if (q.includes('competitor') || q.includes('socar') || q.includes('lukoil') || q.includes('gulf') || q.includes('rompetrol') || q.includes('rival') || q.includes('wissol')) {
       return {
         intent: 'COMPETITOR_INTEL',
         command: { type: 'MAP_SHOW_COMPETITORS' as const, intent: 'COMPETITOR_INTEL',
-          rationale: '[COMPETITOR] Decloaking rival supply chains. SOCAR (blue), Rompetrol (rose), Gulf (orange), Lukoil (slate) transit lanes now visible.' },
-        response: 'COMPETITOR OVERLAY ACTIVE:\n\n• SOCAR (22% share): Baku-Tbilisi direct pipeline\n• Rompetrol (18%): Constanța → Batumi maritime\n• Gulf (25%): Batumi/Poti port imports\n• Lukoil (12%): Novorossiysk → Batumi\n\nDashed lines on map show rival transit lanes.'
+          rationale: '[COMPETITOR] Decloaking rival supply chains. SOCAR (blue), Rompetrol (rose), Gulf (orange), Lukoil (slate), Wissol (purple) transit lanes now visible with supplier origins.' },
+        response: 'COMPETITOR OVERLAY ACTIVE — RETAIL PRICES (GEL/L):\n\n' +
+          '┌─────────────┬───────┬───────┬────────┬────────┐\n' +
+          '│ Operator     │ Reg92 │ Prem95│ Diesel │ Share  │\n' +
+          '├─────────────┼───────┼───────┼────────┼────────┤\n' +
+          '│ SOCAR  🔵    │ 3.15  │ 3.35  │ 2.85   │ 22%    │\n' +
+          '│ Rompetrol 🔴 │ 3.16  │ 3.38  │ 2.84   │ 18%    │\n' +
+          '│ Gulf 🟠      │ 3.18  │ 3.42  │ 2.83   │ 25%    │\n' +
+          '│ Lukoil ⚪    │ 3.20  │ 3.40  │ 2.86   │ 12%    │\n' +
+          '│ Wissol 🟣    │ 3.14  │ 3.36  │ 2.82   │ 15%    │\n' +
+          '└─────────────┴───────┴───────┴────────┴────────┘\n\n' +
+          'SUPPLY SOURCES:\n' +
+          '• SOCAR: Heydar Aliyev Refinery (Baku) — pipeline direct\n' +
+          '• Rompetrol: Petromidia Refinery (Romania) — Black Sea tanker\n' +
+          '• Gulf: Multi-source (Ceyhan, Augusta, Sarroch) — spot market\n' +
+          '• Lukoil: Neftochim Burgas (Bulgaria) — Black Sea tanker\n' +
+          '• Wissol: TÜPRAŞ refineries (Turkey) — Black Sea tanker\n\n' +
+          'Map shows colored transit lanes + supplier origin points (◆).'
       };
     }
 
@@ -162,6 +191,26 @@ const MapOperatorBriefing = ({ activeCommand, isOpen, onClose }: MapOperatorBrie
           `REGIONS:\n${regionLines}\n\n` +
           (headlineLines ? `DISRUPTION SIGNALS:\n${headlineLines}\n\n` : '') +
           `Switch to RISK MAP layer for heatmap visualization.`;
+      }
+
+      if (intent === 'COMPETITOR_INTEL') {
+        const competitors = d.competitors || [];
+        if (competitors.length) {
+          const compLines = competitors.map((c: any) => {
+            const rp = c.retail_prices_gel || {};
+            const reg = rp.regular_92 ? `₾${rp.regular_92.toFixed(2)}` : '—';
+            const diesel = rp.diesel ? `₾${rp.diesel.toFixed(2)}` : '—';
+            const prem = rp.premium_95 ? `₾${rp.premium_95.toFixed(2)}` : '—';
+            const supplier = (c.suppliers && c.suppliers[0]) ? c.suppliers[0].name : 'Unknown';
+            return `• ${c.short_name || c.name} (${(c.market_share * 100).toFixed(0)}% share, ${c.stations_count || '?'} stations)\n` +
+              `  Reg: ${reg} | Prem: ${prem} | Diesel: ${diesel}\n` +
+              `  Source: ${supplier}\n` +
+              `  Corridor: ${c.primary_corridor || c.origin}`;
+          }).join('\n\n');
+
+          return `LIVE COMPETITOR INTELLIGENCE:\n\n${compLines}\n\n` +
+            `Colored transit lanes + supplier origins (◆) shown on map.`;
+        }
       }
 
       if (intent === 'OIL_DISTRIBUTION' || intent === 'SHOW_TRANSITS') {
