@@ -1,27 +1,6 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "backend/main.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/api/flywheel/trigger-cycle",
-      "destination": "backend/main.py"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "backend/main.py"
-    },
     {
       "source": "/(.*)",
       "destination": "backend/nyxcore-website/$1"
@@ -29,12 +8,6 @@
     {
       "source": "/",
       "destination": "backend/nyxcore-website/index.html"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/flywheel/trigger-cycle",
-      "schedule": "0 0 * * *"
     }
   ]
 }
