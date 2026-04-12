@@ -260,6 +260,30 @@ def require_role(*roles: str):
 
 
 # ---------------------------------------------------------------------------
+# Multi-tenancy: require_tenant decorator
+# ---------------------------------------------------------------------------
+
+def require_tenant(f):
+    """Decorator ensuring tenant context is set before endpoint executes.
+
+    Use on endpoints that access tenant-scoped data to get an early,
+    clear 403 instead of silently returning empty results.
+    """
+    from functools import wraps
+
+    @wraps(f)
+    async def wrapper(*args, **kwargs):
+        from app.middleware.tenant import get_current_tenant
+        if get_current_tenant() is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Tenant context required. Authenticate first.",
+            )
+        return await f(*args, **kwargs)
+    return wrapper
+
+
+# ---------------------------------------------------------------------------
 # Phase G-4: Dataset ownership check
 # ---------------------------------------------------------------------------
 

@@ -1,7 +1,14 @@
-# Environment & Secrets
+# Environment & Secrets — NEVER commit secrets
 .env
 .env.local
 .env.*.local
+.env.production
+.env.staging
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
 
 # Virtual Environments
 venv/

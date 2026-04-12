@@ -1,4 +1,8 @@
 """
+DEPRECATED — Use app.graph.graph (LangGraph pipeline) instead.
+This module is retained for backward compatibility during migration.
+It will be removed after all references are ported to the LangGraph pipeline.
+
 Orchestrator v3 — Autonomous Financial Intelligence Conductor
 ==============================================================
 This is the BRAIN CONDUCTOR. It runs the full intelligence pipeline:

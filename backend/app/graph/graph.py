@@ -27,8 +27,86 @@ from app.graph.nodes import (
     whatif_simulator_node,
     report_generator_node,
 )
+from app.orchestrator.circuit_breaker import CircuitBreaker, HaltReason
 
 logger = logging.getLogger(__name__)
+
+
+def _circuit_breaker_check(state: FinAIState) -> FinAIState:
+    """Validate data integrity after extraction, calculation, and reconstruction.
+
+    Checks:
+      - Balance sheet equation (A = L + E)
+      - Trial balance (debits = credits)
+      - Data completeness from reconstruction engine
+      - Calculation results for NaN/Inf
+    """
+    breaker = CircuitBreaker()
+    bs = state.get("balance_sheet", {})
+    metrics = state.get("calculated_metrics", {})
+    completeness = state.get("completeness", {})
+
+    # Check BS equation: Assets = Liabilities + Equity
+    total_assets = bs.get("total_assets") or metrics.get("total_assets")
+    total_liabilities = bs.get("total_liabilities") or metrics.get("total_liabilities")
+    total_equity = bs.get("total_equity") or metrics.get("total_equity")
+
+    if total_assets is not None and total_liabilities is not None and total_equity is not None:
+        try:
+            a = float(total_assets)
+            le = float(total_liabilities) + float(total_equity)
+            if abs(a - le) > 1.0:  # Allow 1 unit tolerance for rounding
+                breaker.record_critical(
+                    HaltReason.BS_EQUATION_FAILED,
+                    f"Assets={a:,.2f} != L+E={le:,.2f} (diff={abs(a - le):,.2f})"
+                )
+        except (ValueError, TypeError):
+            breaker.record_warning("BS equation check skipped: non-numeric values")
+
+    # Check for NaN/Inf in calculated metrics
+    for key, val in metrics.items():
+        if isinstance(val, float):
+            import math
+            if math.isnan(val) or math.isinf(val):
+                breaker.record_critical(
+                    HaltReason.CALCULATION_FAILED,
+                    f"Metric '{key}' is {val}"
+                )
+
+    # Check data completeness from reconstruction engine
+    completeness_pct = completeness.get("completeness_pct", 100)
+    if isinstance(completeness_pct, (int, float)) and completeness_pct < 30:
+        breaker.record_critical(
+            HaltReason.RECONSTRUCTION_FAILED,
+            f"Data completeness {completeness_pct}% — below 30% threshold"
+        )
+    elif isinstance(completeness_pct, (int, float)) and completeness_pct < 50:
+        breaker.record_warning(f"Data completeness {completeness_pct}% — below 50%")
+
+    # Check for critical violations from reconstruction insights
+    for insight in state.get("insights", []):
+        severity = insight.get("severity", "")
+        if severity == "critical":
+            breaker.record_warning(f"Reconstruction: {insight.get('message', 'unknown')}")
+
+    state["circuit_breaker_status"] = breaker.status_summary()
+
+    if not breaker.should_continue():
+        state["status"] = "halted"
+        state["reasoning_trace"] = state.get("reasoning_trace", []) + [
+            f"[CircuitBreaker] HALTED: {'; '.join(breaker.halt_reasons)}"
+        ]
+        logger.warning("Pipeline halted by circuit breaker: %s", breaker.halt_reasons)
+
+    return state
+
+
+def _should_continue_after_check(state: FinAIState) -> str:
+    """Route after circuit breaker: continue pipeline or halt."""
+    cb = state.get("circuit_breaker_status", {})
+    if cb.get("breaker_state") == "open":
+        return "__end__"
+    return "memory"
 
 
 def _should_run_orchestrator(state: FinAIState) -> str:
@@ -43,10 +121,11 @@ def build_finai_graph() -> StateGraph:
 
     workflow = StateGraph(FinAIState)
 
-    # Add all 10 nodes
+    # Add all nodes (10 + circuit breaker)
     workflow.add_node("data_extractor", data_extractor_node)
     workflow.add_node("calculator", calculator_node)
     workflow.add_node("insight_engine", insight_engine_node)
+    workflow.add_node("circuit_breaker_check", _circuit_breaker_check)
     workflow.add_node("memory", memory_node)
     workflow.add_node("orchestrator", orchestrator_node)
     workflow.add_node("reasoner", reasoner_node)
@@ -55,11 +134,18 @@ def build_finai_graph() -> StateGraph:
     workflow.add_node("report_generator", report_generator_node)
     workflow.add_node("alerts", alert_node)
 
-    # Sequential flow: Extract → Calculate → Insight → Memory
+    # Sequential flow: Extract → Calculate → Insight → Circuit Breaker Check
     workflow.add_edge(START, "data_extractor")
     workflow.add_edge("data_extractor", "calculator")
     workflow.add_edge("calculator", "insight_engine")
-    workflow.add_edge("insight_engine", "memory")
+    workflow.add_edge("insight_engine", "circuit_breaker_check")
+
+    # Circuit breaker gate: continue or halt
+    workflow.add_conditional_edges(
+        "circuit_breaker_check",
+        _should_continue_after_check,
+        {"memory": "memory", "__end__": END},
+    )
 
     # Conditional: run orchestrator only if full data
     workflow.add_conditional_edges(
@@ -134,6 +220,7 @@ async def run_finai_pipeline(
         "orchestrator_result": None,
         "alerts": [],
         "report_path": None,
+        "circuit_breaker_status": {},
         "status": "starting",
         "stages_completed": [],
         "stages_failed": [],

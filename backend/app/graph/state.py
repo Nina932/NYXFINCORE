@@ -56,6 +56,9 @@ class FinAIState(TypedDict, total=False):
     # Report
     report_path: Optional[str]
 
+    # Circuit breaker (data integrity)
+    circuit_breaker_status: Dict[str, Any]  # CircuitBreaker.status_summary()
+
     # Flow control
     status: str                           # extracting → calculating → reasoning → done
     stages_completed: List[str]

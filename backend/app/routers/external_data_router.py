@@ -33,7 +33,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, Body
 from pydantic import BaseModel
 
-from app.auth import get_optional_user
+from app.auth import get_current_user
 from app.config import settings
 from app.services.external_data import ExternalDataService
 
@@ -58,7 +58,7 @@ def _serialise(obj: Any) -> Any:
 
 
 @router.get("/exchange-rates", summary="NBG official exchange rates (live)")
-async def exchange_rates(user=Depends(get_optional_user)):
+async def exchange_rates(user=Depends(get_current_user)):
     """
     Fetch live exchange rates from the National Bank of Georgia.
     USD/GEL, EUR/GEL, RUB/GEL and all other NBG-published currencies.
@@ -69,7 +69,7 @@ async def exchange_rates(user=Depends(get_optional_user)):
 
 
 @router.get("/commodities", summary="Commodity prices — Brent/WTI crude (live)")
-async def commodities(user=Depends(get_optional_user)):
+async def commodities(user=Depends(get_current_user)):
     """Brent Crude, WTI Crude, and Natural Gas prices from Yahoo Finance."""
     async with ExternalDataService() as svc:
         data = await svc.get_commodity_prices()
@@ -77,7 +77,7 @@ async def commodities(user=Depends(get_optional_user)):
 
 
 @router.get("/market-indices", summary="Georgian and international market indices")
-async def market_indices(user=Depends(get_optional_user)):
+async def market_indices(user=Depends(get_current_user)):
     """GSE index (best-effort live) + S&P 500 + Brent Crude via Yahoo Finance."""
     async with ExternalDataService() as svc:
         data = await svc.get_market_indices()
@@ -85,7 +85,7 @@ async def market_indices(user=Depends(get_optional_user)):
 
 
 @router.get("/fuel-prices", summary=f"{settings.COMPANY_NAME} pump prices (estimated)")
-async def fuel_prices(user=Depends(get_optional_user)):
+async def fuel_prices(user=Depends(get_current_user)):
     f"""
     Representative {settings.COMPANY_NAME} pump prices.
 
@@ -98,7 +98,7 @@ async def fuel_prices(user=Depends(get_optional_user)):
 
 
 @router.get("/competitors", summary="Competitor fuel prices (estimated)")
-async def competitor_prices(user=Depends(get_optional_user)):
+async def competitor_prices(user=Depends(get_current_user)):
     """
     Rompetrol, Lukoil, Wissol, and Gulf representative prices.
     Based on Georgian Competition Agency filings and press monitoring.
@@ -109,7 +109,7 @@ async def competitor_prices(user=Depends(get_optional_user)):
 
 
 @router.get("/economic-indicators", summary="Georgian macro indicators (estimated)")
-async def economic_indicators(user=Depends(get_optional_user)):
+async def economic_indicators(user=Depends(get_current_user)):
     """
     GDP growth, inflation, unemployment, NBG policy rate.
     Source: Geostat and NBG publications (quarterly cadence).
@@ -120,7 +120,7 @@ async def economic_indicators(user=Depends(get_optional_user)):
 
 
 @router.get("/full-context", summary="All market data in one call")
-async def full_context(user=Depends(get_optional_user)):
+async def full_context(user=Depends(get_current_user)):
     """
     Combined: exchange rates + commodities + economic indicators + fuel prices.
     Used by InsightAgent for enriched financial analysis context.
@@ -132,7 +132,7 @@ async def full_context(user=Depends(get_optional_user)):
 
 
 @router.get("/situational-risk", summary="Real-time risk intelligence for map overlays")
-async def situational_risk(user=Depends(get_optional_user)):
+async def situational_risk(user=Depends(get_current_user)):
     try:
         from app.services.risk_intelligence import risk_engine
         data = await risk_engine.get_situational_risk()
@@ -159,7 +159,7 @@ async def situational_risk(user=Depends(get_optional_user)):
 # =========================================================================
 
 @router.get("/eia/petroleum-report", summary="EIA Weekly Petroleum Status Report")
-async def eia_petroleum_report(user=Depends(get_optional_user)):
+async def eia_petroleum_report(user=Depends(get_current_user)):
     """
     Full weekly petroleum report from the U.S. Energy Information Administration.
 
@@ -175,7 +175,7 @@ async def eia_petroleum_report(user=Depends(get_optional_user)):
 
 
 @router.get("/eia/prices", summary="EIA energy prices (WTI crude + natural gas)")
-async def eia_prices(user=Depends(get_optional_user)):
+async def eia_prices(user=Depends(get_current_user)):
     """
     EIA price data: WTI crude oil spot price and Henry Hub natural gas spot price.
     Includes 4-week trend analysis for each commodity.
@@ -196,7 +196,7 @@ async def eia_prices(user=Depends(get_optional_user)):
 
 
 @router.get("/eia/inventories", summary="Crude oil inventories + SPR levels")
-async def eia_inventories(user=Depends(get_optional_user)):
+async def eia_inventories(user=Depends(get_current_user)):
     """
     U.S. commercial crude oil inventories and Strategic Petroleum Reserve levels.
     Includes total stocks, days-of-supply estimate, and 4-week trend.
@@ -207,7 +207,7 @@ async def eia_inventories(user=Depends(get_optional_user)):
 
 
 @router.get("/logistics/benchmark", summary="Deep comparison between two major operators")
-async def benchmark_competitors(target_a: str, target_b: str, user=Depends(get_optional_user)):
+async def benchmark_competitors(target_a: str, target_b: str, user=Depends(get_current_user)):
     """
     Compares two competitors (e.g., SOCAR vs Rompetrol) on sourcing,
     logistics margins, and supply resilience.
@@ -221,7 +221,7 @@ async def benchmark_competitors(target_a: str, target_b: str, user=Depends(get_o
 
 
 @router.get("/logistics/competitor-prices", summary="All competitor retail fuel prices")
-async def competitor_prices_summary(user=Depends(get_optional_user)):
+async def competitor_prices_summary(user=Depends(get_current_user)):
     """
     Comprehensive pricing comparison for all Georgian fuel market competitors.
     Includes retail prices (GEL/L), station counts, market shares, and primary suppliers.

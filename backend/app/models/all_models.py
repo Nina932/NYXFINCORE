@@ -406,6 +406,7 @@ class DatasetGroup(Base):
     description = Column(Text)
     group_type  = Column(String(50), default="period")        # period|consolidation|comparison|custom
     is_active   = Column(Boolean, default=True)
+    company     = Column(String(100), default=_default_company, index=True)
     metadata_json = Column(JSON)                               # Flexible metadata
     created_at  = Column(DateTime(timezone=True), server_default=func.now())
     updated_at  = Column(DateTime(timezone=True), onupdate=func.now())
@@ -471,6 +472,7 @@ class CustomTool(Base):
     code         = Column(Text, nullable=False)
     input_schema = Column(JSON)
     is_active    = Column(Boolean, default=True)
+    company      = Column(String(100), default=_default_company, index=True)
     created_at   = Column(DateTime(timezone=True), server_default=func.now())
     updated_at   = Column(DateTime(timezone=True), onupdate=func.now())
     def to_dict(self):
@@ -487,6 +489,7 @@ class Forecast(Base):
     id                  = Column(Integer, primary_key=True, autoincrement=True)
     dataset_id          = Column(Integer, ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True)
     forecast_type       = Column(String(50), nullable=False)    # revenue|cogs|margin|expense|ebitda
+    company             = Column(String(100), default=_default_company, index=True)
     product             = Column(String(255))
     segment             = Column(String(100))                    # Wholesale|Retail|Other
     category            = Column(String(100))
@@ -510,6 +513,7 @@ class Scenario(Base):
     id              = Column(Integer, primary_key=True, autoincrement=True)
     name            = Column(String(255), nullable=False)
     description     = Column(Text)
+    company         = Column(String(100), default=_default_company, index=True)
     base_dataset_id = Column(Integer, ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True)
     parameters      = Column(JSON, nullable=False)               # {"changes": [{"target","type","value"}]}
     results         = Column(JSON)                               # computed results {revenue,cogs,margin,ebitda,delta}
@@ -528,6 +532,7 @@ class Anomaly(Base):
     dataset_id       = Column(Integer, ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False)
     transaction_id   = Column(Integer, ForeignKey("transactions.id", ondelete="SET NULL"), nullable=True)
     anomaly_type     = Column(String(50), nullable=False)        # zscore|iqr|benford|seasonal
+    company          = Column(String(100), default=_default_company, index=True)
     severity         = Column(String(20), default="medium")      # low|medium|high|critical
     score            = Column(Float, default=0.0)
     description      = Column(Text)
@@ -579,6 +584,7 @@ class ScheduledReport(Base):
     id            = Column(Integer, primary_key=True, autoincrement=True)
     name          = Column(String(255), nullable=False)
     report_type   = Column(String(50), nullable=False)           # pl|bs|mr|is|dashboard
+    company       = Column(String(100), default=_default_company, index=True)
     frequency     = Column(String(20), nullable=False)           # daily|weekly|monthly
     recipients    = Column(JSON, nullable=False)                 # ["email1@co.ge"]
     smtp_config   = Column(JSON)                                 # override or None
@@ -746,6 +752,7 @@ class DecisionAction(Base):
     __tablename__ = "decision_actions"
     id               = Column(Integer, primary_key=True, autoincrement=True)
     action_type      = Column(String(50), nullable=False)  # cost_reduction|revenue_growth|risk_mitigation|capital_optimization|operational_efficiency
+    company          = Column(String(100), default=_default_company, index=True)
     description      = Column(Text, nullable=False)
     expected_impact  = Column(DecimalString(precision=2), default="0")
     implementation_cost = Column(DecimalString(precision=2), default="0")
@@ -771,6 +778,7 @@ class PredictionRecord(Base):
     __tablename__ = "prediction_records"
     id               = Column(Integer, primary_key=True, autoincrement=True)
     prediction_type  = Column(String(50), nullable=False)  # forecast|scenario|anomaly_flag|threshold_breach
+    company          = Column(String(100), default=_default_company, index=True)
     metric           = Column(String(100), nullable=False)
     predicted_value  = Column(DecimalString(precision=2), nullable=False)
     confidence       = Column(DecimalString(precision=4), default="0.5")
@@ -810,6 +818,7 @@ class Alert(Base):
     __tablename__ = "alerts"
     id               = Column(Integer, primary_key=True, autoincrement=True)
     alert_type       = Column(String(50), nullable=False)  # threshold_breach|anomaly_spike|forecast_deviation|bs_violation
+    company          = Column(String(100), default=_default_company, index=True)
     severity         = Column(String(20), nullable=False)  # info|warning|critical|emergency
     metric           = Column(String(100))
     threshold_value  = Column(DecimalString(precision=2))
@@ -835,6 +844,7 @@ class MonitoringRule(Base):
     __tablename__ = "monitoring_rules"
     id               = Column(Integer, primary_key=True, autoincrement=True)
     rule_type        = Column(String(50), nullable=False)  # threshold|anomaly|forecast_deviation|bs_equation
+    company          = Column(String(100), default=_default_company, index=True)
     metric           = Column(String(100), nullable=False)
     operator         = Column(String(10), nullable=False)  # gt|lt|gte|lte|eq|neq|deviation_pct
     threshold        = Column(DecimalString(precision=2), nullable=False)
@@ -860,6 +870,7 @@ class FinancialDocument(Base):
     metadata_json  = Column(JSON)                                   # {source, entity_id, period}
     document_type  = Column(String(50), nullable=False)             # transaction|revenue|budget|report|rule|memory
     embedding_id   = Column(String(200))                            # chromadb doc ID
+    company        = Column(String(100), default=_default_company, index=True)
     dataset_id     = Column(Integer, ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True)
     is_indexed     = Column(Boolean, default=False)
     created_at     = Column(DateTime(timezone=True), server_default=func.now())
@@ -925,6 +936,7 @@ class JournalEntryRecord(Base):
     period           = Column(String(50), nullable=False, index=True)  # "January 2026"
     fiscal_year      = Column(Integer, nullable=False)
     description      = Column(Text, nullable=False)
+    company          = Column(String(100), default=_default_company, index=True)
     status           = Column(String(20), nullable=False, default="draft")  # draft|posted|reversed
     reference        = Column(String(200))  # External reference (invoice #, etc.)
     currency         = Column(String(10), default="GEL")

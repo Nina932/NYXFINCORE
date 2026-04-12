@@ -27,6 +27,7 @@ import logging
 import os
 import re
 from dataclasses import dataclass, field
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -316,10 +317,33 @@ def _detect_header_row(rows: List[List[Any]], max_scan: int = 20) -> int:
 # METRIC COMPUTER
 # ═══════════════════════════════════════════════════════════════════
 
+_TWO_PLACES = Decimal("0.01")
+_ZERO = Decimal("0")
+
+
+def _safe_decimal(v) -> Optional[Decimal]:
+    """Convert any value to Decimal safely. Returns None on failure.
+
+    Floats from Excel are converted via str() to avoid binary representation
+    errors (e.g. float(0.1) -> Decimal('0.1000000000000000055511151231257827021181583404541015625')).
+    """
+    if v is None:
+        return None
+    try:
+        if isinstance(v, Decimal):
+            return v
+        if isinstance(v, float):
+            return Decimal(str(v))
+        return Decimal(str(v))
+    except (InvalidOperation, ValueError, TypeError):
+        return None
+
+
 def compute_derived_metrics(data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
     """
     Compute any missing derived metrics from available data.
     All computation is deterministic — no LLM.
+    All arithmetic uses Decimal with ROUND_HALF_UP to prevent float errors.
 
     Returns:
         (enriched_data, list_of_auto_corrections)
@@ -327,14 +351,8 @@ def compute_derived_metrics(data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[
     d = dict(data)
     corrections = []
 
-    def _get(key: str) -> Optional[float]:
-        v = d.get(key)
-        if v is None:
-            return None
-        try:
-            return float(v)
-        except (ValueError, TypeError):
-            return None
+    def _get(key: str) -> Optional[Decimal]:
+        return _safe_decimal(d.get(key))
 
     revenue = _get("revenue")
     cogs = _get("cogs")
@@ -360,26 +378,30 @@ def compute_derived_metrics(data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[
 
     # Net profit (approximate)
     if net_profit is None and ebitda is not None:
-        dep = depreciation or 0
-        fin = finance_expense or 0
-        tax = tax_expense or 0
+        dep = depreciation or _ZERO
+        fin = finance_expense or _ZERO
+        tax = tax_expense or _ZERO
         net_profit = ebitda - dep - fin - tax
         d["net_profit"] = net_profit
         corrections.append("Computed net_profit = ebitda - depreciation - finance - tax")
 
-    # Percentages
-    if revenue and revenue != 0:
+    # Percentages — all use Decimal with ROUND_HALF_UP
+    if revenue and revenue != _ZERO:
         if _get("gross_margin_pct") is None and gross_profit is not None:
-            d["gross_margin_pct"] = round(gross_profit / revenue * 100, 2)
+            d["gross_margin_pct"] = (gross_profit / revenue * 100).quantize(
+                _TWO_PLACES, rounding=ROUND_HALF_UP)
             corrections.append("Computed gross_margin_pct")
         if _get("net_margin_pct") is None and net_profit is not None:
-            d["net_margin_pct"] = round(net_profit / revenue * 100, 2)
+            d["net_margin_pct"] = (net_profit / revenue * 100).quantize(
+                _TWO_PLACES, rounding=ROUND_HALF_UP)
             corrections.append("Computed net_margin_pct")
         if _get("ebitda_margin_pct") is None and ebitda is not None:
-            d["ebitda_margin_pct"] = round(ebitda / revenue * 100, 2)
+            d["ebitda_margin_pct"] = (ebitda / revenue * 100).quantize(
+                _TWO_PLACES, rounding=ROUND_HALF_UP)
             corrections.append("Computed ebitda_margin_pct")
         if _get("cogs_to_revenue_pct") is None and cogs is not None:
-            d["cogs_to_revenue_pct"] = round(cogs / revenue * 100, 2)
+            d["cogs_to_revenue_pct"] = (cogs / revenue * 100).quantize(
+                _TWO_PLACES, rounding=ROUND_HALF_UP)
             corrections.append("Computed cogs_to_revenue_pct")
 
     return d, corrections
