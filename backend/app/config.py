@@ -1,10 +1,23 @@
 """
 FinAI Backend — Application Configuration
 """
+from pathlib import Path
 from pydantic_settings import BaseSettings
 from pydantic import field_validator
 from typing import List
 import os
+
+
+def _read_secret(name: str, fallback_env: str = "") -> str:
+    """Read secret from Docker/Kubernetes mounted file, fall back to env var.
+
+    Looks for /run/secrets/<name> first (Docker secrets), then falls back
+    to the environment variable specified by fallback_env (or name.upper()).
+    """
+    secret_path = Path(f"/run/secrets/{name}")
+    if secret_path.exists():
+        return secret_path.read_text().strip()
+    return os.getenv(fallback_env or name.upper(), "")
 
 
 class Settings(BaseSettings):
@@ -158,7 +171,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
-        extra = "ignore"  # Allow extra env vars (OPENAI_API_KEY, VERCEL_TOKEN, etc.)
+        extra = "ignore"  # Allow extra env vars not defined in Settings
 
     @property
     def cors_origins_list(self) -> List[str]:

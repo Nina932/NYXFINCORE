@@ -7,6 +7,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import event, text
 from app.config import settings
 import logging
+from typing import Set
 
 logger = logging.getLogger(__name__)
 
@@ -126,3 +127,69 @@ async def drop_db():
     """Drop all tables (use only in tests)."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+
+# ── Multi-Tenant Query Filtering ──
+# Models whose queries are automatically filtered by company (tenant).
+# These model class names must have a `company` column.
+TENANT_SCOPED_MODELS: Set[str] = {
+    "Dataset", "Report", "CustomTool", "FinancialDocument",
+    "Alert", "Forecast", "Scenario", "Anomaly",
+    "ScheduledReport", "JournalEntryRecord", "DatasetGroup",
+    "DecisionAction", "PredictionRecord", "MonitoringRule",
+}
+
+
+from sqlalchemy.orm import Session as _SyncSession
+
+@event.listens_for(_SyncSession, "do_orm_execute")
+def _inject_tenant_filter(orm_execute_state):
+    """Automatically append WHERE company = :tenant to SELECT queries
+    on tenant-scoped models.
+
+    This provides row-level isolation: Tenant A cannot see Tenant B's data
+    even if the application code forgets to filter by company.
+
+    Only applies when:
+      - A tenant context is active (user is authenticated)
+      - The query is a SELECT
+      - The target model is in TENANT_SCOPED_MODELS
+    """
+    from app.middleware.tenant import get_current_tenant
+
+    tenant = get_current_tenant()
+    if tenant is None:
+        return
+
+    if not orm_execute_state.is_select:
+        return
+
+    # Get the primary mapper (if any) from the statement
+    try:
+        mapper = orm_execute_state.bind_arguments.get("mapper")
+        if mapper is None:
+            # Try to extract from the statement's column descriptions
+            stmt = orm_execute_state.statement
+            if hasattr(stmt, "column_descriptions"):
+                for desc in stmt.column_descriptions:
+                    entity = desc.get("entity")
+                    if entity and entity.__name__ in TENANT_SCOPED_MODELS:
+                        if hasattr(entity, "company"):
+                            orm_execute_state.statement = stmt.filter(
+                                entity.company == tenant
+                            )
+                        return
+            return
+
+        model_cls = mapper.class_
+        if model_cls.__name__ not in TENANT_SCOPED_MODELS:
+            return
+
+        if not hasattr(model_cls, "company"):
+            return
+
+        orm_execute_state.statement = orm_execute_state.statement.filter(
+            model_cls.company == tenant
+        )
+    except Exception as exc:
+        logger.debug("Tenant filter injection skipped: %s", exc)

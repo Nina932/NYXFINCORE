@@ -266,6 +266,10 @@ app.add_middleware(
 from app.middleware.auth_middleware import AuthMiddleware  # noqa: E402
 app.add_middleware(AuthMiddleware)
 
+# Multi-tenant isolation (must be AFTER auth so user_id is available)
+from app.middleware.tenant import TenantMiddleware  # noqa: E402
+app.add_middleware(TenantMiddleware)
+
 # Rate limiting (must be after auth so auth runs first)
 from app.middleware.rate_limiter import RateLimiterMiddleware  # noqa: E402
 app.add_middleware(RateLimiterMiddleware)

@@ -12,7 +12,7 @@ Endpoints:
   GET    /api/documents/{id}/chunks      — preview indexed chunks for a document
 
 Authentication:
-  Uses get_optional_user — works with or without JWT token.
+  Uses get_current_user — requires valid JWT token.
   Deletion requires at least analyst role (enforced server-side).
 """
 
@@ -25,7 +25,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, s
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.auth import get_optional_user
+from app.auth import get_current_user
 from app.services.document_ingestion import document_ingestion_service
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ async def upload_document(
     author: Optional[str] = Form(default=None),
     description: Optional[str] = Form(default=None),
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_optional_user),
+    current_user=Depends(get_current_user),
 ):
     """
     Upload a document and index it into the RAG pipeline.
@@ -208,7 +208,7 @@ async def get_document(
 async def delete_document(
     document_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_optional_user),
+    current_user=Depends(get_current_user),
 ):
     """
     Permanently remove a document from:
